@@ -1,3 +1,6 @@
 [submodule ".emacs.d"]
 	path = .emacs.d
 	url = git@github.com:Jassob/.emacs.d
+[submodule "stumpwm.d"]
+	path = stumpwm.d
+	url = git@github.com:Jassob/.stumpwm.d
