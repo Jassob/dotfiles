@@ -66,6 +66,9 @@ super + c
 super + m
         conkeror http://messenger.com
 
+super + i
+        conkeror http://inbox.google.com
+
 super + e
         emacsclient -c
 
