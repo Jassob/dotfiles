@@ -14,7 +14,7 @@ emacs:
 		mv ~/.emacs.d ~/.emacs.d.bak; \
 	fi
 	echo "Installing Emacs configs..."
-	mv emacs.d ~/.emacs.d
+	cp -r emacs.d ~/.emacs.d
 	echo "Done!"
 
 tmux:
@@ -27,5 +27,13 @@ tmux:
 		mv ~/.tmux.d ~/.tmux.d.bak; \
 	fi
 	echo "Installing tmux configs..."
-	mv tmux/* ~/
+	cp -r tmux/* ~/
+	echo "Done!"
+
+local-scripts:
+	if ! [ -d $(HOME)/.local/bin ]; then \
+		mkdir -p $(HOME)/.local/bin; \
+	fi
+	echo "Installing local scripts..."
+	cp .local/bin/* $(HOME)/.local/bin;
 	echo "Done!"

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+URL=$(echo '' | dmenu -p "Open URL: http://")
+if [ -n "$URL" ]; then
+  xdg-open "http://${URL}" 2> /dev/null
+fi
