@@ -30,7 +30,7 @@ import Graphics.X11.ExtraTypes.XF86
 -- TODO: hook in TopicSpaces, start specific apps on specific workspaces
 
 main = do
-  xmproc <- spawnPipe "/usr/bin/xmobar ~/.xmonad/xmobarrc"
+  xmproc <- spawnPipe "/usr/local/bin/xmobar ~/.xmonad/xmobarrc"
   xmonad $ def {
       modMask = mod4Mask
     , terminal = "urxvt"
@@ -40,10 +40,8 @@ main = do
     , workspaces = myWorkspaces
     , handleEventHook = docksEventHook <+> handleEventHook def
     , startupHook = docksStartupHook <+> startupHook def
-    , logHook = dynamicLogWithPP $ xmobarPP
-                { ppOutput = hPutStrLn xmproc
-                , ppTitle = xmobarColor "white" "" . shorten 50
-                }
+    , logHook = dynamicLogWithPP $ myPP
+                { ppOutput = hPutStrLn xmproc }
   } `additionalKeys` [ ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +20")
                      , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -20")
                      , ((mod4Mask, xK_0), windows $ W.greedyView "messenger")
@@ -62,8 +60,11 @@ myManageHook = composeOne [ isFullscreen -?> doFullFloat
 myWorkspaces = ["www", "emacs", "3", "4", "5", "6", "7", "8", "irc", "messenger"]
 
 myLayout = avoidStruts $ toggleLayouts (noBorders Full)
-    (smartBorders (tiled ||| mosaic 2 [3,2] ||| spacing 5 (Mirror tiled)
-                   ||| layoutHints (tabbed shrinkText myTab)))
+  (smartBorders (tiled
+                ||| Full
+                ||| mosaic 2 [3,2]
+                ||| spacing 5 (Mirror tiled)
+                ||| layoutHints (tabbed shrinkText myTab)))
   where
     tiled   = layoutHints $ ResizableTall nmaster delta ratio []
     nmaster = 1
@@ -94,7 +95,7 @@ myTab = def
     , inactiveBorderColor = "#222222"
     , urgentBorderColor   = "black"
     , activeTextColor     = "orange"
-    , inactiveTextColor   = "#222222"
+    , inactiveTextColor   = "#8e8e8e"
     , urgentTextColor     = "yellow" }
 
 -- shell prompt theme
@@ -110,19 +111,16 @@ mySP = def
     --, autoComplete      = Just 1000
     , historySize       = 1000 }
 
--- dynamicLog theme (suppress everything but layout)
-myPP = def
-    { ppLayout  = (\ x -> case x of
-      "Hinted ResizableTall"        -> "[|]"
-      "Mirror Hinted ResizableTall" -> "[-]"
-      "Hinted Tabbed Simplest"      -> "[T]"
-      "Full"                 -> "[ ]"
-      _                      -> x )
-    , ppCurrent         = const ""
-    , ppVisible         = const ""
-    , ppHidden          = const ""
-    , ppHiddenNoWindows = const ""
-    , ppUrgent          = const ""
-    , ppTitle           = const ""
-    , ppWsSep           = ""
-    , ppSep             = "" }
+myPP :: PP
+myPP = def { ppCurrent = xmobarColor "yellow" "" . wrap "[" "]"
+           , ppVisible = wrap "(" ")"
+           , ppTitle   = const ""
+           , ppUrgent  = xmobarColor "red" "yellow"
+           , ppLayout  =
+               (\ x -> case x of
+                   "Hinted ResizableTall"                  -> "[|]"
+                   "Spacing 5 Mirror Hinted ResizableTall" -> "[-]"
+                   "Hinted Tabbed Simplest"                -> "[T]"
+                   "Full"                                  -> "[ ]"
+                   _                                       -> x )
+           }

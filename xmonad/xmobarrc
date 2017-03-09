@@ -2,7 +2,7 @@ Config {
   font = "xft:Inconsolata:size=11:antialias=true"
   , additionalFonts = ["xft:FontAwesome:size=10"]
   , bgColor         = "black"
-  , fgColor         = "#646464"
+  , fgColor         = "#8e8e8e"
   , position        = Top
   , border          = BottomB
   , borderColor     = "#646464"
@@ -16,33 +16,34 @@ Config {
   , persistent =       True    -- enable/disable hiding (True = disabled)
 
 
-  commands = [
+    commands = [
       Run Battery [ "-t", "<acstatus> <left>%", "--"
                   , "-i", "<fn=1></fn>"
                   , "-O", "<fn=1></fn>"
-                  , "-o", "<fn=1></fn>" ] 10,
+                  , "-o", "<fn=1></fn>" ] 10
 
-      Run MultiCpu [ "-t"      , "<fn=1></fn> <total>%"
-                   , "-L"      , "3"
+      , Run MultiCpu [ "-t"      , "<fn=1></fn> <total>%"
+                     , "-L"      , "3"
                    , "-H"      , "50"
                    , "--normal", "green"
-                   , "--high"  , "red"] 10,
+                   , "--high"  , "red"] 10
 
-      Run Memory [ "-t", "<used> MB" ] 10,
-      Run Date "%b %d, %H:%M" "date" 10,
-      Run Weather "ESGG" [ "-t",       "<skyCondition> | <fc=#4682B4><tempC></fc>°C"
-                         , "-L",       "10"
-                         , "-H",       "20"
-                         , "--normal", "green"
-                         , "--high",   "red"
-                         , "--low",    "lightblue"] 1800,
+      , Run Memory [ "-t", "<used> MB" ] 10
+      , Run Date "%b %d, %H:%M" "date" 10
+      , Run Weather "ESGG" [ "-t",       "<skyCondition> | <fc=#4682B4><tempC></fc>°C"
+                           , "-L",       "10"
+                           , "-H",       "20"
+                           , "--normal", "green"
+                           , "--high",   "red"
+                           , "--low",    "lightblue"] 1800
 
-      Run Com "uname" ["--nodename"] "" 36000,
-      Run Com "whoami" [] "" 36000,
-      Run Com "~/.xmonad/xmobar-volume.sh" [] "vol" 10,
-      Run StdinReader
+      , Run Com "uname" ["--nodename"] "" 36000
+      , Run Com "sh" ["/home/jassob/.xmonad/xmobar-volume.sh"] "vol" 10
+      , Run Com "sh" ["-c", "checkupdates | wc -l"] "checkupdates" 3600
+      , Run MPD ["-t", "<state>: <artist> - <title>"] 10
+      , Run StdinReader
       ]
   , sepChar = "%"
   , alignSep = "}{"
-  , template = "%StdinReader% }{ %battery% | %memory% | <fn=1></fn> %vol% | <fc=#ee9a00>%date%</fc> | %ESGG%"
-  }
+  , template = "%StdinReader% }{ <fn=1></fn> %checkupdates% | %memory% | <fc=#f1f1f1><fn=1></fn> %mpd%</fc> | <fn=1></fn> %vol% | <fn=1></fn> <fc=#ee9a00>%date%</fc> | %battery% "
+}
