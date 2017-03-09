@@ -13,10 +13,10 @@ XF86AudioMute
 
 # brightness
 XF86MonBrightnessUp
-        xbacklight -inc 5
+        xbacklight +5%
 
 XF86MonBrightnessDown
-        xbacklight -dec 5
+        xbacklight -5%
 
 # ctrl + z ; ctrl + g
 #         xte 'key Escape'
@@ -54,9 +54,6 @@ ctrl + z ; ctrl + p
        exec import -window root png:$HOME/Pictures/screenshots/screenshot_$(date +%F_%H-%M-%S).png
 
 # Some quick stuff
-super + t
-        conkeror http://toggl.com/app
-
 super + s
         conkeror http://teapartychs.slack.com
 
@@ -72,16 +69,9 @@ super + i
 super + e
         emacsclient -c
 
+#super + t
+#        conkeror https://www.telegram.org/dl/webogram
+
 # make sxhkd reload its configuration files:
 super + Escape
 	pkill -USR1 -x sxhkd
-
-#
-# Media keys
-#
-XF86AudioRaiseVolume
-    $HOME/.config/bspwm/panel/notify_volume + 3
-XF86AudioLowerVolume
-    $HOME/.config/bspwm/panel/notify_volume - 3
-XF86AudioMute
-    $HOME/.config/bspwm/panel/notify_volume !
