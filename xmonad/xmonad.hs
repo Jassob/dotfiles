@@ -42,13 +42,8 @@ main = do
     , startupHook = docksStartupHook <+> startupHook def
     , logHook = dynamicLogWithPP $ myPP
                 { ppOutput = hPutStrLn xmproc }
-  } `additionalKeys` [ ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +20")
-                     , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -20")
-                     , ((mod4Mask, xK_0), windows $ W.greedyView "messenger")
-                     , ((mod4Mask, xK_Down), scratchpadSpawnActionTerminal "urxvt")
-                     ]
+  } `additionalKeys` myAdditionalKeys
 
--- |
 myManageHook = composeOne [ isFullscreen -?> doFullFloat
                           , isDialog     -?> doCenterFloat ]
                <+> composeAll [ className =? "Gimp"        --> doFloat
@@ -57,7 +52,32 @@ myManageHook = composeOne [ isFullscreen -?> doFullFloat
                               ]
                <+> manageDocks
 
-myWorkspaces = ["www", "emacs", "3", "4", "5", "6", "7", "8", "irc", "messenger"]
+-- | Workspaces and their names.
+-- Super-{1-9} and Super-Shift-{1-9} is
+-- used to jump to the workspace with the given
+-- index(+1) in the list.
+myWorkspaces = [ "www"
+               , "emacs"
+               , "3"
+               , "4"
+               , "5"
+               , "6"
+               , "7"
+               , "audio"
+               , "irc"
+               , "messenger"
+               ]
+
+-- | List of keybindings and actions to take when they are pressed
+-- Defines additionally Super-0 and Super-Shift-0 for
+-- the "messenger" workspace
+myAdditionalKeys = [ ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +20")
+                   , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -20")
+                   , ((mod4Mask, xK_0), windows $ W.greedyView "messenger")
+                   , ((mod4Mask .|. shiftMask, xK_0), windows $ W.shift "messenger")
+                   , ((mod4Mask, xK_Down), scratchpadSpawnActionTerminal "urxvt")
+                   ]
+
 
 myLayout = avoidStruts $ toggleLayouts (noBorders Full)
   (smartBorders (tiled
