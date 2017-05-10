@@ -24,9 +24,9 @@ Config {
 
       , Run MultiCpu [ "-t"      , "<fn=1></fn> <total>%"
                      , "-L"      , "3"
-                   , "-H"      , "50"
-                   , "--normal", "green"
-                   , "--high"  , "red"] 10
+                     , "-H"      , "50"
+                     , "--normal", "green"
+                     , "--high"  , "red"] 10
 
       , Run Memory [ "-t", "<used> MB" ] 10
       , Run Date "%b %d, %H:%M" "date" 10
