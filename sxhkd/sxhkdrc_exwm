@@ -3,20 +3,20 @@
 #
 # sound
 XF86AudioLowerVolume
-        amixer set Master 5%-
+     amixer set Master 5%-
 
 XF86AudioRaiseVolume
-        amixer set Master 5%+
+     amixer set Master 5%+
 
 XF86AudioMute
-        amixer set Master toggle
+     amixer set Master toggle
 
 # brightness
 XF86MonBrightnessUp
-        xbacklight +5%
+     xbacklight +5%
 
 XF86MonBrightnessDown
-        xbacklight -5%
+     xbacklight -5%
 
 # ctrl + z ; ctrl + g
 #         xte 'key Escape'
@@ -27,51 +27,51 @@ XF86MonBrightnessDown
 
 # terminal emulator
 ctrl + z ; ctrl + c
-	urxvt
+     urxvt
 
 # dmenu
 ctrl + z ; ctrl + d
-	dmenu_run
+     dmenu_run
 
 # search the web with google
 super + g
-        dmenu-google-script
+      dmenu-google-script
 
 # open url
 ctrl + z ; b
-       dmenu-open-url
+      dmenu-open-url
 
 # lock screen with lock script
 ctrl + z ; ctrl + l
-       lock
+      lock
 
 # screenshot of current window
 ctrl + z ; alt + p
-       scrot -u -e 'mv $f ~/Pictures/screenshots/'
+      scrot -u -e 'mv $f ~/Pictures/screenshots/'
 
 # screenshot of desktop
 ctrl + z ; ctrl + p
-       exec import -window root png:$HOME/Pictures/screenshots/screenshot_$(date +%F_%H-%M-%S).png
+      exec import -window root png:$HOME/Pictures/screenshots/screenshot_$(date +%F_%H-%M-%S).png
 
 # Some quick stuff
 super + s
-        conkeror http://teapartychs.slack.com
+      conkeror http://teapartychs.slack.com
 
 super + c
-        conkeror http://google.com/calendar
+      conkeror http://google.com/calendar
 
 super + m
-        conkeror http://messenger.com
+      conkeror http://messenger.com
 
 super + i
-        conkeror http://inbox.google.com
+      conkeror http://inbox.google.com
 
 super + e
-        emacsclient -c
+      startemacs
 
 #super + t
-#        conkeror https://www.telegram.org/dl/webogram
+#     conkeror https://www.telegram.org/dl/webogram
 
 # make sxhkd reload its configuration files:
 super + Escape
-	pkill -USR1 -x sxhkd
+      pkill -USR1 -x sxhkd
