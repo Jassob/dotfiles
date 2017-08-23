@@ -1,9 +1,10 @@
 import XMonad
 import qualified XMonad.StackSet as W
+import XMonad.Actions.CopyWindow
+import XMonad.Actions.Search
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
-
 import XMonad.Layout.LayoutHints
 import XMonad.Layout.Mosaic
 import XMonad.Layout.NoBorders
@@ -11,7 +12,6 @@ import XMonad.Layout.ResizableTile
 import XMonad.Layout.Spacing
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ToggleLayouts
-
 import XMonad.Prompt
 
 import XMonad.Util.Run(spawnPipe)
@@ -38,9 +38,15 @@ main = do
     , workspaces = myWorkspaces
     , handleEventHook = docksEventHook <+> handleEventHook def
     , startupHook = docksStartupHook <+> startupHook def
-    , logHook = dynamicLogWithPP $ myPP
-                { ppOutput = hPutStrLn xmproc }
+    , logHook = myLogHook xmproc
   } `additionalKeys` myAdditionalKeys
+
+myLogHook :: Handle -> X ()
+myLogHook h = do
+  copies <- wsContainingCopies
+  let check ws | ws `elem` copies = pad . xmobarColor "red" "black" $ ws
+               | otherwise = pad ws
+  dynamicLogWithPP myPP {ppHidden = check, ppOutput = hPutStrLn h}
 
 myManageHook :: ManageHook
 myManageHook = composeOne [ isFullscreen -?> doFullFloat
@@ -77,6 +83,10 @@ myAdditionalKeys = [ ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +20")
                    , ((mod4Mask, xK_0), windows $ W.greedyView "messenger")
                    , ((mod4Mask .|. shiftMask, xK_0), windows $ W.shift "messenger")
                    , ((mod4Mask, xK_Down), scratchpadSpawnActionTerminal "urxvt")
+                   , ((mod4Mask, xK_v ), windows copyToAll) -- @@ Make focused window always visible
+                   , ((mod4Mask .|. shiftMask, xK_v ),  killAllOtherCopies) -- @@ Toggle window state back
+                   , ((mod4Mask, xK_g), promptSearch def google)
+                   , ((mod4Mask, xK_e), spawn "/home/jassob/.local/bin/startemacs")
                    ]
 
 myLayout = avoidStruts $ toggleLayouts (noBorders Full)
@@ -94,6 +104,7 @@ myLayout = avoidStruts $ toggleLayouts (noBorders Full)
 -- * Themes
 
 -- decoration theme
+myDeco :: Theme
 myDeco = def
     { activeColor         = "orange"
     , inactiveColor       = "#222222"
@@ -149,4 +160,4 @@ myPP = def { ppCurrent = xmobarColor "yellow" "" . wrap "[" "]"
           "Spacing 5 Mirror Hinted ResizableTall" -> "[-]"
           "Hinted Tabbed Simplest"                -> "[T]"
           "Full"                                  -> "[ ]"
-          _                                       -> x 
+          _                                       -> x

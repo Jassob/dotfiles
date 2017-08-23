@@ -1,0 +1,35 @@
+#+TITLE:XMonad TODO
+#+AUTHOR:Jassob
+
+* TODO Handle persistent windows better
+  I have found a way to make windows persistent over workspaces by
+  copying them to every workspace.
+
+  1. <kbd>Super</kbd>+<kbd>v</kbd> - Make current window persistent on all workspaces.
+
+     Note that for tiling windows the current layout is not preserved,
+     as this depends on the other windows in the workspace.
+
+  2. <kbd>Super</kbd>+<kbd>Shift</kbd>+<kbd>v</kbd> - Make current
+     window normal (i.e not persistent) again.
+
+
+  The problem now is that since the window is copied to all
+  workspaces, all workspaces show up as active, even though there
+  might not be any other windows there. This should be fixed.
+
+** Solution
+   Change the state of the window to something like ~Persistent~ and
+   make sure that xmobar/xmonad don't regard workspaces with only
+   ~Persistent~ windows as active.
+
+* TODO Show desktop / Hide windows
+  I would like to be able to show my desktop background without first
+  searching for an empty workspace.
+
+** Solution [Show desktop]
+   This could be solved by creating a temporary workspace where all
+   windows are copied to and removing them from the current workspace.
+
+   When I want to retain my windows again they are just copied back to
+   the workspace (and removed from the temporary workspace).
