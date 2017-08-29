@@ -13,10 +13,6 @@ alias py='python'
 
 alias back='cd -'
 
-alias find_large_dirs='ls -A --quoting-style=escape \
-                           | xargs du -sh \
-                           | grep -e "^[0-9,]\{1,4\}[MG].*"'
-
 # Git aliases
 alias gst='git status'
 alias gl='git log'
