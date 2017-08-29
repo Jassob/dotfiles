@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# A simple script for finding large files and directories.
+#
+# For filtering the result further pipe this script to grep and/or sort.
+# Example, for getting the largest files in gigabyte size:
+#
+# $ find_large_stuff | grep G | sort
+
+ls -A --quoting-style=escape \
+    | xargs du -sh \
+    | grep -e "^[0-9,]*[MG].*" \
