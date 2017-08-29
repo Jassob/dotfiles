@@ -13,6 +13,7 @@ if [[ -d ~/bin ]] ; then
 	MANPATH="${HOME}/share/man:${MANPATH}"
     fi
 fi
+
 if [[ -d ~/.local/bin ]] ; then
 	PATH="${HOME}/.local/bin:${PATH}"
 fi

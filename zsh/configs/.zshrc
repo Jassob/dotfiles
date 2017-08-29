@@ -34,7 +34,6 @@ bindkey '\e.' insert-last-word
 
 autoload -U compinit
 compinit -d ~/.zcompdump.`hostname`
-
 setopt ALL_EXPORT
 
 ZSH_CONFDIR=~/.zsh
@@ -50,6 +49,7 @@ source $ZSH_CONFDIR/plugins/zsh-git-prompt/zshrc.sh
 source $ZSH_CONFDIR/plugins/battery/battery.plugin.zsh
 source $ZSH_CONFDIR/plugins/autojump/autojump.zsh
 source $ZSH_CONFDIR/lib/npm-modules.zsh
+
 ######
 ## Aliases and other profile related settings
 #####
