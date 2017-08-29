@@ -35,5 +35,5 @@ local-scripts:
 		mkdir -p $(HOME)/.local/bin; \
 	fi
 	echo "Installing local scripts..."
-	cp .local/bin/* $(HOME)/.local/bin;
+	cp -p .local/bin/* $(HOME)/.local/bin;
 	echo "Done!"
