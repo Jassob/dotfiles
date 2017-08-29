@@ -60,8 +60,30 @@ source $ZSH_CONFDIR/lib/profile.zsh
 ######
 ## Theme
 #####
-source $ZSH_CONFDIR/themes/jassob2.zsh
+PROMPT_COLORS="yellow
+blue
+green
+cyan
+yellow
+magenta"
 
+P_COLOR=$(echo $PROMPT_COLORS | sort -R | tail -n 1)
+
+local ret_status="%(?:%{$fg_bold[green]%}=):%{$fg_bold[red]%}=()"
+function battery() {
+ if $BATTERY ; then;
+     echo "$(battery_level_gauge)"
+ else
+     echo ""
+ fi
+}
+
+# Default values for the appearance of the prompt. Configure at will.
+ZSH_THEME_GIT_PROMPT_CHANGED="%{$fg[$P_COLOR]%}%{✚%G%}"
+ZSH_THEME_GIT_PROMPT_BRANCH="%{$fg_no_bold[$P_COLOR]%}"
+
+PROMPT='%B%F{$P_COLOR}%}%3~%f %F{$P_COLOR}%D{%H:%M}%f $(git_super_status)%b
+%F{$P_COLOR}%}%n%f%F{white} %# %f'
 
 # Hack to ensure the startup path to be the last path opened in urxvt
 # Override the cd command with this ..
