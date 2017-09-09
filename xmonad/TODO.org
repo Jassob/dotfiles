@@ -33,3 +33,13 @@
 
    When I want to retain my windows again they are just copied back to
    the workspace (and removed from the temporary workspace).
+* TODO Fullscreen
+  I would still like fullscreen flash vids to not crop and leave xmobar
+  drawn.
+* TODO Launch programs from Prompt
+  I think it would be nice to bind as much as possible from XMonad
+  instead of in sxhkd. So moving the browse, search and launch program
+  keybinding to XMonad is probably good.
+* TODO Investigate why tabs not respect theme
+  No matter how much I tell XMonad to change the font size or font
+  name nothing changes. Why?? :/
