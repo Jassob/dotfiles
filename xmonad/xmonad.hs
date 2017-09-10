@@ -29,6 +29,7 @@ import XMonad.Layout.ToggleLayouts (toggleLayouts)
 --------------------------------------------------}
 import XMonad.Prompt (XPConfig(..))
 import XMonad.Prompt.AppLauncher (launchApp)
+import XMonad.Prompt.Pass (passPrompt, passGeneratePrompt)
 
 {- Utils
 ---------------------------------------------------}
@@ -48,14 +49,17 @@ main = do
   setEnv "BROWSER" "conkeror"
   xmonad $ def
     { modMask = mod4Mask
-    , terminal = "termite"
+    , terminal = myTerminal
     , layoutHook = myLayout
     , manageHook = myManageHook
     , workspaces = myWorkspaces
     , handleEventHook = docksEventHook <+> handleEventHook def
     , startupHook = docksStartupHook <+> startupHook def
     , logHook = myLogHook xmproc
-  } `additionalKeys` myAdditionalKeys
+    } `additionalKeys` myAdditionalKeys
+
+myTerminal :: String
+myTerminal = "termite"
 
 myLogHook :: Handle -> X ()
 myLogHook h = do
@@ -93,16 +97,19 @@ myWorkspaces = [ "www"
 -- the "messenger" workspace
 myAdditionalKeys :: [((KeyMask, KeySym), X ())]
 myAdditionalKeys =
-  [ ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +20")
-  , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -20")
-  , ((mod4Mask, xK_0), windows $ W.greedyView "messenger")
+  [ ((0, xF86XK_MonBrightnessUp),    spawn "xbacklight +20")
+  , ((0, xF86XK_MonBrightnessDown),  spawn "xbacklight -20")
+  , ((mod4Mask, xK_0),               windows $ W.greedyView "messenger")
   , ((mod4Mask .|. shiftMask, xK_0), windows $ W.shift "messenger")
-  , ((mod4Mask, xK_Down), scratchpadSpawnActionTerminal "termite")
-  , ((mod4Mask, xK_v ), windows copyToAll)
-  , ((mod4Mask .|. shiftMask, xK_v ),  killAllOtherCopies)
-  , ((mod4Mask, xK_g), promptSearch mySP{historySize=0} duckduckgo)
-  , ((mod4Mask, xK_e), spawn "/home/jassob/.local/bin/startemacs")
-  , ((mod4Mask, xK_b), launchApp mySP "conkeror")
+  , ((mod4Mask, xK_Down),            scratchpadSpawnActionTerminal myTerminal)
+  , ((mod4Mask, xK_v ),              windows copyToAll)
+  , ((mod4Mask .|. shiftMask,
+      xK_v ),                        killAllOtherCopies)
+  , ((mod4Mask, xK_g),               promptSearch mySP{historySize=0} duckduckgo)
+  , ((mod4Mask, xK_e),               spawn "/home/jassob/.local/bin/startemacs")
+  , ((mod4Mask, xK_b),               launchApp mySP "conkeror")
+  , ((mod4Mask, xK_p),               passPrompt mySP)
+  , ((mod4Mask .|. shiftMask, xK_p), passGeneratePrompt mySP)
   ]
 
 myLayout = avoidStruts $ toggleLayouts (noBorders Full)
