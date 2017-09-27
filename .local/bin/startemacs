@@ -11,11 +11,11 @@
 ########################################################################
 
 # Is Emacs daemon running?
-MATCHES=$(ps ux | grep "emacs --daemon" | wc -l)
+IS_RUNNING=$(test -f "/tmp/emacs1000/server")
 
-if (( $MATCHES < 2 )); then
+if (( $IS_RUNNING )); then
     notify-send "Emacs not running, starting Emacs daemon..."
-    systemctl --user start emacs
+    emacs --daemon
     notify-send "Emacs daemon started, starting Emacs client!"
 fi
 
