@@ -15,6 +15,7 @@ import XMonad.Hooks.ManageDocks (avoidStruts, docksEventHook
                                 , docksStartupHook, manageDocks)
 import XMonad.Hooks.ManageHelpers (composeOne, isFullscreen, isDialog
                                   , doFullFloat, doCenterFloat, (-?>))
+import XMonad.Hooks.SetWMName (setWMName)
 
 {- Layout related stuff
 --------------------------------------------------}
@@ -23,7 +24,7 @@ import XMonad.Layout.NoBorders (noBorders, smartBorders)
 import XMonad.Layout.ResizableTile (ResizableTall(..))
 import XMonad.Layout.Spacing (spacing)
 import XMonad.Layout.Tabbed (Theme(..), tabbed, shrinkText)
-import XMonad.Layout.ToggleLayouts (toggleLayouts)
+import XMonad.Layout.ToggleLayouts (ToggleLayout(Toggle), toggleLayouts)
 
 {- Prompt
 --------------------------------------------------}
@@ -33,39 +34,37 @@ import XMonad.Prompt.Pass (passPrompt, passGeneratePrompt)
 
 {- Utils
 ---------------------------------------------------}
+import XMonad.Util.Cursor (setDefaultCursor)
 import XMonad.Util.Run (spawnPipe)
 import XMonad.Util.EZConfig (additionalKeys)
-import XMonad.Util.Scratchpad (scratchpadSpawnActionTerminal)
-
+import XMonad.Util.NamedScratchpad (NamedScratchpad(..), defaultFloating, namedScratchpadAction)
 
 import System.IO (Handle, hPutStrLn)
 import System.Environment (setEnv)
 import Graphics.X11.ExtraTypes.XF86 (xF86XK_MonBrightnessUp
                                     , xF86XK_MonBrightnessDown)
 
-main :: IO ()
-main = do
-  xmproc <- spawnPipe "/usr/local/bin/xmobar ~/.xmonad/xmobarrc"
-  setEnv "BROWSER" "conkeror"
-  xmonad $ def
-    { modMask = mod4Mask
-    , terminal = myTerminal
-    , layoutHook = myLayout
-    , manageHook = myManageHook
-    , workspaces = myWorkspaces
-    , handleEventHook = docksEventHook <+> handleEventHook def
-    , startupHook = docksStartupHook <+> startupHook def
-    , logHook = myLogHook xmproc
-    } `additionalKeys` myAdditionalKeys
+myModMask :: KeyMask
+myModMask = mod4Mask
 
 myTerminal :: String
 myTerminal = "termite"
 
-myLogHook :: Handle -> X ()
-myLogHook h = do
-  let check ws | ws == "NSP" = mempty
-               | otherwise = ws
-  dynamicLogWithPP myPP {ppHidden = check, ppOutput = hPutStrLn h}
+myScratchpads =
+  [ NS "ncmpcpp" "termite -e ncmpcpp -t mopidy" (title =? "mopidy") defaultFloating
+  , NS "termite" "termite -t scratchpad"        (title =? "scratchpad") defaultFloating
+  , NS "firefox" "firefox"                      (className =? "Firefox") defaultFloating
+  ]
+
+-- | Stuff that will run every time XMonad is either started or restarted.
+myStartupHook :: X ()
+myStartupHook = spawn compton
+                <+> setDefaultCursor xC_left_ptr
+                <+> setWMName "LG3D"
+                <+> docksStartupHook
+  where compton = "compton --fading --fade-delta 5 --fade-out-step 0.08 --fade-in-step 0.08 \
+                  \--shadow --shadow-opacity 0.5 --no-dock-shadow --clear-shadow \
+                  \--inactive-opacity 0.5 --inactive-opacity-override"
 
 myManageHook :: ManageHook
 myManageHook = composeOne [ isFullscreen -?> doFullFloat
@@ -73,78 +72,131 @@ myManageHook = composeOne [ isFullscreen -?> doFullFloat
                <+> composeAll [ className =? "Gimp"        --> doFloat
                               , className =? "Gnome-panel" --> doIgnore
                               , className =? "Gtkdialog"   --> doFloat
+                              , className =? "Pinentry"    --> doFloat
                               ]
                <+> manageDocks
 
--- | Workspaces and their names.
--- Super-{1-9} and Super-Shift-{1-9} is used to jump to the workspace
--- with the given index(+1) in the list.
 myWorkspaces :: [String]
-myWorkspaces = [ "www"
-               , "emacs"
-               , "3"
-               , "4"
-               , "5"
-               , "6"
-               , "7"
-               , "audio"
-               , "irc"
-               , "messenger"
-               ]
+myWorkspaces = map makeClickable $ zip ([1..] ++ [0]) ws
+  where -- | Creates a clickable action that will jump to the workspace
+        makeClickable :: (Int, String) -> String
+        makeClickable (idx, wsn) = "<action=xdotool key super+" ++ show idx
+                                   ++ " button=1>" ++ wsn ++ "</action>"
 
--- | List of keybindings and actions to take when they are pressed
--- Defines additionally Super-0 and Super-Shift-0 for
--- the "messenger" workspace
+        ws :: [String]
+        ws = zipWith makeLabel [1..10] icons
+
+        makeLabel :: Int -> Char -> String
+        makeLabel index icon = show index ++ ": <fn=1>" ++ icon : "</fn> "
+
+        icons :: [Char]
+        icons = [ '\xf269', '\xf120', '\xf121', '\xf128', '\xf128',
+                  '\xf128', '\xf128', '\xf128', '\xf001', '\xf0e6' ]
+
 myAdditionalKeys :: [((KeyMask, KeySym), X ())]
-myAdditionalKeys =
-  [ ((0, xF86XK_MonBrightnessUp),    spawn "xbacklight +20")
-  , ((0, xF86XK_MonBrightnessDown),  spawn "xbacklight -20")
-  , ((mod4Mask, xK_0),               windows $ W.greedyView "messenger")
-  , ((mod4Mask .|. shiftMask, xK_0), windows $ W.shift "messenger")
-  , ((mod4Mask, xK_Down),            scratchpadSpawnActionTerminal myTerminal)
-  , ((mod4Mask, xK_v ),              windows copyToAll)
-  , ((mod4Mask .|. shiftMask,
-      xK_v ),                        killAllOtherCopies)
-  , ((mod4Mask, xK_g),               promptSearch mySP{historySize=0} duckduckgo)
-  , ((mod4Mask, xK_e),               spawn "/home/jassob/.local/bin/startemacs")
-  , ((mod4Mask, xK_b),               launchApp mySP "conkeror")
-  , ((mod4Mask, xK_p),               passPrompt mySP)
-  , ((mod4Mask .|. shiftMask, xK_p), passGeneratePrompt mySP)
+myAdditionalKeys = workspaceKeybindings ++
+  -- Change screen brightness
+  [ ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +20")
+  , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -20")
+
+  -- Toggle fullscreen
+  , ((myModMask, xK_f),               sendMessage (Toggle "Full"))
+
+  -- Hide or show a terminal
+  , ((myModMask, xK_Down),            namedScratchpadAction myScratchpads "termite")
+
+  -- Hide or show firefox
+  , ((myModMask, xK_w),               namedScratchpadAction myScratchpads "firefox")
+
+  -- Hide or show a cli mpd client
+  , ((myModMask, xK_Up),              namedScratchpadAction myScratchpads "ncmpcpp")
+
+  -- Copy current window to every workspace
+  , ((myModMask, xK_v ),              windows copyToAll)
+
+  -- Remove all other copies of this window
+  , ((myModMask .|. shiftMask, xK_v ), killAllOtherCopies)
+
+  -- Start emacs
+  , ((myModMask, xK_e),               spawn "/home/jassob/.local/bin/startemacs")
+
+  -- Search with $BROWSER
+  , ((myModMask, xK_g),               promptSearch mySP{historySize=0} duckduckgo)
+
+  -- Open url with Conkeror
+  , ((myModMask, xK_b),               launchApp mySP "conkeror")
+
+  -- Prompt for password from password-store
+  , ((myModMask, xK_p),               passPrompt mySP)
+
+  -- Prompt for a name to store a password that will be generated
+  , ((myModMask .|. shiftMask, xK_p), passGeneratePrompt mySP)
   ]
 
-myLayout = avoidStruts $ toggleLayouts (noBorders Full)
-  (smartBorders (tiled
-                 ||| Full
-                 ||| spacing 5 (Mirror tiled)
-                 ||| layoutHints (tabbed shrinkText myTab)))
+-- | Creates keybindings for workspaces.
+workspaceKeybindings :: [((KeyMask, KeySym), X ())]
+workspaceKeybindings = concat . map makeKeybinding $ pairs
+  where pairs = zip myWorkspaces $ [xK_1 .. xK_9] ++ [xK_0]
+
+        -- | Creates two keybindings for every workspace, one for
+        -- switching to that workspace and one for moving the window
+        -- to that workspace.
+        makeKeybinding :: (String, KeySym) -> [((KeyMask, KeySym), X ())]
+        makeKeybinding (ws, key) =
+          [ ((myModMask, key), windows $ W.greedyView ws)
+          , ((shiftMask .|. myModMask, key), windows $ W.shift ws)]
+
+-- toggleLayouts makes it possible for us to toggle the first layout
+-- argument, while remembering the previous layout. Here we can toggle full-screen.
+myLayout = toggleLayouts (noBorders Full) $ spacedWithBorders $
+           tiled ||| (Mirror tiled) ||| layoutHints (tabbed shrinkText myTab)
   where
-    tiled   = layoutHints $ ResizableTall nmaster delta ratio []
-    nmaster = 1
-    delta   = 2/100
-    ratio   = 1/2
+    spacedWithBorders = avoidStruts . smartBorders . spacing 5
+    tiled   = layoutHints $ ResizableTall 1 (2/100) (1/2) []
 
 -- * Themes
-
--- tab theme
-myTab :: Theme
-myTab = def { fontName   = "xft:inconsolata:size=12"
-            , decoHeight = 30 }
 
 -- shell prompt theme
 mySP :: XPConfig
 mySP = def { font   = "xft:inconsolata:size=12"
            , height = 40 }
 
-myPP :: PP
-myPP = def { ppCurrent = xmobarColor "yellow" "" . wrap "[" "]"
+myTab :: Theme
+myTab = def { fontName = "xft:inconsolata:size=12"
+            , decoHeight = 46
+            }
+
+-- | Log configuration
+myPP :: Handle -> PP
+myPP h = def { ppCurrent = xmobarColor "orange" ""
            , ppVisible = wrap "(" ")"
            , ppTitle   = const ""
            , ppUrgent  = xmobarColor "red" "yellow"
            , ppLayout  = formatLayout
+           , ppHidden  = hideScratchpad
+           , ppOutput  = hPutStrLn h
            }
   where formatLayout x = case x of
-          "Hinted ResizableTall"                  -> "[|]"
+          "Spacing 5 Hinted ResizableTall"        -> "[|]"
           "Spacing 5 Mirror Hinted ResizableTall" -> "[-]"
-          "Hinted Tabbed Simplest"                -> "[T]"
+          "Spacing 5 Hinted Tabbed Simplest"      -> "[T]"
           "Full"                                  -> "[ ]"
           _                                       -> x
+
+        hideScratchpad ws | ws == "NSP" = mempty
+                          | otherwise = ws
+
+-- | Wire it all up and start XMonad
+main :: IO ()
+main = do
+  xmproc <- spawnPipe "nix-shell --run \"xmobar ~/.xmonad/xmobarrc\""
+  setEnv "BROWSER" "conkeror"
+  xmonad $ def { modMask = myModMask
+               , terminal = myTerminal
+               , layoutHook = myLayout
+               , manageHook = myManageHook
+               , workspaces = myWorkspaces
+               , handleEventHook = docksEventHook <+> handleEventHook def
+               , startupHook = myStartupHook
+               , logHook = dynamicLogWithPP $ myPP xmproc
+               } `additionalKeys` myAdditionalKeys
