@@ -46,8 +46,6 @@ ZSH_CONFDIR=~/.zsh
 ## Plugins
 #####
 source $ZSH_CONFDIR/plugins/zsh-git-prompt/zshrc.sh
-source $ZSH_CONFDIR/plugins/battery/battery.plugin.zsh
-source $ZSH_CONFDIR/plugins/autojump/autojump.zsh
 source $ZSH_CONFDIR/lib/npm-modules.zsh
 
 ######
