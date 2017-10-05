@@ -93,12 +93,3 @@ function chpwd() {
 if [ -f ~/.last_dir ]
 	then cd $(cat ~/.last_dir)
 fi
-
-# TODO: Fix a update function
-update-configs() {
-    emulate -L zsh
-
-    git clone https://github.com/Jassob/zsh.git /tmp/tmpconfigs
-    rsync -a /tmp/tmpconfigs/.[^.(git)]* ~
-    rm -rf /tmp/tmpconfigs &&
-}
