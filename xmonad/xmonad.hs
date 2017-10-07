@@ -77,7 +77,7 @@ myManageHook = composeOne [ isFullscreen -?> doFullFloat
                <+> manageDocks
 
 myWorkspaces :: [String]
-myWorkspaces = map makeClickable $ zip ([1..] ++ [0]) ws
+myWorkspaces = map makeClickable $ zip ([1..9] ++ [0]) ws
   where -- | Creates a clickable action that will jump to the workspace
         makeClickable :: (Int, String) -> String
         makeClickable (idx, wsn) = "<action=xdotool key super+" ++ show idx
