@@ -90,8 +90,8 @@ myWorkspaces = map makeClickable $ zip ([1..9] ++ [0]) ws
         makeLabel index icon = show index ++ ": <fn=1>" ++ icon : "</fn> "
 
         icons :: [Char]
-        icons = [ '\xf269', '\xf120', '\xf121', '\xf128', '\xf128',
-                  '\xf128', '\xf128', '\xf128', '\xf001', '\xf0e6' ]
+        icons = [ '\xf269', '\xf120', '\xf121', '\xf02d', '\xf128',
+                  '\xf128', '\xf128', '\xf001', '\xf292', '\xf0e6' ]
 
 myAdditionalKeys :: [((KeyMask, KeySym), X ())]
 myAdditionalKeys = workspaceKeybindings ++
@@ -168,14 +168,15 @@ myTab = def { fontName = "xft:inconsolata:size=12"
 
 -- | Log configuration
 myPP :: Handle -> PP
-myPP h = def { ppCurrent = xmobarColor "orange" ""
-           , ppVisible = wrap "(" ")"
-           , ppTitle   = const ""
-           , ppUrgent  = xmobarColor "red" "yellow"
-           , ppLayout  = formatLayout
-           , ppHidden  = hideScratchpad
-           , ppOutput  = hPutStrLn h
-           }
+myPP h = def
+  { ppCurrent = xmobarColor "orange" ""
+  , ppVisible = wrap "(" ")"
+  , ppTitle   = const ""
+  , ppUrgent  = xmobarColor "red" "yellow"
+  , ppLayout  = formatLayout
+  , ppHidden  = hideScratchpad
+  , ppOutput  = hPutStrLn h
+  }
   where formatLayout x = case x of
           "Spacing 5 Hinted ResizableTall"        -> "[|]"
           "Spacing 5 Mirror Hinted ResizableTall" -> "[-]"
