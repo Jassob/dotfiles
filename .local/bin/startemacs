@@ -1,22 +1,3 @@
 #!/bin/sh
 
-########################################################################
-#
-# Starts Emacs client. If there is no Emacs daemon running, start one
-# using Systemd user service.
-#
-# Requirements: Emacs, Systemd, Systemd user service for Emacs,
-# notify-send
-#
-########################################################################
-
-# Is Emacs daemon running?
-IS_RUNNING=$(test -f "/tmp/emacs1000/server")
-
-if (( $IS_RUNNING )); then
-    notify-send "Emacs not running, starting Emacs daemon..."
-    emacs --daemon
-    notify-send "Emacs daemon started, starting Emacs client!"
-fi
-
-emacsclient -c &
+exec emacsclient --alternate-editor "" -c  "$@"
