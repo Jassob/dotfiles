@@ -4,7 +4,7 @@
 , deepseq, directory, dlist, extensible-exceptions, filepath
 , ghc-prim, integer-gmp, mtl, old-locale, old-time, process, random
 , rts, setlocale, stdenv, time, transformers, unix, utf8-string
-, X11, X11-xft, xmonad, xmonad-contrib
+, X11, X11-xft, xmobar, xmonad, xmonad-contrib
 }:
 mkDerivation {
   pname = "xmonad-config";
@@ -18,7 +18,7 @@ mkDerivation {
     data-default-instances-old-locale deepseq directory dlist
     extensible-exceptions filepath ghc-prim integer-gmp mtl old-locale
     old-time process random rts setlocale time transformers unix
-    utf8-string X11 X11-xft xmonad xmonad-contrib
+    utf8-string X11 X11-xft xmonad xmonad-contrib xmobar
   ];
   license = stdenv.lib.licenses.bsd3;
 }
