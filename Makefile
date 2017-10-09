@@ -2,7 +2,9 @@ SHELL=/bin/bash
 
 .PHONY: all tmux
 
-all: emacs tmux xinitrc xresources
+all: emacs tmux xinitrc xresources local-scripts
+
+update: update-emacs update-repo
 
 emacs:
 	if [ -f $(HOME)/.emacs ]; then \
@@ -30,6 +32,10 @@ tmux:
 	cp -r tmux/* ~/
 	echo "Done!"
 
+
+xresources:
+	echo TODO
+
 local-scripts:
 	if ! [ -d $(HOME)/.local/bin ]; then \
 		mkdir -p $(HOME)/.local/bin; \
@@ -37,3 +43,15 @@ local-scripts:
 	echo "Installing local scripts..."
 	cp -p .local/bin/* $(HOME)/.local/bin;
 	echo "Done!"
+
+local-desktop-files:
+	if ! [ -d $(HOME)/.local/share/applications ]; then \
+		mkdir -p $(HOME)/.local/share/applications; \
+	fi
+	echo "Installing local desktop files..."
+	cp -p .local/share/applications/* $(HOME)/.local/share/applications/;
+	echo "Done!"
+
+
+update-emacs:
+	echo TODO
