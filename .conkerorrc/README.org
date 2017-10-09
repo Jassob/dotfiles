@@ -115,12 +115,42 @@
     session_pref("signon.SignonFileName", "signons.txt");
   #+end_src
 
+  Image animation might be nice, but it does not need to be enabled by
+  default.
+
+  #+begin_src js3 :tangle init.js
+    session_pref('extensions.checkCompatibility', false);
+
+    interactive("enable-gif-animation", "Enable gif animation", function (I) {
+      session_pref("image.animation_mode", "normal");
+    });
+  #+end_src
+
+  Other miscellaneous session variables, like the history expiration,
+  whether extensions should check compatibility and so on.
+
   #+begin_src
     session_pref('browser.history_expire_days', 30);
-    session_pref("image.animation_mode", "none");
     session_pref('extensions.checkCompatibility', false);
     session_pref("xpinstall.whitelist.required", false);
   #+end_src
 
-* TODO Cleanup
+* Cleanup
+
+  We don't need all these different web jumps, so let's just remove them!
+
+  #+begin_src js3 :tangle init.js
+    var unused_webjumps = ['answers', 'buildd','buildd-ports','clhs','cliki'
+			  ,'clusty','creativecommons','debbugs','debfile','debpkg'
+			  ,'debpopcon','debpts','debqa','freshmeat','kuro5hin'
+			  ,'launchpad','lucky','ratpoisonwiki','sadelicious'
+			  ,'scholar','sdelicious','slashdot','sourceforge'
+			  ,'stumpwmwiki','ubuntubugs','ubuntufile','ubuntupkg'
+			  ,'wiktionary','yahoo'];
+
+    for (var i=0; i<unused_webjumps.length; i++) {
+	delete webjumps[unused_webjumps[i]];
+    }
+  #+end_src
+
 * TODO Minibuffer
