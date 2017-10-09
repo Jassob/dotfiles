@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Conkeror
+GenericName=Web Browser
+Comment=Browse the web
+MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;x-scheme-handler/chrome;application/x-extension-htm;application/x-extension-html;application/x-extension-shtml;application/xhtml+xml;application/x-extension-xhtml;application/x-extension-xht;
+Exec=conkeror
+Type=Application
+Terminal=false
+Categories=Network;WebBrowser;
+StartupWMClass=Conkeror
+Keywords=Web;Network;Internet;WWW;
