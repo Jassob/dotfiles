@@ -62,7 +62,20 @@ conkeror:
 		mv $(HOME)/.conkerorrc $(HOME)/.conkerorrc.bak; \
 	fi
 	echo "Installing conkeror config..."
-	cp -pr .conkerorrc $(HOME)/;
+	cp -pr .conkerorrc $(HOME)/
+	echo "Done!"
+
+zsh:
+	if [ -e $(HOME)/.zshrc ]; then \
+		echo "Backuping old .zshrc to .zshrc.bak"; \
+		mv $(HOME)/.zshrc $(HOME)/.zshrc.bak; \
+	fi
+	if [ -d $(HOME)/.zsh.d ]; then \
+		echo "Backuping old .zsh directory to .zsh.bak"; \
+		mv $(HOME)/.zsh $(HOME)/.zsh.bak; \
+	fi
+	echo "Installing zsh config..."
+	cp -pr zsh $(HOME)/.zsh.d
 	echo "Done!"
 
 update-emacs:
