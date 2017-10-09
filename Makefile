@@ -2,6 +2,10 @@ SHELL=/bin/bash
 
 .PHONY: all tmux
 
+ifndef VERBOSE
+.SILENT:
+endif
+
 all: emacs tmux xinitrc xresources local-scripts
 
 update: update-emacs update-repo
@@ -52,6 +56,14 @@ local-desktop-files:
 	cp -p .local/share/applications/* $(HOME)/.local/share/applications/;
 	echo "Done!"
 
+conkeror:
+	if [ -e $(HOME)/.conkerorrc ]; then \
+		echo "Backuping old .conkerorrc to .conkerorrc.bak"; \
+		mv $(HOME)/.conkerorrc $(HOME)/.conkerorrc.bak; \
+	fi
+	echo "Installing conkeror config..."
+	cp -pr .conkerorrc $(HOME)/;
+	echo "Done!"
 
 update-emacs:
 	echo TODO
