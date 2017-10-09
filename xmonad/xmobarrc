@@ -33,7 +33,11 @@ Config
       , "--idle-icon-pattern", "<fn=1>\xf0e7</fn>"
       ] 50
 
-    , Run Mpris2 "mopidy" ["-t", "<action=`playerctl play-pause`><artist> - <title></action>"] 10
+    , Run Mpris2 "mopidy"
+      ["-t", "<action=`playerctl play-pause`><artist> - <title></action>"
+      , "-M", "20"
+      , "-x", ""
+      ] 10
 
     , Run Com "sh" ["/home/jassob/.xmonad/xmobar-volume.sh"] "vol" 10
 
