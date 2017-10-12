@@ -50,7 +50,7 @@ ctrl + z ; ctrl + p
       exec import -window root png:$HOME/Pictures/screenshots/screenshot_$(date +%F_%H-%M-%S).png
 
 # Org-capture with emacsclient
-ctrl + z ; ctrl + c
+ctrl + z ; ctrl + o
      emacsclient -c -e "(org-capture)"
 
 # Some quick stuff
