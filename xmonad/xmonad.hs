@@ -82,7 +82,7 @@ myManageHook = composeOne [ isFullscreen -?> doFullFloat
 
 myWorkspaces :: [String]
 myWorkspaces = map makeClickable $ zip ([1..9] ++ [0]) ws
-  where -- | Creates a clickable action that will jump to the workspace
+  where -- Creates a clickable action that will jump to the workspace
         makeClickable :: (Int, String) -> String
         makeClickable (idx, wsn) = "<action=xdotool key super+" ++ show idx
                                    ++ " button=1>" ++ wsn ++ "</action>"
@@ -201,11 +201,11 @@ main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
   setEnv "BROWSER" "conkeror"
   xmonad $ def { modMask = myModMask
-               , terminal = myTerminal
-               , layoutHook = myLayout
-               , manageHook = myManageHook
-               , workspaces = myWorkspaces
-               , handleEventHook = docksEventHook <+> handleEventHook def
-               , startupHook = myStartupHook
-               , logHook = dynamicLogWithPP $ myPP xmproc
-               } `additionalKeys` myAdditionalKeys
+              , terminal = myTerminal
+              , layoutHook = myLayout
+              , manageHook = myManageHook
+              , workspaces = myWorkspaces
+              , handleEventHook = docksEventHook <+> handleEventHook def
+              , startupHook = myStartupHook
+              , logHook = dynamicLogWithPP $ myPP xmproc
+              } `additionalKeys` myAdditionalKeys
