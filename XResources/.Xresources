@@ -1,4 +1,4 @@
 ! Include specific files
-#include ".Xresources.d/urxvt.conf"
 #include ".Xresources.d/fonts.conf"
 #include ".Xresources.d/theme-tomorrow.conf"
+#include ".Xresources.d/cursor.conf"
