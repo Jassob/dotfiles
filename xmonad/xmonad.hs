@@ -60,8 +60,10 @@ myScratchpads =
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
 myStartupHook = safeSpawn "compton" comptonArgs
+                <+> safeSpawn "sxhkd" []
                 <+> setDefaultCursor xC_left_ptr
                 <+> setWMName "LG3D"
+                <+> safeSpawn "feh" ["--bg-scale", "/home/jassob/.local/share/wallpapers/current.jpg"]
                 <+> docksStartupHook
   where comptonArgs = [ "--fading", "--fade-delta", "5", "--fade-out-step", "0.08"
                       , "--fade-in-step", "0.08", "--shadow", "--shadow-opacity", "0.5"
@@ -131,9 +133,13 @@ myAdditionalKeys = workspaceKeybindings ++
   -- Prompt for password from password-store
   , ((myModMask, xK_p),               passPrompt mySP)
 
+  -- Run dmenu
+  , ((myModMask, xK_d),               safeSpawn "dmenu_run" [])
+
   -- Prompt for a name to store a password that will be generated
   , ((myModMask .|. shiftMask, xK_p), passGeneratePrompt mySP)
   ]
+
 
 -- | Creates keybindings for workspaces.
 workspaceKeybindings :: [((KeyMask, KeySym), X ())]
