@@ -1,2 +1,4 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc821" }:
-(import ./default.nix { inherit nixpkgs compiler; }).env
+{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc802" }:
+nixpkgs.pkgs.haskell.packages.${compiler}.callPackage ./default.nix {
+  backlight = nixpkgs.xorg.xbacklight;
+}
