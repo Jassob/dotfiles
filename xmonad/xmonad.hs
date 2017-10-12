@@ -35,7 +35,7 @@ import XMonad.Prompt.Pass (passPrompt, passGeneratePrompt)
 {- Utils
 ---------------------------------------------------}
 import XMonad.Util.Cursor (setDefaultCursor)
-import XMonad.Util.Run (spawnPipe)
+import XMonad.Util.Run (spawnPipe, safeSpawn)
 import XMonad.Util.EZConfig (additionalKeys)
 import XMonad.Util.NamedScratchpad (NamedScratchpad(..), defaultFloating, namedScratchpadAction)
 
@@ -50,6 +50,7 @@ myModMask = mod4Mask
 myTerminal :: String
 myTerminal = "termite"
 
+myScratchpads :: [NamedScratchpad]
 myScratchpads =
   [ NS "ncmpcpp" "termite -e ncmpcpp -t mopidy" (title =? "mopidy") defaultFloating
   , NS "termite" "termite -t scratchpad"        (title =? "scratchpad") defaultFloating
@@ -58,13 +59,14 @@ myScratchpads =
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
-myStartupHook = spawn compton
+myStartupHook = safeSpawn "compton" comptonArgs
                 <+> setDefaultCursor xC_left_ptr
                 <+> setWMName "LG3D"
                 <+> docksStartupHook
-  where compton = "compton --fading --fade-delta 5 --fade-out-step 0.08 --fade-in-step 0.08 \
-                  \--shadow --shadow-opacity 0.5 --no-dock-shadow --clear-shadow \
-                  \--inactive-opacity 0.5 --inactive-opacity-override"
+  where comptonArgs = [ "--fading", "--fade-delta", "5", "--fade-out-step", "0.08"
+                      , "--fade-in-step", "0.08", "--shadow", "--shadow-opacity", "0.5"
+                      , "--no-dock-shadow", "--clear-shadow", "--inactive-opacity", "0.9"
+                      ]
 
 myManageHook :: ManageHook
 myManageHook = composeOne [ isFullscreen -?> doFullFloat
@@ -96,8 +98,8 @@ myWorkspaces = map makeClickable $ zip ([1..9] ++ [0]) ws
 myAdditionalKeys :: [((KeyMask, KeySym), X ())]
 myAdditionalKeys = workspaceKeybindings ++
   -- Change screen brightness
-  [ ((0, xF86XK_MonBrightnessUp), spawn "xbacklight +20")
-  , ((0, xF86XK_MonBrightnessDown), spawn "xbacklight -20")
+  [ ((0, xF86XK_MonBrightnessUp), safeSpawn "xbacklight" ["+20"])
+  , ((0, xF86XK_MonBrightnessDown), safeSpawn "xbacklight" ["-20"])
 
   -- Toggle fullscreen
   , ((myModMask, xK_f),               sendMessage (Toggle "Full"))
@@ -118,7 +120,7 @@ myAdditionalKeys = workspaceKeybindings ++
   , ((myModMask .|. shiftMask, xK_v ), killAllOtherCopies)
 
   -- Start emacs
-  , ((myModMask, xK_e),               spawn "/home/jassob/.local/bin/startemacs")
+  , ((myModMask, xK_e),               safeSpawn "/home/jassob/.local/bin/startemacs" [])
 
   -- Search with $BROWSER
   , ((myModMask, xK_g),               promptSearch mySP{historySize=0} duckduckgo)
@@ -190,7 +192,7 @@ myPP h = def
 -- | Wire it all up and start XMonad
 main :: IO ()
 main = do
-  xmproc <- spawnPipe "nix-shell --run \"xmobar ~/.xmonad/xmobarrc\""
+  xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
   setEnv "BROWSER" "conkeror"
   xmonad $ def { modMask = myModMask
                , terminal = myTerminal
