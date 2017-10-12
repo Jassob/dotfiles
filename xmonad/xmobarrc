@@ -1,3 +1,5 @@
+-- -*- mode: haskell; -*-
+
 Config
   { font = "xft:Inconsolata:size=11:antialias=true"
   , additionalFonts = ["xft:FontAwesome:size=10"]
@@ -12,7 +14,7 @@ Config
   , commands =
     [ Run UnsafeStdinReader
 
-    , Run Date "%b %d, %H:%M" "date" 10
+    , Run Date "<action=`$BROWSER calendar.google.com`>%b %d, %H:%M</action>" "date" 10
 
     , Run Battery
       [ "--template" , "<acstatus>"
@@ -27,7 +29,7 @@ Config
       , "-O"	, "<leftipat>  <left>%"
       , "-i"	, "<leftipat>  <left>%"
       -- charged status
-      --"-i"	, "<fn=1>\xf240</fn>",
+      , "-i"	, "<fn=1>\xf240</fn>"
       , "--off-icon-pattern", "<fn=1>\xf240</fn>"
       , "--on-icon-pattern", "<fn=1>\xf0e7</fn>"
       , "--idle-icon-pattern", "<fn=1>\xf0e7</fn>"
@@ -56,7 +58,6 @@ Config
    , alignSep = "}{"
    , template =
        "%UnsafeStdinReader% }{ \
-       \<fn=1></fn> %checkupdates% \
        \| %memory% \
        \| %mpris2% \
        \| <fn=1></fn> %vol% \
