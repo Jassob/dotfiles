@@ -25,10 +25,6 @@ XF86MonBrightnessDown
 # wm independent hotkeys
 #
 
-# terminal emulator
-ctrl + z ; ctrl + c
-     urxvt
-
 # dmenu
 ctrl + z ; ctrl + d
      dmenu_run
@@ -53,24 +49,28 @@ ctrl + z ; alt + p
 ctrl + z ; ctrl + p
       exec import -window root png:$HOME/Pictures/screenshots/screenshot_$(date +%F_%H-%M-%S).png
 
+# Org-capture with emacsclient
+ctrl + z ; ctrl + c
+     emacsclient -c -e "(org-capture)"
+
 # Some quick stuff
-super + s
-      conkeror http://teapartychs.slack.com
+ctrl + z ; ctrl + s
+      conkeror https://teapartychs.slack.com
 
-super + c
-      conkeror http://google.com/calendar
+ctrl + z ; ctrl + c
+      conkeror https://google.com/calendar
 
-super + m
-      conkeror http://messenger.com
+ctrl + z ; ctrl + m
+      conkeror https://messenger.com
 
-super + i
-      conkeror http://inbox.google.com
+ctrl + z ; ctrl + i
+      conkeror https://inbox.google.com
 
-super + e
+ctrl + z ; ctrl + e
       startemacs
 
-#super + t
-#     conkeror https://www.telegram.org/dl/webogram
+ctrl + z ; ctrl + t
+     conkeror https://www.telegram.org/dl/webogram
 
 # make sxhkd reload its configuration files:
 super + Escape
