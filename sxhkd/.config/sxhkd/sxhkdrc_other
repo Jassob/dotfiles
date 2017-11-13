@@ -43,11 +43,11 @@ ctrl + z ; ctrl + l
 
 # screenshot of current window
 ctrl + z ; alt + p
-      scrot -u -e 'mv $f ~/Pictures/screenshots/'
+      scrot -u -e 'mv $f ~/pictures/screenshots/'
 
 # screenshot of desktop
 ctrl + z ; ctrl + p
-      exec import -window root png:$HOME/Pictures/screenshots/screenshot_$(date +%F_%H-%M-%S).png
+      exec import -window root png:$HOME/pictures/screenshots/screenshot_$(date +%F_%H-%M-%S).png
 
 # Org-capture with emacsclient
 ctrl + z ; ctrl + o
