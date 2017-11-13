@@ -32,11 +32,11 @@ bindkey '^x' copy-prev-shell-word
 bindkey '^z' vi-undo-change
 bindkey '\e.' insert-last-word
 
-autoload -U compinit
-compinit -d ~/.zcompdump.`hostname`
-setopt ALL_EXPORT
+ZDOTDIR=~/.zsh.d
 
-ZSH_CONFDIR=~/.zsh
+autoload -U compinit
+compinit -d
+setopt ALL_EXPORT
 
 ###########
 # Import separated config files
@@ -45,15 +45,15 @@ ZSH_CONFDIR=~/.zsh
 ######
 ## Plugins
 #####
-source $ZSH_CONFDIR/plugins/zsh-git-prompt/zshrc.sh
-source $ZSH_CONFDIR/lib/npm-modules.zsh
+source $ZDOTDIR/plugins/zsh-git-prompt/zshrc.sh
+source $ZDOTDIR/lib/npm-modules.zsh
 
 ######
 ## Aliases and other profile related settings
 #####
-source $ZSH_CONFDIR/lib/aliases.zsh
-source $ZSH_CONFDIR/lib/paths.zsh
-source $ZSH_CONFDIR/lib/profile.zsh
+source $ZDOTDIR/lib/aliases.zsh
+source $ZDOTDIR/lib/paths.zsh
+source $ZDOTDIR/lib/profile.zsh
 
 ######
 ## Theme
