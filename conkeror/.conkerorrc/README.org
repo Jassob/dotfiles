@@ -154,3 +154,22 @@
   #+end_src
 
 * TODO Minibuffer
+* Page-specific stuff
+
+  Google Calendar mistakes Conkeror for a mobile device and serves a
+  minimal version of their web page instead of the ordinary page (maybe they keep a whitelist of
+  capable browsers and serves a minimal version to all other).
+
+  This is fixed by reporting that we are actually Firefox and not Conkeror.
+
+  #+begin_src js3 :tangle init.js
+    require("user-agent-policy");
+
+    // Tell Google Calendar that we are Firefox not Conkeror:
+    user_agent_policy.define_policy(
+        "GCal",
+        user_agent_firefox(),
+        build_url_regexp($domain = /(.*\.)?google/, $path = /calendar/)
+    );
+  #+end_src
+
