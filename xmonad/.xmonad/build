@@ -20,11 +20,17 @@ output_file=$1; shift
 ################################################################################
 cd $SRC_DIR
 
-nix-shell --command "cabal new-configure \
+# Configure the package
+nix-shell shell.nix --command "cabal configure \
                      --enable-optimization \
                      --enable-executable-stripping"
 
-nix-shell --command "cabal new-build"
+# Build the package
+nix-shell shell.nix --command "cabal build"
 
-find dist-newstyle -type f -executable -name $EXE_NAME \
+# Move the binary out into the root directory
+find dist -type f -executable -name $EXE_NAME \
      -exec mv -u '{}' $output_file ';'
+
+# Remove building
+rm -r dist*

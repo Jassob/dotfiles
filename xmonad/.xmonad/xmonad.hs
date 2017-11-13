@@ -59,11 +59,11 @@ myScratchpads =
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
-myStartupHook = safeSpawn "compton" comptonArgs
-                <+> safeSpawn "sxhkd" []
+myStartupHook = -- safeSpawn "compton" comptonArgs
+                safeSpawn "sxhkd" []
                 <+> setDefaultCursor xC_left_ptr
                 <+> setWMName "LG3D"
-                <+> safeSpawn "feh" ["--bg-scale", "/home/jassob/.local/share/wallpapers/current.jpg"]
+                <+> spawn "$HOME/.fehbg"
                 <+> docksStartupHook
   where comptonArgs = [ "--fading", "--fade-delta", "5", "--fade-out-step", "0.08"
                       , "--fade-in-step", "0.08", "--shadow", "--shadow-opacity", "0.5"
