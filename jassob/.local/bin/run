@@ -1,0 +1,19 @@
+#! env bash
+
+# Validity check
+if [[ $# == 0 ]]; then
+	echo "$0: specify a command to run"
+fi
+
+# Command to execute
+CMD=$1
+
+shift 1
+
+# If we have multiple arguments call drop the 2 first elements of the
+# argument array and run the command in background.
+if [[ $# > 1 ]]; then
+	exec $CMD $@ &
+else
+	exec $CMD &
+fi
