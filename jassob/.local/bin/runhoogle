@@ -1,0 +1,10 @@
+#! env bash
+
+# Run a local hoogle instance and keep the socket (ip number and port)
+CONTAINER_ID=$(docker run -P -d jwiegley/hoogle-local)
+SOCKET=$(docker port $CONTAINER_ID | awk '{ print $3 }')
+
+# Open the local hoogle site in firefox
+firefox $SOCKET &
+
+echo "Hoogle container id: $CONTAINER_ID"
