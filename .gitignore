@@ -2,3 +2,5 @@
 /zsh/.zsh.d/history
 /xmonad/.xmonad/xmonad-x86_64-linux
 /xmonad/.xmonad/xmonad.errors
+/xmonad/.xmonad/xmonad.state
+/xmonad/.xmonad/prompt-history
