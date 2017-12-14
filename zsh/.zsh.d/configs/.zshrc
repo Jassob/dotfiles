@@ -1,7 +1,4 @@
 # ~/.zshrc
-# Original:
-# $Id: zshrc 144 2012-04-19 23:01:12Z gnitset $
-#source ~/.zsh/config/.zshrc
 
 setopt NO_CLOBBER
 setopt NO_PROMPT_CR
@@ -16,6 +13,9 @@ setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
 setopt SHARE_HISTORY
+
+# Disable C-s to stop the terminal accepting input
+stty -ixon
 
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion::complete:*' use-cache 1
@@ -37,10 +37,6 @@ ZDOTDIR=~/.zsh.d
 autoload -U compinit
 compinit -d
 setopt ALL_EXPORT
-
-###########
-# Import separated config files
-##########
 
 ######
 ## Plugins
@@ -83,7 +79,7 @@ ZSH_THEME_GIT_PROMPT_BRANCH="%{$fg_no_bold[$P_COLOR]%}"
 PROMPT='%B%F{$P_COLOR}%}%3~%f %F{$P_COLOR}%D{%H:%M}%f $(git_super_status)%b
 %F{$P_COLOR}%}%n%f%F{white} %# %f'
 
-# Hack to ensure the startup path to be the last path opened in urxvt
+# Hack to ensure the startup path to be the last path opened in terminal
 # Override the cd command with this ..
 function chpwd() {
 	pwd >! ~/.last_dir
