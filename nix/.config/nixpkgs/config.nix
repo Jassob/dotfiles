@@ -10,6 +10,8 @@
       ## Packages that I've modified and built locally
       filestore = dontCheck (doJailbreak (pkg ~/src/filestore {}));
       hasktags = pkg ./pkgs/hasktags.nix {};
+      pandoc-citeproc = pkg ./pkgs/pandoc-citeproc-0.12.1.nix {};
+      hakyll = doJailbreak (pkg ./pkgs/hakyll-4.9.8.0.nix { pandoc-citeproc = pandoc-citeproc; });
 
       ## Hackage overrides
       blaze-builder-enumerator = doJailbreak super.blaze-builder-enumerator;
@@ -53,6 +55,8 @@
       packages = [ hPkgs.xmonad-contrib hPkgs.xmonad-extras hPkgs.xmobar ];
     };
 
+    # Exposing custom packages
     hasktags = haskPkgs.hasktags;
+    hakyll = haskPkgs.hakyll;
   };
 }
