@@ -24,16 +24,21 @@
       time-recurrence = doJailbreak super.time-recurrence;
       Agda = dontHaddock super.Agda;
       cabal-install = doJailbreak super.cabal-install;
+      gtk2hs-buildtools = doJailbreak super.gtk2hs-buildtools;
+      hint = doJailbreak super.hint;
+
+      hoogle_4_2_43 = super.hoogle_4_2_43.override {
+        mkDerivation = args: super.mkDerivation (args // {
+          enableSharedExecutables = false;
+        });
+      };
     };
 
-    haskPkgs = haskell821Packages;
-    haskellPackages = haskPkgs;
-
-    haskell821Packages = super.haskell.packages.ghc821.override {
+    haskellPackages = super.haskellPackages.override {
       overrides = myHaskellPackages false;
     };
 
-    profiledHaskell821Packages = super.haskell.packages.ghc821.override {
+    profiledHaskellPackages = super.haskellPackages.override {
       overrides = myHaskellPackages true;
     };
 
@@ -56,7 +61,7 @@
     };
 
     # Exposing custom packages
-    hasktags = haskPkgs.hasktags;
-    hakyll = haskPkgs.hakyll;
+    hasktags = haskellPackages.hasktags;
+    hakyll = haskellPackages.hakyll;
   };
 }
