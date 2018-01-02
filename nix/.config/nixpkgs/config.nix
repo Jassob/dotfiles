@@ -42,6 +42,33 @@
       overrides = myHaskellPackages true;
     };
 
+    # Generates environments with local haskell packages
+    haskellEnvFun = { withHoogle ? false, compiler ? null, name }:
+      let hp = if compiler != null
+                  then super.haskell.packages.${compiler}
+                  else haskellPackages;
+
+          ghcWith = if withHoogle
+                      then hp.ghcWithHoogle
+                      else hp.ghcWithPackages;
+
+      in super.buildEnv {
+       name = name;
+       paths = [(ghcWith (import ~/src/hoogle-local/package-list.nix))];
+      };
+
+    # Haskell environment with Hoogle
+    haskellEnvHoogle = haskellEnvFun {
+      name = "haskellEnvHoogle";
+      withHoogle = true;
+    };
+
+    # Haskell environment without Hoogle
+    haskellEnv = haskellEnvFun {
+      name = "haskellEnv";
+      withHoogle = false;
+    };
+
     ghc82Env = pkgs.myEnvFun {
       name = "ghc82";
       buildInputs = with haskell821Packages; [

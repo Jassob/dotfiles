@@ -50,6 +50,7 @@ source $ZDOTDIR/lib/npm-modules.zsh
 source $ZDOTDIR/lib/aliases.zsh
 source $ZDOTDIR/lib/paths.zsh
 source $ZDOTDIR/lib/profile.zsh
+source $ZDOTDIR/lib/functions.zsh
 
 ######
 ## Theme
