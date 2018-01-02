@@ -14,7 +14,7 @@ Config
   , commands =
     [ Run UnsafeStdinReader
 
-    , Run Date "<action=`$BROWSER calendar.google.com`>%b %d, %H:%M</action>" "date" 10
+    , Run Date "<action=`$BROWSER https://calendar.google.com`>%b %d, %H:%M</action>" "date" 10
 
     , Run Battery
       [ "--template" , "<acstatus>"
