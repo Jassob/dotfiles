@@ -45,19 +45,16 @@ Config
 
     , Run Com "sh" ["-c", "checkupdates | wc -l"] "checkupdates" 3600
 
-    , Run Memory [ "-t", "<used> MB" ] 10
+    , Run Com "sh" ["/home/jassob/.xmonad/xmobar-disturb.sh"] "disturb" 10
 
-    , Run Wireless "wlp3s0"
-      [
-        "-t", "<fn=1>\xf1eb</fn>  <essid>",
-        "-x", "Not Connected"
-      ] 10
+    , Run Memory [ "-t", "<used> MB" ] 10
     ]
 
    , sepChar = "%"
    , alignSep = "}{"
    , template =
        "%UnsafeStdinReader% }{ \
+       \| <action=`/home/jassob/.local/bin/toggle-dunst` button=1><fn=1>%disturb%</fn></action> \
        \| %memory% \
        \| %mpris2% \
        \| <fn=1></fn> %vol% \

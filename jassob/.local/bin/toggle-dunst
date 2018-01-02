@@ -1,0 +1,35 @@
+#! /usr/bin/env bash
+
+ENV_FILE="${HOME}/.local/share/env/disturb"
+
+echoerr() {
+	echo "$@" 1>&2;
+}
+
+toggle_focus() {
+	DO_NOT_DISTURB=$(cat "${ENV_FILE}")
+	if [[ ${DO_NOT_DISTURB} == "true" ]]; then
+		echo "false" > "${ENV_FILE}"
+	else
+		echo "true" > "${ENV_FILE}"
+	fi
+}
+
+toggle_dunst() {
+	DO_NOT_DISTURB=$(cat "${ENV_FILE}")
+	if [[ ${DO_NOT_DISTURB} == "true" ]]; then
+		notify-send "Pausing dunst.."
+		sleep 2
+		pkill -SIGUSR1 dunst
+	else
+		pkill -SIGUSR2 dunst
+		notify-send "Resuming dunst.."
+	fi
+}
+
+if [[ ! -f "${ENV_FILE}" ]]; then
+	echo "false" > "${ENV_FILE}"
+fi
+
+toggle_focus
+toggle_dunst
