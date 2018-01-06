@@ -12,6 +12,7 @@
       hasktags = pkg ./pkgs/hasktags.nix {};
       pandoc-citeproc = pkg ./pkgs/pandoc-citeproc-0.12.1.nix {};
       hakyll = doJailbreak (pkg ./pkgs/hakyll-4.9.8.0.nix { pandoc-citeproc = pandoc-citeproc; });
+      bnfc = dontCheck (pkg ./pkgs/bnfc-2.8.1.nix {});
 
       ## Hackage overrides
       blaze-builder-enumerator = doJailbreak super.blaze-builder-enumerator;
