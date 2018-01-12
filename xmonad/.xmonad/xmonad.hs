@@ -128,7 +128,7 @@ myAdditionalKeys = workspaceKeybindings ++
   , ((myModMask, xK_g),               promptSearch mySP{historySize=0} duckduckgo)
 
   -- Open url with Conkeror
-  , ((myModMask, xK_b),               launchApp mySP "conkeror")
+  , ((myModMask, xK_b),               launchApp mySP "firefox")
 
   -- Prompt for password from password-store
   , ((myModMask, xK_p),               passPrompt mySP)
@@ -199,7 +199,6 @@ myPP h = def
 main :: IO ()
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
-  setEnv "BROWSER" "conkeror"
   xmonad $ def { modMask = myModMask
               , terminal = myTerminal
               , layoutHook = myLayout

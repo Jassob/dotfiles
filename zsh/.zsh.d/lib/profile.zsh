@@ -13,6 +13,10 @@ else
    EDITOR='emacs'
 fi
 
+if [[ ! $BROWSER ]]; then
+	BROWSER="firefox"
+fi
+
 # Shell history
 HISTSIZE=4096
 HISTFILE=$ZDOTDIR/history
