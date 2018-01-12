@@ -55,22 +55,22 @@ ctrl + z ; ctrl + o
 
 # Some quick stuff
 ctrl + z ; ctrl + s
-      conkeror https://teapartychs.slack.com
+      xdg-open https://teapartychs.slack.com
 
 ctrl + z ; ctrl + c
-      conkeror https://google.com/calendar
+      xdg-open https://google.com/calendar
 
 ctrl + z ; ctrl + m
-      conkeror https://messenger.com
+      xdg-open https://messenger.com
 
 ctrl + z ; ctrl + i
-      conkeror https://inbox.google.com
+      xdg-open https://inbox.google.com
 
 ctrl + z ; ctrl + e
       startemacs
 
 ctrl + z ; ctrl + t
-     conkeror https://www.telegram.org/dl/webogram
+     xdg-open https://www.telegram.org/dl/webogram
 
 # make sxhkd reload its configuration files:
 super + Escape
