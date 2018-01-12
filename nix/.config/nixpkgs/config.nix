@@ -28,7 +28,7 @@
       gtk2hs-buildtools = doJailbreak super.gtk2hs-buildtools;
       hint = doJailbreak super.hint;
 
-      hoogle_4_2_43 = super.hoogle_4_2_43.override {
+      hoogle = super.hoogle.override {
         mkDerivation = args: super.mkDerivation (args // {
           enableSharedExecutables = false;
         });
@@ -72,7 +72,7 @@
 
     ghc82Env = pkgs.myEnvFun {
       name = "ghc82";
-      buildInputs = with haskell821Packages; [
+      buildInputs = with haskellPackages; [
         (ghcWithHoogle (import ~/src/hoogle-local/package-list.nix))
         alex happy cabal-install
         ghc-core
