@@ -39,7 +39,7 @@ ctrl + z ; b
 
 # lock screen with lock script
 ctrl + z ; ctrl + l
-      lock
+      dm-tool lock
 
 # screenshot of current window
 ctrl + z ; alt + p
