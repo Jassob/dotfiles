@@ -134,7 +134,7 @@ myAdditionalKeys = workspaceKeybindings ++
   , ((myModMask, xK_p),               passPrompt mySP)
 
   -- Run dmenu
-  , ((myModMask, xK_d),               safeSpawn "dmenu_run" [])
+  , ((myModMask, xK_d),               safeSpawn "rofi -show drun" [])
 
   -- Prompt for a name to store a password that will be generated
   , ((myModMask .|. shiftMask, xK_p), passGeneratePrompt mySP)

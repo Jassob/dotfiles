@@ -27,7 +27,7 @@ XF86MonBrightnessDown
 
 # dmenu
 ctrl + z ; ctrl + d
-     dmenu_run
+     rofi -show drun
 
 # search the web with google
 super + g
