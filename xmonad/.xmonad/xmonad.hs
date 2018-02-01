@@ -81,7 +81,7 @@ myManageHook = composeOne [ isFullscreen -?> doFullFloat
                <+> manageDocks
 
 myWorkspaces :: [String]
-myWorkspaces = map makeClickable $ zip ([1..9] ++ [0]) ws
+myWorkspaces = zipWith (curry makeClickable) ([1..9] ++ [0]) ws
   where -- Creates a clickable action that will jump to the workspace
         makeClickable :: (Int, String) -> String
         makeClickable (idx, wsn) = "<action=xdotool key super+" ++ show idx
@@ -140,10 +140,9 @@ myAdditionalKeys = workspaceKeybindings ++
   , ((myModMask .|. shiftMask, xK_p), passGeneratePrompt mySP)
   ]
 
-
 -- | Creates keybindings for workspaces.
 workspaceKeybindings :: [((KeyMask, KeySym), X ())]
-workspaceKeybindings = concat . map makeKeybinding $ pairs
+workspaceKeybindings = concatMap makeKeybinding pairs
   where pairs = zip myWorkspaces $ [xK_1 .. xK_9] ++ [xK_0]
 
         -- | Creates two keybindings for every workspace, one for
@@ -157,7 +156,7 @@ workspaceKeybindings = concat . map makeKeybinding $ pairs
 -- toggleLayouts makes it possible for us to toggle the first layout
 -- argument, while remembering the previous layout. Here we can toggle full-screen.
 myLayout = toggleLayouts (noBorders Full) $ spacedWithBorders $
-           tiled ||| (Mirror tiled) ||| layoutHints (tabbed shrinkText myTab)
+           tiled ||| Mirror tiled ||| layoutHints (tabbed shrinkText myTab)
   where
     spacedWithBorders = avoidStruts . smartBorders . spacing 5
     tiled   = layoutHints $ ResizableTall 1 (2/100) (1/2) []
