@@ -9,13 +9,15 @@ if [[ $(which rofi) == "rofi not found" ]] ; then
 		CMD="dmenu -p";
 	fi
 else
-	CMD="rofi -dmenu -sep \n -p";
+	CMD='rofi -dmenu -p';
 fi
 
-PREV_URLS=$(cat $HOME/.local/share/env/browse | uniq)
+BROWSE_FILE=$HOME/.local/share/env/browse
+touch $BROWSE_FILE
+PREV_URLS=$(cat $BROWSE_FILE)
 
-URL=$(echo $PREV_URLS | $CMD "Open URL: http://")
+URL=$(echo "$PREV_URLS" | $CMD "Open URL: http://")
 if [ -n "$URL" ]; then
-	echo -e "${URL}\n${PREV_URLS}" > $HOME/.local/share/env/browse
+	echo -e "${URL}\n${PREV_URLS}" | sort | uniq > $BROWSE_FILE
 	xdg-open "http://${URL}" 2> /dev/null
 fi
