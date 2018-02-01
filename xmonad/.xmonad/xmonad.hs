@@ -125,10 +125,10 @@ myAdditionalKeys = workspaceKeybindings ++
   , ((myModMask, xK_e),               safeSpawn "/home/jassob/.local/bin/startemacs" [])
 
   -- Search with $BROWSER
-  , ((myModMask, xK_g),               promptSearch mySP{historySize=0} duckduckgo)
+  , ((myModMask, xK_g),               promptSearch mySP{historySize=10} duckduckgo)
 
   -- Open url with Conkeror
-  , ((myModMask, xK_b),               launchApp mySP "firefox")
+  , ((myModMask, xK_b),               safeSpawn "/home/jassob/.local/bin/dmenu-open-url" [])
 
   -- Prompt for password from password-store
   , ((myModMask, xK_p),               passPrompt mySP)
