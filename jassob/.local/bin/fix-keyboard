@@ -1,4 +1,4 @@
-#!/bin/bash
+#! env bash
 
 echo "Setting the emacs keybindings and fixing CAPS"
-setxkbmap -model emacs2 -option ctrl:nocaps,compose:rwin
+setxkbmap se -model emacs2 -option ctrl:nocaps,compose:rwin
