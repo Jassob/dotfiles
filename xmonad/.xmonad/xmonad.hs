@@ -121,21 +121,6 @@ myAdditionalKeys = workspaceKeybindings ++
   -- Remove all other copies of this window
   , ((myModMask .|. shiftMask, xK_v ), killAllOtherCopies)
 
-  -- Start emacs
-  , ((myModMask, xK_e),               safeSpawn "/home/jassob/.local/bin/startemacs" [])
-
-  -- Search with $BROWSER
-  , ((myModMask, xK_g),               promptSearch mySP{historySize=10} duckduckgo)
-
-  -- Open url with Conkeror
-  , ((myModMask, xK_b),               safeSpawn "/home/jassob/.local/bin/dmenu-open-url" [])
-
-  -- Prompt for password from password-store
-  , ((myModMask, xK_p),               passPrompt mySP)
-
-  -- Run dmenu
-  , ((myModMask, xK_d),               safeSpawn "rofi -show drun" [])
-
   -- Prompt for a name to store a password that will be generated
   , ((myModMask .|. shiftMask, xK_p), passGeneratePrompt mySP)
   ]

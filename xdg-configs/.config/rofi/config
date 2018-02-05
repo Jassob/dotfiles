@@ -220,3 +220,4 @@ rofi.font:                           Inconsolata 24
 ! rofi.display-windowcd:
 ! "The display name of this browser" Set from: Default
 ! rofi.display-combi:
+#include "/etc/per-user-pkgs/jassob/share/rofi/themes//gruvbox-dark-soft.theme"

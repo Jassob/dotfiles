@@ -1,7 +1,6 @@
-#
+#######
 # multimedia keys
-#
-# sound
+#######
 XF86AudioLowerVolume
      amixer set Master 5%-
 
@@ -11,65 +10,67 @@ XF86AudioRaiseVolume
 XF86AudioMute
      amixer set Master toggle
 
-# brightness
 XF86MonBrightnessUp
      xbacklight +5%
 
 XF86MonBrightnessDown
      xbacklight -5%
 
-# ctrl + z ; ctrl + g
-#         xte 'key Escape'
+super + r
+	 rofi -show drun
 
-#
-# wm independent hotkeys
-#
-
-# dmenu
 ctrl + z ; ctrl + d
      rofi -show drun
 
-# search the web with google
-super + g
-      dmenu-google-script
+#######
+# Launching stuff
+#######
+ctrl + z ; l ; p
+	  rofi-pass
 
-# open url
-ctrl + z ; b
-      dmenu-open-url
-
-# lock screen with lock script
-ctrl + z ; ctrl + l
-      dm-tool lock
-
-# screenshot of current window
-ctrl + z ; alt + p
-      scrot -u -e 'mv $f ~/pictures/screenshots/'
-
-# screenshot of desktop
-ctrl + z ; ctrl + p
-      exec import -window root png:$HOME/pictures/screenshots/screenshot_$(date +%F_%H-%M-%S).png
-
-# Org-capture with emacsclient
-ctrl + z ; ctrl + o
+ctrl + z ; l ; ctrl + a
      emacsclient -c -e "(org-capture)"
 
-# Some quick stuff
-ctrl + z ; ctrl + s
-      xdg-open https://teapartychs.slack.com
+ctrl + z ; l ; e
+      $HOME/.local/bin/startemacs
 
-ctrl + z ; ctrl + c
+#######
+# System stuff
+#######
+ctrl + z ; x ; l
+      dm-tool lock
+
+ctrl + z ; x ; p
+      scrot -u -e 'mv $f ~/pictures/screenshots/'
+
+ctrl + z ; x ; P
+      exec import -window root png:$HOME/pictures/screenshots/screenshot_$(date +%F_%H-%M-%S).png
+
+#######
+# Web
+#######
+super + g
+      $HOME/.local/bin/dmenu-google-script
+
+ctrl + z ; w ; g
+      $HOME/.local/bin/dmenu-google-script
+
+super + b
+      $HOME/.local/bin/dmenu-open-url
+
+ctrl + z ; w ; b
+      $HOME/.local/bin/dmenu-open-url
+
+ctrl + z ; w ; c
       xdg-open https://google.com/calendar
 
-ctrl + z ; ctrl + m
+ctrl + z ; w ; m
       xdg-open https://messenger.com
 
-ctrl + z ; ctrl + i
+ctrl + z ; w ; i
       xdg-open https://inbox.google.com
 
-ctrl + z ; ctrl + e
-      startemacs
-
-ctrl + z ; ctrl + t
+ctrl + z ; w ; t
      xdg-open https://www.telegram.org/dl/webogram
 
 # make sxhkd reload its configuration files:
