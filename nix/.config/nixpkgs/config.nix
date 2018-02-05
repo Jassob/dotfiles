@@ -91,7 +91,5 @@
     # Exposing custom packages
     hasktags = haskellPackages.hasktags;
     hakyll = haskellPackages.hakyll;
-
-    feed-the-beast = self.callPackage ./pkgs/feed-the-beast.nix {};
   };
 }
