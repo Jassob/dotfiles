@@ -1,2 +1,2 @@
 #!/bin/sh
-'/home/jassob/.nix-profile/bin/feh' '--theme=feh' '--theme=feh' '--theme=feh' '--theme=feh' '--bg-scale' '/home/jassob/.background-image'
+'/home/jassob/.nix-profile/bin/feh' '--theme=feh' '--bg-scale' '/home/jassob/.background-image' 

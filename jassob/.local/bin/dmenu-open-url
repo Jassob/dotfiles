@@ -1,5 +1,7 @@
 #! env bash
 
+# TODO: Write this script in some other language than bash.
+
 # Select either rofi or dmenu or print error.
 if [[ $(which rofi) == "rofi not found" ]] ; then
 	if [[ $(which dmenu) == "dmenu not found" ]]; then

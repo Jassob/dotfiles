@@ -9,13 +9,13 @@ if [[ $(which rofi) == "rofi not found" ]] ; then
 		CMD="dmenu -p";
 	fi
 else
-	CMD="rofi -dmenu -sep \n -p";
+	CMD="rofi -dmenu -p";
 fi
 
 PREV_SEARCHES=$(cat $HOME/.local/share/env/search | uniq)
 
 URL='https://google.com/search?q='
-QUERY=$(echo $PREV_SEARCHES | $CMD "Search:")
+QUERY=$(echo "$PREV_SEARCHES" | $CMD "Search:")
 if [ -n "$QUERY" ]; then
 	echo -e "${QUERY}\n${PREV_SEARCHES}" > $HOME/.local/share/env/search
 	xdg-open "${URL}${QUERY}" 2> /dev/null
