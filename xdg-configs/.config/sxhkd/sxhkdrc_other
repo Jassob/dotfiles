@@ -28,11 +28,17 @@ ctrl + z ; ctrl + d
 ctrl + z ; l ; p
 	  rofi-pass
 
+super + p
+	  rofi-pass
+
 ctrl + z ; l ; ctrl + a
-     emacsclient -c -e "(org-capture)"
+      emacsclient -c -e "(org-capture)"
 
 ctrl + z ; l ; e
       $HOME/.local/bin/startemacs
+
+super + e
+	  $HOME/.local/bin/startemacs
 
 #######
 # System stuff
