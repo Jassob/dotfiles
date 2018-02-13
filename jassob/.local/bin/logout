@@ -1,0 +1,52 @@
+#! /bin/sh
+# Inspired by https://gist.github.com/blueyed/84a578b575ef07e9635c
+
+set -euo pipefail
+IFS=$'\n\t'
+
+ask() {
+	TEXT=$1
+
+	ANSWER=$(echo "Yes|No" | rofi -dmenu -sep '|' -p "$TEXT " -only-match -lines 2)
+	if [ -n "${ANSWER}" ]; then
+		if [[ "${ANSWER}" == "Yes" ]]; then return 0;
+		else return 1;
+		fi
+	fi
+}
+
+# close stdin
+exec <&-
+
+ACTION=$(printf 'suspend|hybrid-sleep|hibernate|reboot|shutdown|switch-user|logout|lock|abort|' \
+			 | rofi -dmenu -sep '|' -p "How do you want to quit? " -only-match)
+
+if [ -n "${ACTION}" ];then
+	case $ACTION in
+		switch-user)
+			dm-tool switch-to-greeter ;;
+		hybrid-sleep)
+			systemctl hybrid-sleep ;;
+		suspend)
+			systemctl suspend
+			dm-tool lock
+			;;
+		hibernate)
+			systemctl hibernate ;;
+		reboot)
+			ask "Are you sure?" \
+				&& systemctl reboot ;;
+		shutdown)
+			ask "Are you sure?" \
+				&& systemctl poweroff ;;
+		logout)
+			ask "Are you sure?" \
+				&& loginctl session-status \
+					| head -n 1 \
+					| awk '{print $1}' \
+					| loginctl terminate-session ;;
+		lock) dm-tool lock ;;
+
+		abort) ;;
+	esac
+fi
