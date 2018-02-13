@@ -16,6 +16,7 @@ import XMonad.Hooks.ManageDocks (avoidStruts, docksEventHook
 import XMonad.Hooks.ManageHelpers (composeOne, isFullscreen, isDialog
                                   , doFullFloat, doCenterFloat, (-?>))
 import XMonad.Hooks.SetWMName (setWMName)
+import XMonad.Hooks.EwmhDesktops (ewmh)
 
 {- Layout related stuff
 --------------------------------------------------}
@@ -39,6 +40,8 @@ import XMonad.Util.Run (spawnPipe, safeSpawn)
 import XMonad.Util.EZConfig (additionalKeys)
 import XMonad.Util.NamedScratchpad (NamedScratchpad(..), defaultFloating, namedScratchpadAction)
 
+import Data.Map (Map, fromList, toList)
+import System.Exit (exitSuccess)
 import System.IO (Handle, hPutStrLn)
 import System.Environment (setEnv)
 import Graphics.X11.ExtraTypes.XF86 (xF86XK_MonBrightnessUp
@@ -54,7 +57,6 @@ myScratchpads :: [NamedScratchpad]
 myScratchpads =
   [ NS "ncmpcpp" "termite -e ncmpcpp -t mopidy" (title =? "mopidy") defaultFloating
   , NS "termite" "termite -t scratchpad"        (title =? "scratchpad") defaultFloating
-  , NS "firefox" "firefox"                      (className =? "Firefox") defaultFloating
   ]
 
 -- | Stuff that will run every time XMonad is either started or restarted.
@@ -97,32 +99,66 @@ myWorkspaces = zipWith (curry makeClickable) ([1..9] ++ [0]) ws
         icons = [ '\xf269', '\xf120', '\xf121', '\xf02d', '\xf128',
                   '\xf128', '\xf128', '\xf001', '\xf292', '\xf0e6' ]
 
-myAdditionalKeys :: [((KeyMask, KeySym), X ())]
-myAdditionalKeys = workspaceKeybindings ++
-  -- Change screen brightness
-  [ ((0, xF86XK_MonBrightnessUp), safeSpawn "xbacklight" ["+20"])
-  , ((0, xF86XK_MonBrightnessDown), safeSpawn "xbacklight" ["-20"])
+myKeys :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
+myKeys conf@(XConfig {XMonad.modMask = modMask}) = fromList $
+  workspaceKeybindings ++ screenWorkspaceKeybindings ++
+  -- launching and killing programs
+  [ ((modMask .|. shiftMask, xK_Return), spawn myTerminal)
+  , ((modMask .|. shiftMask, xK_c     ), kill)
+
+  , ((modMask,               xK_space ), sendMessage NextLayout)
+  , ((modMask .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
+  , ((modMask,               xK_n     ), refresh)
+
+  -- move focus up or down the window stack
+  , ((modMask,               xK_Tab   ), windows W.focusDown)
+  , ((modMask .|. shiftMask, xK_Tab   ), windows W.focusUp  )
+  , ((modMask,               xK_j     ), windows W.focusDown)
+  , ((modMask,               xK_k     ), windows W.focusUp  )
+  , ((modMask,               xK_m     ), windows W.focusMaster)
+
+  -- modifying the window order
+  , ((modMask,               xK_Return), windows W.swapMaster)
+  , ((modMask .|. shiftMask, xK_j     ), windows W.swapDown  )
+  , ((modMask .|. shiftMask, xK_k     ), windows W.swapUp    )
+
+  -- resizing the master/slave ratio
+  , ((modMask,               xK_h     ), sendMessage Shrink)
+  , ((modMask,               xK_l     ), sendMessage Expand)
+
+  -- floating layer support
+  , ((modMask,               xK_t     ), withFocused $ windows . W.sink)
+
+  -- increase or decrease number of windows in the master area
+  , ((modMask              , xK_comma ), sendMessage (IncMasterN 1))
+  , ((modMask              , xK_period), sendMessage (IncMasterN (-1)))
+
+  -- quit
+  , ((modMask .|. shiftMask, xK_q     ), io exitSuccess)
+
+  -- restart
+  , ((modMask              , xK_q     ), spawn "if type xmonad; \
+                                                 \then xmonad --recompile && xmonad --restart; \
+                                                 \else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
+
+  -- Run xmessage with a summary of the default keybindings (useful
+  -- for beginners)
+  , ((modMask .|. shiftMask, xK_plus), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
 
   -- Toggle fullscreen
-  , ((myModMask, xK_f),               sendMessage (Toggle "Full"))
+  , ((modMask              , xK_f), sendMessage (Toggle "Full"))
 
-  -- Hide or show a terminal
-  , ((myModMask, xK_Down),            namedScratchpadAction myScratchpads "termite")
+    -- Hide or show a terminal
+  , ((modMask              , xK_Down), namedScratchpadAction myScratchpads "termite")
 
-  -- Hide or show firefox
-  , ((myModMask, xK_w),               namedScratchpadAction myScratchpads "firefox")
+    -- Hide or show a cli mpd client
+  , ((modMask              , xK_Up), namedScratchpadAction myScratchpads "ncmpcpp")
 
-  -- Hide or show a cli mpd client
-  , ((myModMask, xK_Up),              namedScratchpadAction myScratchpads "ncmpcpp")
+    -- Copy current window to every workspace
+  , ((modMask              , xK_v ), windows copyToAll)
 
-  -- Copy current window to every workspace
-  , ((myModMask, xK_v ),              windows copyToAll)
-
-  -- Remove all other copies of this window
-  , ((myModMask .|. shiftMask, xK_v ), killAllOtherCopies)
-
-  -- Prompt for a name to store a password that will be generated
-  , ((myModMask .|. shiftMask, xK_p), passGeneratePrompt mySP)
+    -- Remove all other copies of this window
+  , ((modMask .|. shiftMask, xK_v ), killAllOtherCopies)
   ]
 
 -- | Creates keybindings for workspaces.
@@ -135,8 +171,85 @@ workspaceKeybindings = concatMap makeKeybinding pairs
         -- to that workspace.
         makeKeybinding :: (String, KeySym) -> [((KeyMask, KeySym), X ())]
         makeKeybinding (ws, key) =
-          [ ((myModMask, key), windows $ W.greedyView ws)
-          , ((shiftMask .|. myModMask, key), windows $ W.shift ws)]
+          [ ((myModMask              , key), windows $ W.greedyView ws)
+          , ((myModMask .|. shiftMask, key), windows $ W.shift ws)]
+
+
+-- mod-{a,s,d} %! Switch to physical/Xinerama screens 1, 2, or 3
+-- mod-shift-{a,s,d} %! Move client to screen 1, 2, or 3
+screenWorkspaceKeybindings :: [((KeyMask, KeySym), X ())]
+screenWorkspaceKeybindings = concatMap makeKeybinding pairs
+  where pairs = zip [0..] [xK_a, xK_s, xK_d]
+        action sc f = screenWorkspace sc >>= flip whenJust (windows . f)
+
+        -- | Creates two keybindings for every screenworkspace, one
+        -- for switching to that workspace and one for moving the
+        -- window to that workspace.
+        makeKeybinding :: (ScreenId, KeySym) -> [((KeyMask, KeySym), X ())]
+        makeKeybinding (sc, key) =
+          [ ((myModMask              , key), action sc W.view)
+          , ((myModMask .|. shiftMask, key), action sc W.shift)]
+
+
+-- | Finally, a copy of the default bindings in simple textual tabular format.
+help :: String
+help = unlines
+  [ "The mod button is Mod5 (or Super)'. My keybindings:"
+  , ""
+  , "-- launching and killing programs"
+  , "mod-Shift-Enter  Launch termite"
+  , "mod-Shift-c      Close/kill the focused window"
+  , "mod-Space        Rotate through the available layout algorithms"
+  , "mod-Shift-Space  Reset the layouts on the current workSpace to default"
+  , "mod-down         Open termite scratchpad"
+  , "mod-up           Open ncmpcpp scratchpad"
+  , "mod-n            Resize/refresh viewed windows to the correct size"
+  , "mod-f            Toggle fullscreen"
+  , ""
+  , "-- move focus up or down the window stack"
+  , "mod-Tab        Move focus to the next window"
+  , "mod-Shift-Tab  Move focus to the previous window"
+  , "mod-j          Move focus to the next window"
+  , "mod-k          Move focus to the previous window"
+  , "mod-m          Move focus to the master window"
+  , ""
+  , "-- modifying the window order"
+  , "mod-Return   Swap the focused window and the master window"
+  , "mod-Shift-j  Swap the focused window with the next window"
+  , "mod-Shift-k  Swap the focused window with the previous window"
+  , ""
+  , "-- resizing the master/slave ratio"
+  , "mod-h  Shrink the master area"
+  , "mod-l  Expand the master area"
+  , ""
+  , "-- floating layer support"
+  , "mod-t  Push window back into tiling; unfloat and re-tile it"
+  , ""
+  , "-- increase or decrease number of windows in the master area"
+  , "mod-comma  (mod-,)   Increment the number of windows in the master area"
+  , "mod-period (mod-.)   Deincrement the number of windows in the master area"
+  , ""
+  , "-- quit, or restart"
+  , "mod-Shift-q  Quit xmonad"
+  , "mod-q        Restart xmonad"
+  , ""
+  , "-- Workspaces & screens"
+  , "mod-[1..9]         Switch to workSpace N"
+  , "mod-Shift-[1..9]   Move client to workspace N"
+  , "mod-{a,s,d}        Switch to physical/Xinerama screens 1, 2, or 3"
+  , "mod-Shift-{a,s,d}  Move client to screen 1, 2, or 3"
+  , "mod-v              Show current window on every workspace"
+  , "mod-Shift-v        Remove all other copies of current window"
+  , ""
+  , "-- Mouse bindings: default actions bound to mouse events"
+  , "mod-button1  Set the window to floating mode and move by dragging"
+  , "mod-button2  Raise the window to the top of the stack"
+  , "mod-button3  Set the window to floating mode and resize by dragging"
+  , ""
+  , "-- Help"
+  , "mod-Shift-plus    Show this help message."
+  , ""
+  ]
 
 -- toggleLayouts makes it possible for us to toggle the first layout
 -- argument, while remembering the previous layout. Here we can toggle full-screen.
@@ -183,12 +296,13 @@ myPP h = def
 main :: IO ()
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
-  xmonad $ def { modMask = myModMask
-              , terminal = myTerminal
-              , layoutHook = myLayout
-              , manageHook = myManageHook
-              , workspaces = myWorkspaces
-              , handleEventHook = docksEventHook <+> handleEventHook def
-              , startupHook = myStartupHook
-              , logHook = dynamicLogWithPP $ myPP xmproc
-              } `additionalKeys` myAdditionalKeys
+  xmonad $ ewmh def { modMask = myModMask
+                    , terminal = myTerminal
+                    , layoutHook = myLayout
+                    , manageHook = myManageHook
+                    , workspaces = myWorkspaces
+                    , handleEventHook = docksEventHook <+> handleEventHook def
+                    , startupHook = myStartupHook
+                    , logHook = dynamicLogWithPP $ myPP xmproc
+                    , keys = myKeys
+                    }
