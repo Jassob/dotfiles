@@ -4,3 +4,5 @@
 /xmonad/.xmonad/xmonad.errors
 /xmonad/.xmonad/xmonad.state
 /xmonad/.xmonad/prompt-history
+*.hi
+*.o
