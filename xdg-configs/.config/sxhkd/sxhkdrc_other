@@ -56,16 +56,16 @@ ctrl + z ; x ; P
 # Web
 #######
 super + g
-      $HOME/.local/bin/dmenu-google-script
+      $HOME/.local/bin/prompt-search
 
 ctrl + z ; w ; g
-      $HOME/.local/bin/dmenu-google-script
+      $HOME/.local/bin/prompt-search
 
 super + b
-      $HOME/.local/bin/dmenu-open-url
+      $HOME/.local/bin/prompt-open-url
 
 ctrl + z ; w ; b
-      $HOME/.local/bin/dmenu-open-url
+      $HOME/.local/bin/prompt-open-url
 
 ctrl + z ; w ; c
       xdg-open https://google.com/calendar
