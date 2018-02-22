@@ -44,7 +44,7 @@ run fp browser = handle handler $ do
   updateUrlStore fp (init url) contentMap
 
     where handler :: SomeException -> IO ()
-          handler = print
+          handler = const exitSuccess
 
           rofiOptions :: [String]
           rofiOptions = ["-dmenu", "-sep", " ", "-i", "-p", "Open URL: http://"]

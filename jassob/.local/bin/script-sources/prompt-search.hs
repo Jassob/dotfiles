@@ -68,7 +68,7 @@ run fp browser se = handle handler $ do
   updateQueryStore fp (init query) contentMap
 
     where handler :: SomeException -> IO ()
-          handler = print
+          handler _ = exitSuccess
 
           rofiOptions :: [String]
           rofiOptions = ["-dmenu", "-i", "-p", "Search: "]
