@@ -88,6 +88,11 @@
       packages = [ hPkgs.xmonad-contrib hPkgs.xmonad-extras hPkgs.xmobar ];
     };
 
+    # Pidgin
+    pidgin-with-plugins = super.pidgin-with-plugins.override {
+      plugins = [ pkgs.purple-facebook pkgs.telegram-purple ];
+    };
+
     # Exposing custom packages
     hasktags = haskellPackages.hasktags;
     hakyll = haskellPackages.hakyll;
