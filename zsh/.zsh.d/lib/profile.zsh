@@ -6,15 +6,8 @@ export EMAILSERVER="smtp.gmail.com"
 # Print using Chalmers printers
 export CUPS_GSSSERVICENAME=HTTP
 
-# Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-   EDITOR='emacsclient -a "" -c'
-else
-   EDITOR='emacs'
-fi
-
 if [[ ! $BROWSER ]]; then
-	BROWSER="firefox"
+    BROWSER="firefox"
 fi
 
 # Shell history
@@ -26,8 +19,6 @@ SAVEHIST=3072
 LC_CTYPE="sv_SE.UTF-8"
 LC_NUMERIC="sv_SE.UTF-8"
 LC_TIME="sv_SE.UTF-8"
-# . ignoreras vid sortering av tex lsoutput
-#LC_COLLATE="en_US.UTF-8"
 LC_MONETARY="sv_SE.UTF-8"
 LC_MESSAGES="en_US.UTF-8"
 LC_PAPER="sv_SE.UTF-8"
