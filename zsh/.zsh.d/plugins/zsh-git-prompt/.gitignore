@@ -1,7 +1,0 @@
-###
-# Haskell files
-###
-.cabal-sandbox/*
-cabal.sandbox.config
-*.hi
-*.o
