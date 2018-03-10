@@ -1,5 +1,5 @@
 #######
-# multimedia keys
+# Multimedia keys
 #######
 XF86AudioLowerVolume
      amixer set Master 5%-
@@ -26,10 +26,10 @@ ctrl + z ; ctrl + d
 # Launching stuff
 #######
 ctrl + z ; l ; p
-	  rofi-pass
+     rofi-pass
 
 super + p
-	  rofi-pass
+     rofi-pass
 
 ctrl + z ; l ; ctrl + a
       emacsclient -c -e "(org-capture)"
@@ -38,7 +38,7 @@ ctrl + z ; l ; e
       $HOME/.local/bin/startemacs
 
 super + e
-	  $HOME/.local/bin/startemacs
+      $HOME/.local/bin/startemacs
 
 #######
 # System stuff

@@ -1,6 +1,6 @@
 #! env bash
 
-ENV_FILE="${HOME}/.local/share/env/disturb"
+ENV_FILE="${HOME}/.cache/disturb"
 DO_NOT_DISTURB=$(cat "${ENV_FILE}")
 
 if [[ ${DO_NOT_DISTURB} == "true" ]]; then

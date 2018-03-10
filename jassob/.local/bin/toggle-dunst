@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-ENV_FILE="${HOME}/.local/share/env/disturb"
+ENV_FILE="${HOME}/.cache/disturb"
 
 echoerr() {
 	echo "$@" 1>&2;
