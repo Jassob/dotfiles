@@ -1,0 +1,4 @@
+#!emacs --script
+
+(load (concat user-emacs-directory "init.el"))
+(local--untangle-file)
