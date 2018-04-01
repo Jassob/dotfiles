@@ -1,43 +1,34 @@
 #######
 # Multimedia keys
 #######
-XF86AudioLowerVolume
-     amixer set Master 5%-
+{XF86AudioLowerVolume, ctrl + F11}
+     pamixer --decrease 5
 
-XF86AudioRaiseVolume
-     amixer set Master 5%+
+{XF86AudioRaiseVolume, ctrl + F12}
+     pamixer --increase 5
 
-XF86AudioMute
-     amixer set Master toggle
+{XF86AudioMute, ctrl + F10}
+     pamixer --toggle-mute
 
-XF86MonBrightnessUp
+{XF86MonBrightnessUp, ctrl + F6}
      xbacklight +5%
 
-XF86MonBrightnessDown
+{XF86MonBrightnessDown, ctrl + F5}
      xbacklight -5%
 
-super + r
-	 rofi -show drun
-
-ctrl + z ; ctrl + d
+{ctrl + z ; ctrl + d, super + r}
      rofi -show drun
 
 #######
 # Launching stuff
 #######
-ctrl + z ; l ; p
-     rofi-pass
-
-super + p
+{ctrl + z ; l ; p, super + p}
      rofi-pass
 
 ctrl + z ; l ; ctrl + a
       emacsclient -c -e "(org-capture)"
 
-ctrl + z ; l ; e
-      $HOME/.local/bin/startemacs
-
-super + e
+{ctrl + z ; l ; e, super + e}
       $HOME/.local/bin/startemacs
 
 #######
@@ -55,17 +46,20 @@ ctrl + z ; x ; P
 #######
 # Web
 #######
-super + g
-      $HOME/.local/bin/prompt-search
+{super + g, ctrl + z ; s ; d}
+      prompt-search -s duckduckgo
 
-ctrl + z ; w ; g
-      $HOME/.local/bin/prompt-search
+ctrl + z ; s ; g
+      prompt-search -s google
 
-super + b
-      $HOME/.local/bin/prompt-open-url
+ctrl + z ; s ; h
+      prompt-search -s hoogle
 
-ctrl + z ; w ; b
-      $HOME/.local/bin/prompt-open-url
+ctrl + z ; s ; p
+      prompt-search -s hackage
+
+{super + b, ctrl + z ; w ; b}
+      prompt-open-url
 
 ctrl + z ; w ; c
       xdg-open https://google.com/calendar
