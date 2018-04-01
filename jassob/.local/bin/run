@@ -1,4 +1,4 @@
-#! env bash
+#!/usr/bin/env bash
 
 # Validity check
 if [[ $# == 0 ]]; then
