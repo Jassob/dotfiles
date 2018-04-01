@@ -5,7 +5,7 @@ Config
   , additionalFonts = ["xft:FontAwesome:size=10"]
   , alpha           = 0
   , bgColor         = "black"
-  , fgColor         = "#1e1e1e"
+  , fgColor         = "#f8f8f8"
   , position        = Top
 
   -- general behavior
@@ -62,7 +62,11 @@ Config
        \<action=`/home/jassob/.local/bin/toggle-dunst` button=1>\
          \<fn=1>%disturb%</fn>\
        \</action> \
-       \| %memory% | %mpris2% | <fn=1></fn> %vol% | %battery% \
+       \| %memory% | %mpris2% | \
+       \<action=`pavucontrol` button=1>\
+         \<fn=1></fn> %vol%\
+       \</action> \
+       \| %battery% \
        \| <action=`/home/jassob/.local/bin/logout` button=1>\
            \<fn=1><raw=1:/></fn>\
           \</action> "

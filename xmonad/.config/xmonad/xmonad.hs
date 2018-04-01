@@ -21,17 +21,12 @@ import XMonad.Hooks.EwmhDesktops (ewmh)
 {- Layout related stuff
 --------------------------------------------------}
 import XMonad.Layout.LayoutHints (layoutHints)
+import XMonad.Layout.LayoutBuilder (relBox, layoutAll, layoutN)
 import XMonad.Layout.NoBorders (noBorders, smartBorders)
 import XMonad.Layout.ResizableTile (ResizableTall(..))
 import XMonad.Layout.Spacing (spacing)
-import XMonad.Layout.Tabbed (Theme(..), tabbed, shrinkText)
+import XMonad.Layout.Tabbed (simpleTabbed, shrinkText, tabbedBottom)
 import XMonad.Layout.ToggleLayouts (ToggleLayout(Toggle), toggleLayouts)
-
-{- Prompt
---------------------------------------------------}
-import XMonad.Prompt (XPConfig(..))
-import XMonad.Prompt.AppLauncher (launchApp)
-import XMonad.Prompt.Pass (passPrompt, passGeneratePrompt)
 
 {- Utils
 ---------------------------------------------------}
@@ -44,8 +39,6 @@ import Data.Map (Map, fromList, toList)
 import System.Exit (exitSuccess)
 import System.IO (Handle, hPutStrLn)
 import System.Environment (setEnv)
-import Graphics.X11.ExtraTypes.XF86 (xF86XK_MonBrightnessUp
-                                    , xF86XK_MonBrightnessDown)
 
 myModMask :: KeyMask
 myModMask = mod4Mask
@@ -63,6 +56,7 @@ myScratchpads =
 myStartupHook :: X ()
 myStartupHook = -- safeSpawn "compton" comptonArgs
                 safeSpawn "sxhkd" []
+                <+> safeSpawn "notify-send" ["Welcome Jassob"]
                 <+> setDefaultCursor xC_left_ptr
                 <+> setWMName "LG3D"
                 <+> spawn "$HOME/.fehbg"
@@ -95,12 +89,11 @@ myWorkspaces = zipWith (curry makeClickable) ([1..9] ++ [0]) ws
         makeLabel :: Int -> Char -> String
         makeLabel index icon = show index ++ ": <fn=1>" ++ icon : "</fn> "
 
-        icons :: [Char]
-        icons = [ '\xf269', '\xf120', '\xf121', '\xf02d', '\xf128',
-                  '\xf128', '\xf128', '\xf001', '\xf292', '\xf0e6' ]
+        icons :: String
+        icons = "\xf269\xf120\xf121\xf02d\xf128\xf128\xf128\xf001\xf292\xf0e6"
 
 myKeys :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
-myKeys conf@(XConfig {XMonad.modMask = modMask}) = fromList $
+myKeys conf@XConfig {XMonad.modMask = modMask} = fromList $
   workspaceKeybindings ++ screenWorkspaceKeybindings ++
   -- launching and killing programs
   [ ((modMask .|. shiftMask, xK_Return), spawn myTerminal)
@@ -252,24 +245,13 @@ help = unlines
   ]
 
 -- toggleLayouts makes it possible for us to toggle the first layout
--- argument, while remembering the previous layout. Here we can toggle full-screen.
+-- argument, while remembering the previous layout. Here we can toggle
+-- full-screen.
 myLayout = toggleLayouts (noBorders Full) $ spacedWithBorders $
-           tiled ||| Mirror tiled ||| layoutHints (tabbed shrinkText myTab)
+           tiled ||| Mirror tiled ||| simpleTabbed
   where
-    spacedWithBorders = avoidStruts . smartBorders . spacing 5
-    tiled   = layoutHints $ ResizableTall 1 (2/100) (1/2) []
-
--- * Themes
-
--- shell prompt theme
-mySP :: XPConfig
-mySP = def { font   = "xft:inconsolata:size=12"
-           , height = 40 }
-
-myTab :: Theme
-myTab = def { fontName = "xft:inconsolata:size=12"
-            , decoHeight = 46
-            }
+    spacedWithBorders = avoidStruts . smartBorders
+    tiled = ResizableTall 1 (2/100) (1/2) []
 
 -- | Log configuration
 myPP :: Handle -> PP
@@ -295,7 +277,7 @@ myPP h = def
 -- | Wire it all up and start XMonad
 main :: IO ()
 main = do
-  xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
+  xmproc <- getXMonadDir >>= \ dir -> spawnPipe $ "xmobar " ++ dir ++ "/xmobarrc"
   xmonad $ ewmh def { modMask = myModMask
                     , terminal = myTerminal
                     , layoutHook = myLayout

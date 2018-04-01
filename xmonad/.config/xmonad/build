@@ -5,7 +5,7 @@
 
 ################################################################################
 # The directory holding your source code and Cabal file:
-SRC_DIR=~/.xmonad
+SRC_DIR=~/.config/xmonad
 
 ################################################################################
 # The name of the executable produced by cabal.  This comes from the
@@ -20,17 +20,8 @@ output_file=$1; shift
 ################################################################################
 cd $SRC_DIR
 
-# Configure the package
-nix-shell shell.nix --command "cabal configure \
-                     --enable-optimization \
-                     --enable-executable-stripping"
-
-# Build the package
-nix-shell shell.nix --command "cabal build"
+# Build with nix
+nix-build shell.nix
 
 # Move the binary out into the root directory
-find dist -type f -executable -name $EXE_NAME \
-     -exec mv -u '{}' $output_file ';'
-
-# Remove building
-rm -r dist*
+nix-env -i "$SRC_DIR/result"
