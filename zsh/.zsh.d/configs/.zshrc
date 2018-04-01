@@ -65,5 +65,5 @@ function chpwd() {
 
 # Restore the last saved path
 if [ -f ~/.last_dir ]
-	then cd $(cat ~/.cache/last_dir)
+	then cd "$(cat ~/.cache/last_dir)"
 fi
