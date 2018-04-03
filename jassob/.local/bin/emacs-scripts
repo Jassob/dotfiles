@@ -1,0 +1,21 @@
+#!emacs --script
+
+(defun bootstrap (conf)
+  "Load custom CONF if exists, otherwise load init.el."
+  (if (file-exists-p (concat "~/.emacs.d/" conf))
+      (load-file (concat "~/.emacs.d/" conf))
+    (load-file "~/.emacs.d/init.el")))
+
+(cond
+ ((string= (car argv) "update")
+  (bootstrap "org.el")
+  (org-babel-tangle-file "~/.emacs.d/README.org"))
+
+ ((string= (car argv) "sync-gcal")
+  (princ "Synchronizing org-gcal...\n")
+  (shell-command "emacs-sync-gcal")
+ (t
+  (princ (concat "Unknown command: " (car argv) "\n\n"))
+  (princ (concat "Defined commands are:\n"
+		 "- update (update the configs from the source file)\n"
+		 "- sync-gcal (synchronize org-gcal with google calendar)\n"))))
