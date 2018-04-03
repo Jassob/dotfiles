@@ -54,17 +54,11 @@ myScratchpads =
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
-myStartupHook = -- safeSpawn "compton" comptonArgs
-                safeSpawn "sxhkd" []
-                <+> safeSpawn "notify-send" ["Welcome Jassob"]
+myStartupHook = safeSpawn "sxhkd" []
                 <+> setDefaultCursor xC_left_ptr
                 <+> setWMName "LG3D"
-                <+> spawn "$HOME/.fehbg"
+                <+> safeSpawn "feh" ["--bg-scale", "~/.background-image"]
                 <+> docksStartupHook
-  where comptonArgs = [ "--fading", "--fade-delta", "5", "--fade-out-step", "0.08"
-                      , "--fade-in-step", "0.08", "--shadow", "--shadow-opacity", "0.5"
-                      , "--no-dock-shadow", "--clear-shadow", "--inactive-opacity", "0.9"
-                      ]
 
 myManageHook :: ManageHook
 myManageHook = composeOne [ isFullscreen -?> doFullFloat
@@ -265,11 +259,11 @@ myPP h = def
   , ppOutput  = hPutStrLn h
   }
   where formatLayout x = case x of
-          "Spacing 5 Hinted ResizableTall"        -> "[|]"
-          "Spacing 5 Mirror Hinted ResizableTall" -> "[-]"
-          "Spacing 5 Hinted Tabbed Simplest"      -> "[T]"
-          "Full"                                  -> "[ ]"
-          _                                       -> x
+          "ResizableTall"        -> "[|]"
+          "Mirror ResizableTall" -> "[-]"
+          "Tabbed Simplest"      -> "[T]"
+          "Full"                 -> "[ ]"
+          _                      -> x
 
         hideScratchpad ws | ws == "NSP" = mempty
                           | otherwise = ws

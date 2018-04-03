@@ -5,7 +5,7 @@
 
 ################################################################################
 # The directory holding your source code and Cabal file:
-SRC_DIR=~/.config/xmonad
+SRC_DIR=~/.config/xmonad/src
 
 ################################################################################
 # The name of the executable produced by cabal.  This comes from the
