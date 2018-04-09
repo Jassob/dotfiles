@@ -11,10 +11,10 @@
      pamixer --toggle-mute
 
 {XF86MonBrightnessUp, ctrl + F6}
-     xbacklight +5%
+     light -A 5
 
 {XF86MonBrightnessDown, ctrl + F5}
-     xbacklight -5%
+     light -U 5
 
 {ctrl + z ; ctrl + d, super + r}
      rofi -show drun
