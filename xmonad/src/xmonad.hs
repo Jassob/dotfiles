@@ -6,7 +6,6 @@ import qualified XMonad.StackSet as W
 {- Actions
 --------------------------------------------------}
 import XMonad.Actions.CopyWindow (copyToAll, killAllOtherCopies)
-import XMonad.Actions.Search (promptSearch, duckduckgo)
 
 {- Hooks
 --------------------------------------------------}
@@ -20,25 +19,23 @@ import XMonad.Hooks.EwmhDesktops (ewmh)
 
 {- Layout related stuff
 --------------------------------------------------}
-import XMonad.Layout.LayoutHints (layoutHints)
-import XMonad.Layout.LayoutBuilder (relBox, layoutAll, layoutN)
 import XMonad.Layout.NoBorders (noBorders, smartBorders)
 import XMonad.Layout.ResizableTile (ResizableTall(..))
 import XMonad.Layout.Spacing (spacing)
-import XMonad.Layout.Tabbed (simpleTabbed, shrinkText, tabbedBottom)
+import XMonad.Layout.Tabbed (simpleTabbed)
 import XMonad.Layout.ToggleLayouts (ToggleLayout(Toggle), toggleLayouts)
 
 {- Utils
 ---------------------------------------------------}
 import XMonad.Util.Cursor (setDefaultCursor)
-import XMonad.Util.Run (spawnPipe, safeSpawn)
+import XMonad.Util.Run (spawnPipe, safeSpawn, runProcessWithInput)
 import XMonad.Util.EZConfig (additionalKeys)
 import XMonad.Util.NamedScratchpad (NamedScratchpad(..), defaultFloating, namedScratchpadAction)
 
 import Data.Map (Map, fromList, toList)
+import System.Environment (setEnv)
 import System.Exit (exitSuccess)
 import System.IO (Handle, hPutStrLn)
-import System.Environment (setEnv)
 
 myModMask :: KeyMask
 myModMask = mod4Mask
@@ -241,11 +238,11 @@ help = unlines
 -- toggleLayouts makes it possible for us to toggle the first layout
 -- argument, while remembering the previous layout. Here we can toggle
 -- full-screen.
-myLayout = toggleLayouts (noBorders Full) $ spacedWithBorders $
-           tiled ||| Mirror tiled ||| simpleTabbed
+myLayout = toggleLayouts (noBorders Full) $ borders $
+           spacedTiled ||| Mirror spacedTiled ||| simpleTabbed
   where
-    spacedWithBorders = avoidStruts . smartBorders
-    tiled = ResizableTall 1 (2/100) (1/2) []
+    borders = avoidStruts . smartBorders
+    spacedTiled = spacing 5 $ ResizableTall 1 (2/100) (1/2) []
 
 -- | Log configuration
 myPP :: Handle -> PP
@@ -259,11 +256,11 @@ myPP h = def
   , ppOutput  = hPutStrLn h
   }
   where formatLayout x = case x of
-          "ResizableTall"        -> "[|]"
-          "Mirror ResizableTall" -> "[-]"
-          "Tabbed Simplest"      -> "[T]"
-          "Full"                 -> "[ ]"
-          _                      -> x
+          "Spacing 5 ResizableTall"        -> "[|]"
+          "Spacing 5 Mirror ResizableTall" -> "[-]"
+          "Tabbed Simplest"                -> "[T]"
+          "Full"                           -> "[ ]"
+          _                                -> x
 
         hideScratchpad ws | ws == "NSP" = mempty
                           | otherwise = ws
@@ -272,13 +269,14 @@ myPP h = def
 main :: IO ()
 main = do
   xmproc <- getXMonadDir >>= \ dir -> spawnPipe $ "xmobar " ++ dir ++ "/xmobarrc"
-  xmonad $ ewmh def { modMask = myModMask
-                    , terminal = myTerminal
-                    , layoutHook = myLayout
-                    , manageHook = myManageHook
-                    , workspaces = myWorkspaces
-                    , handleEventHook = docksEventHook <+> handleEventHook def
-                    , startupHook = myStartupHook
-                    , logHook = dynamicLogWithPP $ myPP xmproc
-                    , keys = myKeys
-                    }
+  xmonad $ ewmh def
+    { modMask = myModMask
+    , terminal = myTerminal
+    , layoutHook = myLayout
+    , manageHook = myManageHook
+    , workspaces = myWorkspaces
+    , handleEventHook = docksEventHook <+> handleEventHook def
+    , startupHook = myStartupHook
+    , logHook = dynamicLogWithPP $ myPP xmproc
+    , keys = myKeys
+    }

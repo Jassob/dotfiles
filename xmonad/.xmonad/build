@@ -5,7 +5,7 @@
 
 ################################################################################
 # The directory holding your source code and Cabal file:
-SRC_DIR=~/.config/xmonad/src
+SRC_DIR=~/dotfiles/xmonad/src
 
 ################################################################################
 # The name of the executable produced by cabal.  This comes from the
@@ -13,15 +13,18 @@ SRC_DIR=~/.config/xmonad/src
 EXE_NAME=xmonad
 
 ################################################################################
-# This script will be given a single argument, the path to the
+# This script will be given a single argument, the full path to the
 # executable it should produce.
 output_file=$1; shift
 
+if [ -f "$output_file" ]; then
+    rm -f "$output_file"
+fi
+
 ################################################################################
-cd $SRC_DIR
 
 # Build with nix
-nix-build shell.nix
+nix-build "$SRC_DIR/shell.nix"
 
 # Move the binary out into the root directory
-nix-env -i "$SRC_DIR/result"
+cp "result/bin/$EXE_NAME" "$output_file"
