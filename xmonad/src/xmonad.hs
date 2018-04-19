@@ -45,8 +45,8 @@ myTerminal = "termite"
 
 myScratchpads :: [NamedScratchpad]
 myScratchpads =
-  [ NS "ncmpcpp" "termite -e ncmpcpp -t mopidy" (title =? "mopidy") defaultFloating
-  , NS "termite" "termite -t scratchpad"        (title =? "scratchpad") defaultFloating
+  [ NS "ncmpcpp" (myTerminal ++ " -e ncmpcpp -t mopidy") (title =? "mopidy") defaultFloating
+  , NS "terminal" (myTerminal ++ " -t scratchpad") (title =? "scratchpad") defaultFloating
   ]
 
 -- | Stuff that will run every time XMonad is either started or restarted.
@@ -257,7 +257,7 @@ myPP h = def
   }
   where formatLayout x = case x of
           "Spacing 5 ResizableTall"        -> "[|]"
-          "Spacing 5 Mirror ResizableTall" -> "[-]"
+          "Mirror Spacing 5 ResizableTall" -> "[-]"
           "Tabbed Simplest"                -> "[T]"
           "Full"                           -> "[ ]"
           _                                -> x
