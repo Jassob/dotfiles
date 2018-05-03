@@ -202,41 +202,41 @@ help = unlines
   [ "The mod button is Mod5 (or Super)'. My keybindings:"
   , ""
   , "-- launching and killing programs"
-  , "mod-Shift-Enter  Launch termite"
-  , "mod-Shift-c      Close/kill the focused window"
-  , "mod-Space        Rotate through the available layout algorithms"
-  , "mod-Shift-Space  Reset the layouts on the current workSpace to default"
-  , "mod-down         Open termite scratchpad"
-  , "mod-up           Open ncmpcpp scratchpad"
-  , "mod-n            Resize/refresh viewed windows to the correct size"
-  , "mod-f            Toggle fullscreen"
+  , "mod-Shift-Enter         Launch termite"
+  , "mod-Shift-c             Close/kill the focused window"
+  , "mod-Space               Rotate through the available layout algorithms"
+  , "mod-Shift-Space         Reset the layouts on the current workSpace"
+  , "mod-down                Open termite scratchpad"
+  , "mod-up                  Open ncmpcpp scratchpad"
+  , "mod-n                   Resize/refresh viewed windows to the correct size"
+  , "mod-f                   Toggle fullscreen"
   , ""
   , "-- move focus up or down the window stack"
-  , "mod-Tab        Move focus to the next window"
-  , "mod-Shift-Tab  Move focus to the previous window"
-  , "mod-j          Move focus to the next window"
-  , "mod-k          Move focus to the previous window"
-  , "mod-m          Move focus to the master window"
+  , "mod-Tab                Move focus to the next window"
+  , "mod-Shift-Tab          Move focus to the previous window"
+  , "mod-j                  Move focus to the next window"
+  , "mod-k                  Move focus to the previous window"
+  , "mod-m                  Move focus to the master window"
   , ""
   , "-- modifying the window order"
-  , "mod-Return   Swap the focused window and the master window"
-  , "mod-Shift-j  Swap the focused window with the next window"
-  , "mod-Shift-k  Swap the focused window with the previous window"
+  , "mod-Return             Swap the focused window and the master window"
+  , "mod-Shift-j            Swap the focused window with the next window"
+  , "mod-Shift-k            Swap the focused window with the previous window"
   , ""
   , "-- resizing the master/slave ratio"
-  , "mod-h  Shrink the master area"
-  , "mod-l  Expand the master area"
+  , "mod-h                  Shrink the master area"
+  , "mod-l                  Expand the master area"
   , ""
   , "-- floating layer support"
-  , "mod-t  Push window back into tiling; unfloat and re-tile it"
+  , "mod-t                  Push window back into tiling"
   , ""
   , "-- increase or decrease number of windows in the master area"
-  , "mod-comma  (mod-,)   Increment the number of windows in the master area"
-  , "mod-period (mod-.)   Deincrement the number of windows in the master area"
+  , "mod-comma  (mod-,)     Increment the number of windows in the master area"
+  , "mod-period (mod-.)     Decrement the number of windows in the master area"
   , ""
   , "-- quit, or restart"
-  , "mod-Shift-q  Quit xmonad"
-  , "mod-q        Restart xmonad"
+  , "mod-Shift-q            Quit xmonad"
+  , "mod-q                  Restart xmonad"
   , ""
   , "-- Workspaces & screens"
   , "mod-[1..9]             Switch to workSpace N"
@@ -254,13 +254,12 @@ help = unlines
   , "mod-Shift-n            Move selected node"
   , ""
   , "-- Mouse bindings: default actions bound to mouse events"
-  , "mod-button1  Set the window to floating mode and move by dragging"
-  , "mod-button2  Raise the window to the top of the stack"
-  , "mod-button3  Set the window to floating mode and resize by dragging"
+  , "mod-button1            Float the window and move it by dragging"
+  , "mod-button2            Raise the window to the top of the stack"
+  , "mod-button3            Float the window and resize it by dragging"
   , ""
   , "-- Help"
-  , "mod-Shift-plus    Show this help message."
-  , ""
+  , "mod-Shift-plus         Show this help message."
   ]
 
 -- toggleLayouts makes it possible for us to toggle the first layout
@@ -271,7 +270,7 @@ myLayout = toggleLayouts (noBorders Full) $ borders $
   where
     borders = avoidStruts . smartBorders
     spacedTiled = spacing 5 $ ResizableTall 1 (2/100) (1/2) []
-    tabs = tabbed shrinkText $ def { fontName = "xft:Inconsolata:style=Regular" }
+    tabs = tabbed shrinkText $ def {fontName = "xft:Inconsolata:style=Regular"}
 
 -- | Log configuration
 myPP :: Handle -> PP
@@ -285,11 +284,11 @@ myPP h = def
   , ppOutput  = hPutStrLn h
   }
   where formatLayout x = case x of
-          "Spacing 5 ResizableTall"        -> "[|]"
-          "Tabbed Simplest"                -> "[T]"
-          "Full"                           -> "[ ]"
-          "BSP"                            -> "[+]"
-          _                                -> x
+          "Spacing 5 ResizableTall" -> "[|]"
+          "Tabbed Simplest"         -> "[T]"
+          "Full"                    -> "[ ]"
+          "BSP"                     -> "[+]"
+          _                         -> x
 
         hideScratchpad ws | ws == "NSP" = mempty
                           | otherwise = ws
@@ -297,7 +296,7 @@ myPP h = def
 -- | Wire it all up and start XMonad
 main :: IO ()
 main = do
-  xmproc <- getXMonadDir >>= \ dir -> spawnPipe $ "xmobar " ++ dir ++ "/xmobarrc"
+  xmproc <- getXMonadDir >>= \dir -> spawnPipe $ "xmobar " ++ dir ++ "/xmobarrc"
   xmonad $ ewmh def
     { modMask = myModMask
     , terminal = myTerminal
