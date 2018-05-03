@@ -22,8 +22,9 @@ import XMonad.Hooks.EwmhDesktops (ewmh)
 import XMonad.Layout.NoBorders (noBorders, smartBorders)
 import XMonad.Layout.ResizableTile (ResizableTall(..))
 import XMonad.Layout.Spacing (spacing)
-import XMonad.Layout.Tabbed (simpleTabbed)
+import XMonad.Layout.Tabbed (Theme(..), tabbed, shrinkText)
 import XMonad.Layout.ToggleLayouts (ToggleLayout(Toggle), toggleLayouts)
+import XMonad.Layout.BinarySpacePartition
 
 {- Utils
 ---------------------------------------------------}
@@ -32,7 +33,7 @@ import XMonad.Util.Run (spawnPipe, safeSpawn, runProcessWithInput)
 import XMonad.Util.EZConfig (additionalKeys)
 import XMonad.Util.NamedScratchpad (NamedScratchpad(..), defaultFloating, namedScratchpadAction)
 
-import Data.Map (Map, fromList, toList)
+import Data.Map (Map, fromList)
 import System.Environment (setEnv)
 import System.Exit (exitSuccess)
 import System.IO (Handle, hPutStrLn)
@@ -51,7 +52,8 @@ myScratchpads =
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
-myStartupHook = safeSpawn "sxhkd" []
+myStartupHook = safeSpawn "pkill" ["sxhkd"]
+                <+> safeSpawn "sxhkd" []
                 <+> setDefaultCursor xC_left_ptr
                 <+> setWMName "LG3D"
                 <+> safeSpawn "feh" ["--bg-scale", "~/.background-image"]
@@ -71,8 +73,10 @@ myWorkspaces :: [String]
 myWorkspaces = zipWith (curry makeClickable) ([1..9] ++ [0]) ws
   where -- Creates a clickable action that will jump to the workspace
         makeClickable :: (Int, String) -> String
-        makeClickable (idx, wsn) = "<action=xdotool key super+" ++ show idx
-                                   ++ " button=1>" ++ wsn ++ "</action>"
+        makeClickable (idx, wsn) = concat
+          [ "<action=xdotool key super+", show idx
+          , " button=1>", wsn,  "</action>"
+          ]
 
         ws :: [String]
         ws = zipWith makeLabel [1..10] icons
@@ -88,62 +92,79 @@ myKeys conf@XConfig {XMonad.modMask = modMask} = fromList $
   workspaceKeybindings ++ screenWorkspaceKeybindings ++
   -- launching and killing programs
   [ ((modMask .|. shiftMask, xK_Return), spawn myTerminal)
-  , ((modMask .|. shiftMask, xK_c     ), kill)
+  , ((modMask .|. shiftMask, xK_c), kill)
 
-  , ((modMask,               xK_space ), sendMessage NextLayout)
-  , ((modMask .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
-  , ((modMask,               xK_n     ), refresh)
+  , ((modMask, xK_space ), sendMessage NextLayout)
+  , ((modMask .|. shiftMask, xK_space), setLayout $ XMonad.layoutHook conf)
+  , ((modMask, xK_n), refresh)
 
   -- move focus up or down the window stack
-  , ((modMask,               xK_Tab   ), windows W.focusDown)
-  , ((modMask .|. shiftMask, xK_Tab   ), windows W.focusUp  )
-  , ((modMask,               xK_j     ), windows W.focusDown)
-  , ((modMask,               xK_k     ), windows W.focusUp  )
-  , ((modMask,               xK_m     ), windows W.focusMaster)
+  , ((modMask, xK_Tab), windows W.focusDown)
+  , ((modMask .|. shiftMask, xK_Tab), windows W.focusUp)
+  , ((modMask, xK_j), windows W.focusDown)
+  , ((modMask, xK_k), windows W.focusUp)
+  , ((modMask, xK_m), windows W.focusMaster)
 
   -- modifying the window order
-  , ((modMask,               xK_Return), windows W.swapMaster)
-  , ((modMask .|. shiftMask, xK_j     ), windows W.swapDown  )
-  , ((modMask .|. shiftMask, xK_k     ), windows W.swapUp    )
+  , ((modMask, xK_Return), windows W.swapMaster)
+  , ((modMask .|. shiftMask, xK_j), windows W.swapDown)
+  , ((modMask .|. shiftMask, xK_k), windows W.swapUp)
+
+  , ((modMask .|. altMask, xK_l), sendMessage $ ExpandTowards R)
+  , ((modMask .|. altMask, xK_h), sendMessage $ ExpandTowards L)
+  , ((modMask .|. altMask, xK_j), sendMessage $ ExpandTowards D)
+  , ((modMask .|. altMask, xK_k), sendMessage $ ExpandTowards U)
+  , ((modMask .|. altMask .|. ctrlMask, xK_l), sendMessage $ ShrinkFrom R)
+  , ((modMask .|. altMask .|. ctrlMask, xK_h), sendMessage $ ShrinkFrom L)
+  , ((modMask .|. altMask .|. ctrlMask, xK_j), sendMessage $ ShrinkFrom D)
+  , ((modMask .|. altMask .|. ctrlMask, xK_k), sendMessage $ ShrinkFrom U)
+  , ((modMask, xK_r), sendMessage Rotate)
+  , ((modMask, xK_s), sendMessage Swap)
+  , ((modMask, xK_n), sendMessage FocusParent)
+  , ((modMask .|. ctrlMask, xK_n), sendMessage SelectNode)
+  , ((modMask .|. shiftMask, xK_n), sendMessage MoveNode)
 
   -- resizing the master/slave ratio
-  , ((modMask,               xK_h     ), sendMessage Shrink)
-  , ((modMask,               xK_l     ), sendMessage Expand)
+  , ((modMask, xK_h), sendMessage Shrink)
+  , ((modMask, xK_l), sendMessage Expand)
 
   -- floating layer support
-  , ((modMask,               xK_t     ), withFocused $ windows . W.sink)
+  , ((modMask, xK_t), withFocused $ windows . W.sink)
 
   -- increase or decrease number of windows in the master area
-  , ((modMask              , xK_comma ), sendMessage (IncMasterN 1))
-  , ((modMask              , xK_period), sendMessage (IncMasterN (-1)))
+  , ((modMask, xK_comma ), sendMessage (IncMasterN 1))
+  , ((modMask, xK_period), sendMessage (IncMasterN (-1)))
 
   -- quit
-  , ((modMask .|. shiftMask, xK_q     ), io exitSuccess)
+  , ((modMask .|. shiftMask, xK_q), io exitSuccess)
 
   -- restart
-  , ((modMask              , xK_q     ), spawn "if type xmonad; \
-                                                 \then xmonad --recompile && xmonad --restart; \
-                                                 \else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
+  , ((modMask, xK_q),
+      spawn "if type xmonad; then xmonad --recompile && xmonad --restart;\
+            \else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
 
   -- Run xmessage with a summary of the default keybindings (useful
   -- for beginners)
-  , ((modMask .|. shiftMask, xK_plus), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
+  , ((modMask .|. shiftMask, xK_plus),
+      spawn $ concat [ "echo \"" , help , "\" | xmessage -file -"])
 
   -- Toggle fullscreen
-  , ((modMask              , xK_f), sendMessage (Toggle "Full"))
+  , ((modMask, xK_f), sendMessage (Toggle "Full"))
 
     -- Hide or show a terminal
-  , ((modMask              , xK_Down), namedScratchpadAction myScratchpads "termite")
+  , ((modMask , xK_Down), namedScratchpadAction myScratchpads "terminal")
 
     -- Hide or show a cli mpd client
-  , ((modMask              , xK_Up), namedScratchpadAction myScratchpads "ncmpcpp")
+  , ((modMask , xK_Up), namedScratchpadAction myScratchpads "ncmpcpp")
 
     -- Copy current window to every workspace
-  , ((modMask              , xK_v ), windows copyToAll)
+  , ((modMask, xK_v ), windows copyToAll)
 
     -- Remove all other copies of this window
   , ((modMask .|. shiftMask, xK_v ), killAllOtherCopies)
   ]
+  where ctrlMask = controlMask
+        altMask = mod1Mask
 
 -- | Creates keybindings for workspaces.
 workspaceKeybindings :: [((KeyMask, KeySym), X ())]
@@ -218,12 +239,19 @@ help = unlines
   , "mod-q        Restart xmonad"
   , ""
   , "-- Workspaces & screens"
-  , "mod-[1..9]         Switch to workSpace N"
-  , "mod-Shift-[1..9]   Move client to workspace N"
-  , "mod-{a,s,d}        Switch to physical/Xinerama screens 1, 2, or 3"
-  , "mod-Shift-{a,s,d}  Move client to screen 1, 2, or 3"
-  , "mod-v              Show current window on every workspace"
-  , "mod-Shift-v        Remove all other copies of current window"
+  , "mod-[1..9]             Switch to workSpace N"
+  , "mod-Shift-[1..9]       Move client to workspace N"
+  , "mod-{a,s,d}            Switch to physical/Xinerama screens 1, 2, or 3"
+  , "mod-Shift-{a,s,d}      Move client to screen 1, 2, or 3"
+  , "mod-v                  Show current window on every workspace"
+  , "mod-Shift-v            Remove all other copies of current window"
+  , "mod-Alt-[l,h,j,k]      Expand window towards right, left, down and up"
+  , "mod-Alt-Ctrl-[l,h,j,k] Shrink window from right, left, down and up"
+  , "mod-r                  Rotate the partition tree"
+  , "mod-s                  Swap two nodes in the partition tree"
+  , "mod-n                  Focus on the parent node in the partition tree"
+  , "mod-Ctrl-n             Select focused node"
+  , "mod-Shift-n            Move selected node"
   , ""
   , "-- Mouse bindings: default actions bound to mouse events"
   , "mod-button1  Set the window to floating mode and move by dragging"
@@ -239,10 +267,11 @@ help = unlines
 -- argument, while remembering the previous layout. Here we can toggle
 -- full-screen.
 myLayout = toggleLayouts (noBorders Full) $ borders $
-           spacedTiled ||| Mirror spacedTiled ||| simpleTabbed
+           spacedTiled ||| emptyBSP ||| tabs
   where
     borders = avoidStruts . smartBorders
     spacedTiled = spacing 5 $ ResizableTall 1 (2/100) (1/2) []
+    tabs = tabbed shrinkText $ def { fontName = "xft:Inconsolata:style=Regular" }
 
 -- | Log configuration
 myPP :: Handle -> PP
@@ -257,9 +286,9 @@ myPP h = def
   }
   where formatLayout x = case x of
           "Spacing 5 ResizableTall"        -> "[|]"
-          "Mirror Spacing 5 ResizableTall" -> "[-]"
           "Tabbed Simplest"                -> "[T]"
           "Full"                           -> "[ ]"
+          "BSP"                            -> "[+]"
           _                                -> x
 
         hideScratchpad ws | ws == "NSP" = mempty
