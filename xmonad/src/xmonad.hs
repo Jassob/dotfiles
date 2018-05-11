@@ -29,9 +29,10 @@ import XMonad.Layout.BinarySpacePartition
 {- Utils
 ---------------------------------------------------}
 import XMonad.Util.Cursor (setDefaultCursor)
-import XMonad.Util.Run (spawnPipe, safeSpawn, runProcessWithInput)
+import XMonad.Util.Run (spawnPipe)
 import XMonad.Util.EZConfig (additionalKeys)
-import XMonad.Util.NamedScratchpad (NamedScratchpad(..), defaultFloating, namedScratchpadAction)
+import XMonad.Util.NamedScratchpad (NamedScratchpad(..)
+                                   , defaultFloating, namedScratchpadAction)
 
 import Data.Map (Map, fromList)
 import System.Environment (setEnv)
@@ -45,18 +46,15 @@ myTerminal :: String
 myTerminal = "termite"
 
 myScratchpads :: [NamedScratchpad]
-myScratchpads =
-  [ NS "ncmpcpp" (myTerminal ++ " -e ncmpcpp -t mopidy") (title =? "mopidy") defaultFloating
-  , NS "terminal" (myTerminal ++ " -t scratchpad") (title =? "scratchpad") defaultFloating
-  ]
+myScratchpads = [ mkNS "mopidy" " -e ncmpcpp" defaultFloating
+                , mkNS "terminal" "" defaultFloating]
+  where mkNS :: String -> String -> ManageHook -> NamedScratchpad
+        mkNS n cmd = NS n (myTerminal ++ cmd ++ " -t " ++ n) (title =? n)
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
-myStartupHook = safeSpawn "pkill" ["sxhkd"]
-                <+> safeSpawn "sxhkd" []
-                <+> setDefaultCursor xC_left_ptr
+myStartupHook = setDefaultCursor xC_left_ptr
                 <+> setWMName "LG3D"
-                <+> safeSpawn "feh" ["--bg-scale", "~/.background-image"]
                 <+> docksStartupHook
 
 myManageHook :: ManageHook
@@ -155,7 +153,7 @@ myKeys conf@XConfig {XMonad.modMask = modMask} = fromList $
   , ((modMask , xK_Down), namedScratchpadAction myScratchpads "terminal")
 
     -- Hide or show a cli mpd client
-  , ((modMask , xK_Up), namedScratchpadAction myScratchpads "ncmpcpp")
+  , ((modMask , xK_Up), namedScratchpadAction myScratchpads "mopidy")
 
     -- Copy current window to every workspace
   , ((modMask, xK_v ), windows copyToAll)
