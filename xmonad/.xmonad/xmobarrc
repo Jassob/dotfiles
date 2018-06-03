@@ -6,7 +6,7 @@ Config
   , alpha           = 0
   , bgColor         = "black"
   , fgColor         = "#f8f8f8"
-  , position        = Top
+  , position        = TopW L 95
 
   -- general behavior
   , allDesktops      = True    -- show on all desktops
