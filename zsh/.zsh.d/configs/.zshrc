@@ -45,12 +45,10 @@ setopt ALL_EXPORT
 ######
 ## Sourcing other files
 #####
-sourceIfExists "$ZDOTDIR/lib/aliases.zsh"
-sourceIfExists "$ZDOTDIR/lib/paths.zsh"
-sourceIfExists "$ZDOTDIR/lib/profile.zsh"
+sourceIfExists "$ZDOTDIR/aliases.zsh"
 
 if [[ -f /etc/NIXOS ]]; then
-    source "$ZDOTDIR/lib/nix.zsh"
+    sourceIfExists "$ZDOTDIR/nix.zsh"
 fi
 
 ######
