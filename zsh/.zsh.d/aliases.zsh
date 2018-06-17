@@ -5,7 +5,7 @@ alias la='ls -A'
 alias l='ls -CF'
 
 alias se='setxkbmap -model emacs2 -option ctrl:nocaps,compose:rwin se'
-alias dv='setxkbmap -model emacs2 -option ctrl:nocaps,compose:rwin -variant dvorak_a5 se'
+alias dv='xkbcomp -I$HOME/.xkb ~/.xkb/keymap/mydvorak $DISPLAY 2> /dev/null'
 
 alias svim='sudo vim'
 
