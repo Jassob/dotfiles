@@ -16,61 +16,61 @@
 {XF86MonBrightnessDown, ctrl + F5}
      light -U 5
 
-{ctrl + z ; ctrl + d, super + r}
+{super + x; o, super + r}
      rofi -show drun
 
 #######
 # Launching stuff
 #######
-{ctrl + z ; l ; p, super + p}
+super + p
      rofi-pass
 
-ctrl + z ; l ; ctrl + a
+super + x ; e ; c
       emacsclient -c -e "(org-capture)"
 
-{ctrl + z ; l ; e, super + e}
+super + e
       $HOME/.local/bin/startemacs
 
 #######
 # System stuff
 #######
-ctrl + z ; x ; l
+super + x ; l
       dm-tool lock
 
-ctrl + z ; x ; p
+super + x ; p
       scrot -u -e 'mv $f ~/pictures/screenshots/'
 
-ctrl + z ; x ; P
+super + x ; P
       exec import -window root png:$HOME/pictures/screenshots/screenshot_$(date +%F_%H-%M-%S).png
 
 #######
 # Web
 #######
-{super + g, ctrl + z ; s ; d}
+{super + g, super + x ; s ; d}
       prompt-search -s duckduckgo
 
-ctrl + z ; s ; g
+super + x ; s ; g
       prompt-search -s google
 
-ctrl + z ; s ; h
+super + x ; s ; h
       prompt-search -s hoogle
 
-ctrl + z ; s ; p
+super + x ; s ; p
       prompt-search -s hackage
 
-{super + b, ctrl + z ; w ; b}
+{super + b, super + x ; w ; b}
       prompt-open-url
 
-ctrl + z ; w ; c
+super + x ; w ; c
       xdg-open https://google.com/calendar
 
-ctrl + z ; w ; m
+super + x ; w ; m
       xdg-open https://messenger.com
 
-ctrl + z ; w ; i
+super + x ; w ; i
       xdg-open https://inbox.google.com
 
-ctrl + z ; w ; t
+super + x ; w ; t
      xdg-open https://www.telegram.org/dl/webogram
 
 # make sxhkd reload its configuration files:
