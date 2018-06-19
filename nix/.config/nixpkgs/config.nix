@@ -56,7 +56,19 @@
       in super.buildEnv {
        name = name;
        paths = [(ghcWith (import ~/src/hoogle-local/package-list.nix))];
+    };
+
+    # Custom python packages
+    myPythonPackages = rec {
+      click_6_6 = with pkgs.pythonPackages; callPackage ./pkgs/click-6.6.nix { inherit buildPythonPackage fetchPypi pytest; };
+      arrow_0_10_0 = with pkgs.pythonPackages; callPackage ./pkgs/arrow-0.10.0.nix
+        { inherit buildPythonPackage fetchPypi nose chai simplejson dateutil backports_functools_lru_cache; };
+      gitlint = with pythonPackages; callPackage ./pkgs/gitlint.nix {
+        inherit buildPythonPackage fetchPypi sh pkgconfig;
+        click = click_6_6;
+        arrow = arrow_0_10_0;
       };
+    };
 
     # Haskell environment with Hoogle
     haskellEnvHoogle = haskellEnvFun {
