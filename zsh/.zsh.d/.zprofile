@@ -1,3 +1,5 @@
+setopt ALL_EXPORT
+
 # Email settings
 export EMAIL="jacob.t.jonsson@gmail.com"
 export NAME="Jacob Jonsson"
