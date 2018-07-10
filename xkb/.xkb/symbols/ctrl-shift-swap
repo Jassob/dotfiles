@@ -1,5 +1,8 @@
+// Swap left Shift and left Ctrl keys
 partial modifier_keys
-xkb_symbols "swap_l_shift_ctrl" {
-    replace key <LCTL>  { [ Shift_L ] };
+xkb_symbols "swap_lshift_lctl" {
+    replace key <LCTL> { [ Shift_L ] };
     replace key <LFSH> { [ Control_L ] };
+    modifier_map Control { <LFSH> };
+    modifier_map Shift   { <LTCL> };
 };
