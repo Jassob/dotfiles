@@ -37,3 +37,10 @@
 
    When I want to retain my windows again they are just copied back to
    the workspace (and removed from the temporary workspace).
+* TODO Checkout SubLayouts
+  Ethan Schoonover makes use of Sublayouts, a way of organising a
+  layout that consists of multiple layouts in itself.
+
+  - [[https://www.youtube.com/watch?v%3D70IxjLEmomg][1st video]]
+  - [[https://www.youtube.com/watch?v%3D9FsIZX_F8K8][2nd video]]
+  - [[https://github.com/altercation/dotfiles-tilingwm/blob/master/.xmonad/xmonad.hs][Ethan Schoonover's xmonad.hs]]
