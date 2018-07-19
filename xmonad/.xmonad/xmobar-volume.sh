@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env sh -eo
 
 # Extract amixer Master information
 VOL=$(pulsemixer --get-volume | awk '{ print $1 }')
