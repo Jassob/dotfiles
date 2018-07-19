@@ -1,6 +1,10 @@
 #+TITLE:XMonad TODO
 #+AUTHOR:Jassob
 
+* TODO [#A] Make function that depending on layout resizes current window
+  ATM there are two set of keybindings {S+l, S+h} and {M+S+l, M+S+h}
+  which depending on the layout either does nothing or resizes the
+  window proportions.
 * TODO Handle persistent windows better
   I have found a way to make windows persistent over workspaces by
   copying them to every workspace.
@@ -33,7 +37,3 @@
 
    When I want to retain my windows again they are just copied back to
    the workspace (and removed from the temporary workspace).
-* TODO Make function that depending on layout resizes current window
-  ATM there are two set of keybindings {S+l, S+h} and {M+S+l, M+S+h}
-  which depending on the layout either does nothing or resizes the
-  window proportions.
