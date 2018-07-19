@@ -2,13 +2,13 @@
 # Multimedia keys
 #######
 {XF86AudioLowerVolume, ctrl + F11}
-     pamixer --decrease 5
+     pulsemixer --change-volume -5
 
 {XF86AudioRaiseVolume, ctrl + F12}
-     pamixer --increase 5
+     pulsemixer --change-volume +5
 
 {XF86AudioMute, ctrl + F10}
-     pamixer --toggle-mute
+     pulsemixer --toggle-mute
 
 {XF86MonBrightnessUp, ctrl + F6}
      light -A 5
@@ -16,7 +16,7 @@
 {XF86MonBrightnessDown, ctrl + F5}
      light -U 5
 
-{super + x; o, super + r}
+super + x; o
      rofi -show drun
 
 #######
