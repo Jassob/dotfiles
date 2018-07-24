@@ -30,12 +30,10 @@ import XMonad.Layout.BinarySpacePartition
 ---------------------------------------------------}
 import XMonad.Util.Cursor (setDefaultCursor)
 import XMonad.Util.Run (spawnPipe, safeSpawn)
-import XMonad.Util.EZConfig (additionalKeys)
 import XMonad.Util.NamedScratchpad (NamedScratchpad(..)
                                    , defaultFloating, namedScratchpadAction)
 
 import Data.Map (Map, fromList)
-import System.Environment (setEnv)
 import System.Exit (exitSuccess)
 import System.IO (Handle, hPutStrLn)
 
