@@ -29,7 +29,7 @@ import XMonad.Layout.BinarySpacePartition
 {- Utils
 ---------------------------------------------------}
 import XMonad.Util.Cursor (setDefaultCursor)
-import XMonad.Util.Run (spawnPipe)
+import XMonad.Util.Run (spawnPipe, safeSpawn)
 import XMonad.Util.EZConfig (additionalKeys)
 import XMonad.Util.NamedScratchpad (NamedScratchpad(..)
                                    , defaultFloating, namedScratchpadAction)
@@ -54,6 +54,7 @@ myScratchpads = [ mkNS "mopidy" " -e ncmpcpp" defaultFloating
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
 myStartupHook = setDefaultCursor xC_left_ptr
+                <+> (getXMonadDir >>= \dir -> safeSpawn "run" [dir ++ "/xmobar-trayer.sh"])
                 <+> setWMName "LG3D"
                 <+> docksStartupHook
 
