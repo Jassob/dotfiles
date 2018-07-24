@@ -54,37 +54,37 @@ myScratchpads = [ mkNS "mopidy" " -e ncmpcpp" defaultFloating
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
 myStartupHook = setDefaultCursor xC_left_ptr
-                <+> (getXMonadDir >>= \dir -> safeSpawn "run" [dir ++ "/xmobar-trayer.sh"])
-                <+> setWMName "LG3D"
-                <+> docksStartupHook
+  <+> (getXMonadDir >>= \dir -> safeSpawn "run" [dir ++ "/xmobar-trayer.sh"])
+  <+> setWMName "LG3D"
+  <+> docksStartupHook
 
 myManageHook :: ManageHook
 myManageHook = composeOne [ isFullscreen -?> doFullFloat
                           , isDialog     -?> doCenterFloat ]
-               <+> composeAll [ className =? "Gimp"        --> doFloat
-                              , className =? "Gnome-panel" --> doIgnore
-                              , className =? "Gtkdialog"   --> doFloat
-                              , className =? "Pinentry"    --> doFloat
-                              ]
-               <+> manageDocks
+  <+> composeAll [ className =? "Gimp"        --> doFloat
+                 , className =? "Gnome-panel" --> doIgnore
+                 , className =? "Gtkdialog"   --> doFloat
+                 , className =? "Pinentry"    --> doFloat
+                 ]
+  <+> manageDocks
 
 myWorkspaces :: [String]
 myWorkspaces = zipWith (curry makeClickable) ([1..9] ++ [0]) ws
   where -- Creates a clickable action that will jump to the workspace
-        makeClickable :: (Int, String) -> String
-        makeClickable (idx, wsn) = concat
-          [ "<action=xdotool key super+", show idx
-          , " button=1>", wsn,  "</action>"
-          ]
+    makeClickable :: (Int, String) -> String
+    makeClickable (idx, wsn) = concat
+      [ "<action=xdotool key super+", show idx
+      , " button=1>", wsn,  "</action>"
+      ]
 
-        ws :: [String]
-        ws = zipWith makeLabel [1..10] icons
+    ws :: [String]
+    ws = zipWith makeLabel [1..10] icons
 
-        makeLabel :: Int -> Char -> String
-        makeLabel index icon = show index ++ ": <fn=1>" ++ icon : "</fn> "
+    makeLabel :: Int -> Char -> String
+    makeLabel index icon = show index ++ ": <fn=1>" ++ icon : "</fn> "
 
-        icons :: String
-        icons = "\xf269\xf120\xf121\xf02d\xf128\xf128\xf128\xf001\xf292\xf0e6"
+    icons :: String
+    icons = "\xf269\xf120\xf121\xf02d\xf128\xf128\xf128\xf001\xf292\xf0e6"
 
 myKeys :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
 myKeys conf@XConfig {XMonad.modMask = modMask} = fromList $
@@ -168,31 +168,33 @@ myKeys conf@XConfig {XMonad.modMask = modMask} = fromList $
 -- | Creates keybindings for workspaces.
 workspaceKeybindings :: [((KeyMask, KeySym), X ())]
 workspaceKeybindings = concatMap makeKeybinding pairs
-  where pairs = zip myWorkspaces $ [xK_1 .. xK_9] ++ [xK_0]
+  where
+    pairs = zip myWorkspaces $ [xK_1 .. xK_9] ++ [xK_0]
 
-        -- | Creates two keybindings for every workspace, one for
-        -- switching to that workspace and one for moving the window
-        -- to that workspace.
-        makeKeybinding :: (String, KeySym) -> [((KeyMask, KeySym), X ())]
-        makeKeybinding (ws, key) =
-          [ ((myModMask              , key), windows $ W.greedyView ws)
-          , ((myModMask .|. shiftMask, key), windows $ W.shift ws)]
+    -- | Creates two keybindings for every workspace, one for
+    -- switching to that workspace and one for moving the window
+    -- to that workspace.
+    makeKeybinding :: (String, KeySym) -> [((KeyMask, KeySym), X ())]
+    makeKeybinding (ws, key) =
+      [ ((myModMask              , key), windows $ W.greedyView ws)
+      , ((myModMask .|. shiftMask, key), windows $ W.shift ws)]
 
 
 -- mod-{a,s,d} %! Switch to physical/Xinerama screens 1, 2, or 3
 -- mod-shift-{a,s,d} %! Move client to screen 1, 2, or 3
 screenWorkspaceKeybindings :: [((KeyMask, KeySym), X ())]
 screenWorkspaceKeybindings = concatMap makeKeybinding pairs
-  where pairs = zip [0..] [xK_a, xK_s, xK_d]
-        action sc f = screenWorkspace sc >>= flip whenJust (windows . f)
+  where
+    pairs = zip [0..] [xK_a, xK_s, xK_d]
+    action sc f = screenWorkspace sc >>= flip whenJust (windows . f)
 
-        -- | Creates two keybindings for every screenworkspace, one
-        -- for switching to that workspace and one for moving the
-        -- window to that workspace.
-        makeKeybinding :: (ScreenId, KeySym) -> [((KeyMask, KeySym), X ())]
-        makeKeybinding (sc, key) =
-          [ ((myModMask              , key), action sc W.view)
-          , ((myModMask .|. shiftMask, key), action sc W.shift)]
+    -- | Creates two keybindings for every screenworkspace, one
+    -- for switching to that workspace and one for moving the
+    -- window to that workspace.
+    makeKeybinding :: (ScreenId, KeySym) -> [((KeyMask, KeySym), X ())]
+    makeKeybinding (sc, key) =
+      [ ((myModMask              , key), action sc W.view)
+      , ((myModMask .|. shiftMask, key), action sc W.shift)]
 
 
 -- | Finally, a copy of the default bindings in simple textual tabular format.
@@ -282,15 +284,16 @@ myPP h = def
   , ppHidden  = hideScratchpad
   , ppOutput  = hPutStrLn h
   }
-  where formatLayout x = case x of
-          "Spacing 5 ResizableTall" -> "[|]"
-          "Tabbed Simplest"         -> "[T]"
-          "Full"                    -> "[ ]"
-          "BSP"                     -> "[+]"
-          _                         -> x
+  where
+    formatLayout x = case x of
+      "Spacing 5 ResizableTall" -> "[|]"
+      "Tabbed Simplest"         -> "[T]"
+      "Full"                    -> "[ ]"
+      "BSP"                     -> "[+]"
+      _                         -> x
 
-        hideScratchpad ws | ws == "NSP" = mempty
-                          | otherwise = ws
+    hideScratchpad ws | ws == "NSP" = mempty
+                      | otherwise = ws
 
 -- | Wire it all up and start XMonad
 main :: IO ()
