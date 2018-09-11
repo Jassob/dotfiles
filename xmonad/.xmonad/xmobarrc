@@ -1,7 +1,7 @@
 -- -*- mode: haskell; -*-
 
 Config
-  { font = "xft:Inconsolata:size=11:antialias=true"
+  { font = "xft:Inconsolata:antialias=true"
   , additionalFonts = ["xft:FontAwesome:size=10"]
   , alpha           = 0
   , bgColor         = "black"
