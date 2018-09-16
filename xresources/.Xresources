@@ -3,3 +3,4 @@
 #include ".Xresources.d/dpi.conf"
 #include ".Xresources.d/theme-tomorrow.conf"
 #include ".Xresources.d/cursor.conf"
+#include ".Xresources.d/emacs.conf"
