@@ -59,10 +59,5 @@ if [ -d /opt/local/bin ] ; then
     fi
 fi
 
-# Autostart if session is XMonad
-if [ -n "$DESKTOP_SESSION" ] && [ "$DESKTOP_SESSION" = "none+xmonad" ]; then
-    bash ~/dotfiles/jassob/autostart.sh
-fi
-
 # Add local/bin/ to PATH
 export PATH="~/.local/bin:$PATH"
