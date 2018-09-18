@@ -278,11 +278,11 @@ myPP h = def
   }
   where
     formatLayout x = case x of
-      "Spacing 5 ResizableTall" -> "[|]"
-      "Tabbed Simplest"         -> "[T]"
-      "Full"                    -> "[ ]"
-      "BSP"                     -> "[+]"
-      _                         -> x
+      "Spacing ResizableTall" -> "[|]"
+      "Tabbed Simplest"       -> "[T]"
+      "Full"                  -> "[ ]"
+      "BSP"                   -> "[+]"
+      _                       -> x
 
     hideScratchpad ws | ws == "NSP" = mempty
                       | otherwise = ws
