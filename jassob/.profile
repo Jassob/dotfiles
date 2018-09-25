@@ -10,11 +10,6 @@ if [ ! $BROWSER ]; then
     export BROWSER="google-chrome"
 fi
 
-# Shell history
-export HISTSIZE=4096
-export HISTFILE=$HOME/.shell_history
-export SAVEHIST=3072
-
 # Locale
 export LC_CTYPE="sv_SE.UTF-8"
 export LC_NUMERIC="sv_SE.UTF-8"
