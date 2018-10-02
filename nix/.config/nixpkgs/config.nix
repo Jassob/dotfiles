@@ -97,7 +97,7 @@
 
     # XMonad
     xmonad = xmonad-with-packages.override {
-      packages = [ hPkgs.xmonad-contrib hPkgs.xmonad-extras hPkgs.xmobar ];
+      packages = self: with self; [ xmonad-contrib xmonad-extras xmobar ];
     };
 
     # Pidgin
