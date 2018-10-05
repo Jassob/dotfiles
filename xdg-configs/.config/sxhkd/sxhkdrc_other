@@ -16,6 +16,12 @@
 {XF86MonBrightnessDown, ctrl + F5}
      light -U 5
 
+XF86AudioPause
+     playerctl pause
+
+XF86AudioPlay
+     playerctl play
+
 super + x; o
      rofi -show drun
 
