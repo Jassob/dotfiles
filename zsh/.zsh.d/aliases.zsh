@@ -13,6 +13,10 @@ alias py='python'
 
 alias back='cd -'
 
+# Bluetooth
+alias plattan-connect='bluetoothctl connect 5C:EB:68:45:78:6D'
+alias plattan-disconnect='bluetoothctl disconnect 5C:EB:68:45:78:6D'
+
 # Git aliases
 alias gst='git status'
 alias gl='git log'
