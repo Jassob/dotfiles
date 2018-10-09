@@ -40,7 +40,7 @@ Config
 
     , Run Mpris2 "spotify"
       ["-t", "<action=`playerctl play-pause`><artist> - <title></action>"
-      , "-M", "20"
+      , "-M", "15"
       , "-x", ""
       ] 10
 
