@@ -35,7 +35,7 @@ Config
       , "--idle-icon-pattern", "<fn=1>\xf0e7</fn>"
       ] 50
 
-    , Run Mpris2 "mopidy"
+    , Run Mpris2 "spotify"
       ["-t", "<action=`playerctl play-pause`><artist> - <title></action>"
       , "-M", "20"
       , "-x", ""
