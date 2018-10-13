@@ -1,5 +1,7 @@
 # ~/.zshrc
 
+source ~/.profile
+
 # Source FILE if it exists
 function sourceIfExists {
     FILE=${1:-undefined}
@@ -23,6 +25,10 @@ setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
 setopt SHARE_HISTORY
+
+export HISTSIZE=4096
+export HISTFILE=$HOME/.shell_history
+export SAVEHIST=3072
 
 # Disable C-s to stop the terminal accepting input
 stty -ixon
