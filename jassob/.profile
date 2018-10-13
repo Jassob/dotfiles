@@ -7,7 +7,7 @@ export EMAILSERVER="smtp.gmail.com"
 export CUPS_GSSSERVICENAME=HTTP
 
 if [ ! $BROWSER ]; then
-    export BROWSER="google-chrome"
+    export BROWSER="firefox"
 fi
 
 # Locale
