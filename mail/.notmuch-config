@@ -1,0 +1,17 @@
+[database]
+path=/home/jassob/.mail
+
+[user]
+name=Jacob Jonsson
+primary_email=jacob.t.jonsson@gmail.com
+other_email=jacob.jonsson@einride.tech;jassob@live.se;
+
+[new]
+tags=unread;inbox;
+ignore=
+
+[search]
+exclude_tags=deleted;spam;ignored;
+
+[maildir]
+synchronize_flags=true
