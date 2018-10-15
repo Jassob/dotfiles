@@ -76,3 +76,9 @@ function chpwd() {
 if [ -f ~/.last_dir ]
 	then cd "$(cat ~/.cache/last_dir)"
 fi
+
+# Initialize fasd
+eval "$(fasd --init auto)"
+
+# Initialize fzf
+[ -f ~/.zsh.d/fzf.zsh ] && source ~/.zsh.d/fzf.zsh
