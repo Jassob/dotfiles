@@ -24,7 +24,7 @@ fi
 ################################################################################
 
 # Build with nix
-nix-build "$SRC_DIR/shell.nix"
+cabal build
 
 # Move the binary out into the root directory
-cp "result/bin/$EXE_NAME" "$output_file"
+cp "dist/build/$EXE_NAME/$EXE_NAME" "$output_file"
