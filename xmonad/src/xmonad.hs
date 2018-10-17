@@ -44,8 +44,8 @@ myTerminal :: String
 myTerminal = "termite"
 
 myScratchpads :: [NamedScratchpad]
-myScratchpads = [ mkNS "mopidy" " -e ncmpcpp" defaultFloating
-                , mkNS "terminal" "" defaultFloating]
+myScratchpads = [ NS "musicNS" "spotify" (className =? "Spotify") defaultFloating
+                , mkNS "terminalNS" "" defaultFloating]
   where mkNS :: String -> String -> ManageHook -> NamedScratchpad
         mkNS n cmd = NS n (myTerminal ++ cmd ++ " -t " ++ n) (title =? n)
 
@@ -143,10 +143,10 @@ myKeys conf@XConfig {XMonad.modMask = modMask} = fromList $
   , ((modMask, xK_f), sendMessage (Toggle "Full"))
 
     -- Hide or show a terminal
-  , ((modMask , xK_Down), namedScratchpadAction myScratchpads "terminal")
+  , ((modMask , xK_Down), namedScratchpadAction myScratchpads "terminalNS")
 
     -- Hide or show a cli mpd client
-  , ((modMask , xK_Up), namedScratchpadAction myScratchpads "mopidy")
+  , ((modMask , xK_Up), namedScratchpadAction myScratchpads "musicNS")
 
     -- Copy current window to every workspace
   , ((modMask, xK_v ), windows copyToAll)
@@ -199,8 +199,8 @@ help = unlines
   , "mod-Shift-c             Close/kill the focused window"
   , "mod-Space               Rotate through the available layout algorithms"
   , "mod-Shift-Space         Reset the layouts on the current workSpace"
-  , "mod-down                Open termite scratchpad"
-  , "mod-up                  Open ncmpcpp scratchpad"
+  , "mod-down                Open terminal scratchpad"
+  , "mod-up                  Open music scratchpad"
   , "mod-n                   Resize/refresh viewed windows to the correct size"
   , "mod-f                   Toggle fullscreen"
   , ""
