@@ -40,6 +40,6 @@ list-python2-packages () {
 
 # Link ~/.nix-defexpr -> ~/nixpkgs
 rm -r ~/.nix-defexpr
-ln -s ~/nixpkgs ~/.nix-defexpr
+ln -s ~/nix/ ~/.nix-defexpr
 
-export NIX_PATH=$HOME:nixos-config=/etc/nixos/configuration.nix
+export NIX_PATH=$HOME/nix:nixos-config=/etc/nixos/configuration.nix
