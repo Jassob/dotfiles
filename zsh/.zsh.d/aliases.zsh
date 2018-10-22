@@ -37,3 +37,7 @@ alias start='systemctl start'
 
 alias please='sudo $(fc -ln -1)'
 alias balena-login="pass notes/balena-api-key | xargs sudo balena login -t"
+
+# Configurations
+alias dock='~/.configurations/work.sh'
+alias undock='~/.configurations/laptop.sh'
