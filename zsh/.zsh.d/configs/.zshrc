@@ -41,6 +41,8 @@ zstyle ':completion:*' special-dirs true
 
 # Use emacs keymap
 bindkey -e
+bindkey '^[[1;5C' emacs-forward-word
+bindkey '^[[1;5D' emacs-backward-word
 
 ZDOTDIR=~/.zsh.d
 
