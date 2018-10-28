@@ -2,7 +2,10 @@
 
 Config
   { font = "xft:Inconsolata:antialias=true"
-  , additionalFonts = ["xft:FontAwesome:size=10"]
+  , additionalFonts = [ "xft:FontAwesome:size=10:style=Regular"
+                      , "xft:Font Awesome 5 Free Regular:size=10:style=Regular"
+                      , "xft:Font Awesome 5 Free Solid:size=10:style=Solid"
+                      ]
   , alpha           = 0
   , bgColor         = "black"
   , fgColor         = "#f8f8f8"
