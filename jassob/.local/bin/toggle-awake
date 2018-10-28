@@ -1,0 +1,28 @@
+#! /usr/bin/env bash
+
+ENV_FILE="${HOME}/.cache/awake"
+
+echoerr() {
+	echo "$@" 1>&2;
+}
+
+toggle_awake() {
+	STAY_AWAKE=$(cat "${ENV_FILE}")
+	if [[ "${STAY_AWAKE}" == "true" ]]; then
+	    echo "false" > "${ENV_FILE}"
+	    xset +dpms
+	    xset s on
+	    setterm -powerdown 10
+	else
+	    echo "true" > "${ENV_FILE}"
+	    setterm -blank 0 -powerdown
+	    xset -dpms
+	    xset s off
+	fi
+}
+
+if [[ ! -f "${ENV_FILE}" ]]; then
+	echo "false" > "${ENV_FILE}"
+fi
+
+toggle_awake

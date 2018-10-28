@@ -50,6 +50,8 @@ Config
 
     , Run Com "sh" ["/home/jassob/.xmonad/xmobar-disturb.sh"] "disturb" 10
 
+    , Run Com "sh" ["/home/jassob/.xmonad/xmobar-awake.sh"] "awake" 10
+
     , Run Memory [ "-t", "<used> MB" ] 10
     ]
 
@@ -65,6 +67,9 @@ Config
        \<action=`/home/jassob/.local/bin/toggle-dunst` button=1>\
          \<fn=1>%disturb%</fn>\
        \</action> \
+       \<action=`/home/jassob/.local/bin/toggle-awake` button=1>\
+         \| %awake% \
+       \</action>\
        \| %memory% | %mpris2% | \
        \<action=`pavucontrol` button=1>\
          \<fn=1></fn> %vol%\
