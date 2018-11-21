@@ -5,3 +5,4 @@ Description=Mailbox synchronization service
 Environment="PATH=$PATH:/run/current-system/sw/bin/nix-shell"
 Type=oneshot
 ExecStart=/home/jassob/dotfiles/mail/notmuch-tag-script.sh
+ExecStartPost=/home/jassob/.nix-profile/bin/mu index --maildir=~/.mail/gmail
