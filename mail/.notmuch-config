@@ -1,10 +1,10 @@
 [database]
-path=/home/jassob/.mail
+path=/home/jassob/.mail/gmail
 
 [user]
 name=Jacob Jonsson
 primary_email=jacob.t.jonsson@gmail.com
-other_email=jacob.jonsson@einride.tech;jassob@live.se;
+other_email=jacob.jonsson@einride.tech;jassob@live.se;jacobjo@student.chalmers.se;
 
 [new]
 tags=unread;inbox;

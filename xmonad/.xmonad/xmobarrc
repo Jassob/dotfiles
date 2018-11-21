@@ -77,7 +77,7 @@ Config
         \</action>\
        \| %memory% \
        \<action=`pavucontrol` button=1>\
-         \%vol%\
+         \| %vol%\
        \</action> \
        \| %battery% \
        \| <action=`/home/jassob/.local/bin/logout` button=1>\
