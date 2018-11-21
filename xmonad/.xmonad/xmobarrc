@@ -75,7 +75,7 @@ Config
        \<action=`emacsclient -c -e '(mu4e)'` button=1>\
          \| <fn=1></fn> %mail% \
         \</action>\
-       \| %memory% | %mpris2% | \
+       \| %memory% \
        \<action=`pavucontrol` button=1>\
          \%vol%\
        \</action> \
