@@ -6,7 +6,11 @@ MUTE=$(pulsemixer --get-mute)
 
 # Add the muted line if the Master device is off (muted)
 if [ $MUTE = "1" ] ; then
-    echo "muted (${VOL}%)"
+    ICON="<fn=3></fn>"
+elif [ "$VOL" -le 50 ]; then
+    ICON="<fn=3></fn>"
 else
-    echo "${VOL}%"
+    ICON="<fn=3></fn>"
 fi
+
+echo "${ICON} ${VOL}%"
