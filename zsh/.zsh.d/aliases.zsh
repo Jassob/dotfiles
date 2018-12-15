@@ -28,3 +28,4 @@ alias status='systemctl status'
 alias start='systemctl start'
 
 alias please='sudo $(fc -ln -1)'
+alias balena-login="pass notes/balena-api-key | xargs sudo balena login -t"
