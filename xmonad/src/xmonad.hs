@@ -44,10 +44,9 @@ myTerminal :: String
 myTerminal = "termite"
 
 myScratchpads :: [NamedScratchpad]
-myScratchpads = [ NS "musicNS" "spotify" (className =? "Spotify") defaultFloating
-                , mkNS "terminalNS" "" defaultFloating]
-  where mkNS :: String -> String -> ManageHook -> NamedScratchpad
-        mkNS n cmd = NS n (myTerminal ++ cmd ++ " -t " ++ n) (title =? n)
+myScratchpads = [ NS "mupad" "spotify" (className =? "Spotify") defaultFloating
+                , NS "termpad" (myTerminal ++ " -t termpad") (title =? "termpad") defaultFloating
+                , NS "empad" "emacs --title empad" (title =? "empad") defaultFloating]
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
@@ -143,12 +142,15 @@ myKeys conf@XConfig {XMonad.modMask = modMask} = fromList $
   , ((modMask, xK_f), sendMessage (Toggle "Full"))
 
     -- Hide or show a terminal
-  , ((modMask , xK_Down), namedScratchpadAction myScratchpads "terminalNS")
+  , ((modMask, xK_Down), namedScratchpadAction myScratchpads "termpad")
 
-    -- Hide or show a cli mpd client
-  , ((modMask , xK_Up), namedScratchpadAction myScratchpads "musicNS")
+    -- Hide or show a music client
+  , ((modMask, xK_Up), namedScratchpadAction myScratchpads "mupad")
 
-    -- Copy current window to every workspace
+  -- Hide or show an Emacs window
+  , ((modMask, xK_Right), namedScratchpadAction myScratchpads "empad")
+
+    -- Copy current window to every workspacee
   , ((modMask, xK_v ), windows copyToAll)
 
     -- Remove all other copies of this window
