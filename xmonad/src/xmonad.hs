@@ -91,79 +91,75 @@ myWorkspaces = ws
     icons = "\xf269\xf120\xf121\xf02d\xf128\xf128\xf128\xf001\xf292\xf0e6"
 
 myKeys :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
-myKeys conf@XConfig {XMonad.modMask = modMask} = fromList $
+myKeys XConfig {modMask = modm} = M.fromList $
   workspaceKeybindings ++ screenWorkspaceKeybindings ++
   -- launching and killing programs
-  [ ((modMask .|. shiftMask, xK_Return), spawn myTerminal)
-  , ((modMask .|. shiftMask, xK_c), kill)
+  [ ((modm .|. shiftMask, xK_Return), spawn myTerminal)
+  , ((modm .|. shiftMask, xK_c), kill)
 
-  , ((modMask, xK_space ), sendMessage NextLayout)
-  , ((modMask .|. shiftMask, xK_space), setLayout $ XMonad.layoutHook conf)
-  , ((modMask, xK_n), refresh)
+  , ((modm, xK_space ), sendMessage NextLayout)
+  , ((modm, xK_n), refresh)
 
   -- move focus up or down the window stack
-  , ((modMask, xK_Tab), windows W.focusDown)
-  , ((modMask .|. shiftMask, xK_Tab), windows W.focusUp)
-  , ((modMask, xK_j), windows W.focusDown)
-  , ((modMask, xK_k), windows W.focusUp)
-  , ((modMask, xK_m), windows W.focusMaster)
+  , ((modm, xK_Tab), windows W.focusDown)
+  , ((modm .|. shiftMask, xK_Tab), windows W.focusUp)
+  , ((modm, xK_j), windows W.focusDown)
+  , ((modm, xK_k), windows W.focusUp)
+  , ((modm, xK_m), windows W.focusMaster)
+  , ((modm, xK_w), spawn "rofi -show window")
 
   -- modifying the window order
-  , ((modMask, xK_Return), windows W.swapMaster)
-  , ((modMask .|. shiftMask, xK_j), windows W.swapDown)
-  , ((modMask .|. shiftMask, xK_k), windows W.swapUp)
+  , ((modm, xK_Return), windows W.swapMaster)
+  , ((modm .|. shiftMask, xK_j), windows W.swapDown)
+  , ((modm .|. shiftMask, xK_k), windows W.swapUp)
 
-  , ((modMask .|. altMask, xK_l), sendMessage $ ExpandTowards R)
-  , ((modMask .|. altMask, xK_h), sendMessage $ ExpandTowards L)
-  , ((modMask .|. altMask, xK_j), sendMessage $ ExpandTowards D)
-  , ((modMask .|. altMask, xK_k), sendMessage $ ExpandTowards U)
-  , ((modMask, xK_r), sendMessage Rotate)
-  , ((modMask, xK_s), sendMessage Swap)
-  , ((modMask, xK_n), sendMessage FocusParent)
-  , ((modMask .|. ctrlMask, xK_n), sendMessage SelectNode)
-  , ((modMask .|. shiftMask, xK_n), sendMessage MoveNode)
+  , ((modm .|. altMask, xK_l), sendMessage $ ExpandTowards R)
+  , ((modm .|. altMask, xK_h), sendMessage $ ExpandTowards L)
+  , ((modm .|. altMask, xK_j), sendMessage $ ExpandTowards D)
+  , ((modm .|. altMask, xK_k), sendMessage $ ExpandTowards U)
+  , ((modm .|. altMask, xK_r), sendMessage Rotate)
+  , ((modm .|. altMask, xK_m), sendMessage Swap)
+  , ((modm .|. altMask, xK_n), sendMessage FocusParent)
+  , ((modm .|. ctrlMask, xK_n), sendMessage SelectNode)
+  , ((modm .|. shiftMask, xK_n), sendMessage MoveNode)
 
   -- resizing the master/slave ratio
-  , ((modMask, xK_h), sendMessage Shrink)
-  , ((modMask, xK_l), sendMessage Expand)
+  , ((modm, xK_h), sendMessage Shrink)
+  , ((modm, xK_l), sendMessage Expand)
 
   -- floating layer support
-  , ((modMask, xK_t), withFocused $ windows . W.sink)
+  , ((modm, xK_t), withFocused $ windows . W.sink)
 
   -- increase or decrease number of windows in the master area
-  , ((modMask, xK_comma ), sendMessage (IncMasterN 1))
-  , ((modMask, xK_period), sendMessage (IncMasterN (-1)))
+  , ((modm, xK_comma ), sendMessage (IncMasterN 1))
+  , ((modm, xK_period), sendMessage (IncMasterN (-1)))
 
   -- quit
-  , ((modMask .|. shiftMask, xK_q), io exitSuccess)
+  , ((modm .|. shiftMask, xK_q), io exitSuccess)
 
   -- restart
-  , ((modMask, xK_q),
+  , ((modm, xK_q),
       spawn "if type xmonad; then xmonad --recompile && xmonad --restart;\
             \else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
 
   -- Run xmessage with a summary of the default keybindings (useful
   -- for beginners)
-  , ((modMask .|. shiftMask, xK_plus),
+  , ((modm .|. shiftMask, xK_plus),
       spawn $ concat [ "echo \"" , help , "\" | xmessage -file -"])
 
   -- Toggle fullscreen
-  , ((modMask, xK_f), sendMessage (Toggle "Full"))
+  , ((modm, xK_f), sendMessage (Toggle "Full"))
 
-    -- Hide or show a terminal
-  , ((modMask, xK_Down), namedScratchpadAction myScratchpads "termpad")
+    -- Hide or show named scratchpads
+  , ((modm, xK_Down), namedScratchpadAction myScratchpads "termpad")
+  , ((modm, xK_Up), namedScratchpadAction myScratchpads "mupad")
+  , ((modm, xK_Right), namedScratchpadAction myScratchpads "empad")
 
-    -- Hide or show a music client
-  , ((modMask, xK_Up), namedScratchpadAction myScratchpads "mupad")
-
-  -- Hide or show an Emacs window
-  , ((modMask, xK_Right), namedScratchpadAction myScratchpads "empad")
-
-    -- Copy current window to every workspacee
-  , ((modMask, xK_v ), windows copyToAll)
+    -- Copy current window to every workspace
+  , ((modm, xK_v ), windows copyToAll)
 
     -- Remove all other copies of this window
-  , ((modMask .|. shiftMask, xK_v ), killAllOtherCopies)
+  , ((modm .|. shiftMask, xK_v ), killAllOtherCopies)
   ]
   where ctrlMask = controlMask
         altMask = mod1Mask
@@ -212,6 +208,7 @@ help = unlines
   , "mod-Shift-Space         Reset the layouts on the current workSpace"
   , "mod-down                Open terminal scratchpad"
   , "mod-up                  Open music scratchpad"
+  , "mod-right               Open Emacs scratchpad"
   , "mod-n                   Resize/refresh viewed windows to the correct size"
   , "mod-f                   Toggle fullscreen"
   , ""
@@ -250,9 +247,9 @@ help = unlines
   , "mod-v                  Show current window on every workspace"
   , "mod-Shift-v            Remove all other copies of current window"
   , "mod-Alt-[l,h,j,k]      Expand window towards right, left, down and up"
-  , "mod-r                  Rotate the partition tree"
-  , "mod-s                  Swap two nodes in the partition tree"
-  , "mod-n                  Focus on the parent node in the partition tree"
+  , "mod-Alt-r              Rotate the partition tree"
+  , "mod-Alt-s              Swap two nodes in the partition tree"
+  , "mod-Alt-n              Focus on the parent node in the partition tree"
   , "mod-Ctrl-n             Select focused node"
   , "mod-Shift-n            Move selected node"
   , ""
