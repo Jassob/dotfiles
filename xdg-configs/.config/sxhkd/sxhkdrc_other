@@ -50,31 +50,31 @@ super + x ; P
 # Web
 #######
 {super + g, super + x ; s ; d}
-      prompt-search -s duckduckgo
+      prompt-search -s duckduckgo -b surf
 
 super + x ; s ; g
-      prompt-search -s google
+      prompt-search -s google -b surf
 
 super + x ; s ; h
-      prompt-search -s hoogle
+      prompt-search -s hoogle -b surf
 
 super + x ; s ; p
-      prompt-search -s hackage
+      prompt-search -s hackage -b surf
 
 {super + b, super + x ; w ; b}
-      prompt-open-url
+      prompt-open-url -b surf
 
 super + x ; w ; c
-      xdg-open https://google.com/calendar
+      surf https://google.com/calendar
 
 super + x ; w ; m
-      xdg-open https://messenger.com
+      surf https://messenger.com
 
 super + x ; w ; i
-      xdg-open https://inbox.google.com
+      surf https://mail.google.com
 
 super + x ; w ; t
-     xdg-open https://www.telegram.org/dl/webogram
+     surf https://www.telegram.org/dl/webogram
 
 # make sxhkd reload its configuration files:
 super + Escape
