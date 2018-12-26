@@ -73,6 +73,7 @@ myManageHook = composeOne [ isFullscreen -?> doFullFloat
                  , className =? "Gnome-panel" --> doIgnore
                  , className =? "Gtkdialog"   --> doFloat
                  , className =? "Pinentry"    --> doFloat
+                 , title =? "xmessage"        --> doCenterFloat
                  ]
   <+> namedScratchpadManageHook myScratchpads
   <+> manageDocks
