@@ -53,9 +53,11 @@ myTerminal :: String
 myTerminal = "termite"
 
 myScratchpads :: [NamedScratchpad]
-myScratchpads = [ NS "mupad" "spotify" (className =? "Spotify") defaultFloating
-                , NS "termpad" (myTerminal ++ " -t termpad") (title =? "termpad") defaultFloating
-                , NS "empad" "emacs --title empad" (title =? "empad") defaultFloating]
+myScratchpads = [ NS "mupad" "spotify" (className =? "Spotify") floatInCenter
+                , NS "termpad" "termite -t termpad -e \"tmux new-session -A -s termpad\"" (title =? "termpad") floatInCenter
+                , NS "empad" "emacs --name=empad" (title =? "empad") floatInCenter
+                ]
+  where floatInCenter = customFloating $ W.RationalRect (1/11) (1/11) (9/11) (9/11)
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
@@ -72,6 +74,7 @@ myManageHook = composeOne [ isFullscreen -?> doFullFloat
                  , className =? "Gtkdialog"   --> doFloat
                  , className =? "Pinentry"    --> doFloat
                  ]
+  <+> namedScratchpadManageHook myScratchpads
   <+> manageDocks
 
 myWorkspaces :: [String]
