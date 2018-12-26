@@ -117,10 +117,6 @@ myKeys conf@XConfig {XMonad.modMask = modMask} = fromList $
   , ((modMask .|. altMask, xK_h), sendMessage $ ExpandTowards L)
   , ((modMask .|. altMask, xK_j), sendMessage $ ExpandTowards D)
   , ((modMask .|. altMask, xK_k), sendMessage $ ExpandTowards U)
-  , ((modMask .|. altMask .|. ctrlMask, xK_l), sendMessage $ ShrinkFrom R)
-  , ((modMask .|. altMask .|. ctrlMask, xK_h), sendMessage $ ShrinkFrom L)
-  , ((modMask .|. altMask .|. ctrlMask, xK_j), sendMessage $ ShrinkFrom D)
-  , ((modMask .|. altMask .|. ctrlMask, xK_k), sendMessage $ ShrinkFrom U)
   , ((modMask, xK_r), sendMessage Rotate)
   , ((modMask, xK_s), sendMessage Swap)
   , ((modMask, xK_n), sendMessage FocusParent)
@@ -254,7 +250,6 @@ help = unlines
   , "mod-v                  Show current window on every workspace"
   , "mod-Shift-v            Remove all other copies of current window"
   , "mod-Alt-[l,h,j,k]      Expand window towards right, left, down and up"
-  , "mod-Alt-Ctrl-[l,h,j,k] Shrink window from right, left, down and up"
   , "mod-r                  Rotate the partition tree"
   , "mod-s                  Swap two nodes in the partition tree"
   , "mod-n                  Focus on the parent node in the partition tree"
