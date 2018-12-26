@@ -1,41 +1,49 @@
+{-
+  My XMonad configuration.
+
+  Here be monads, hapless wanderers beware!
+
+TODO
+---------
+* Unify resize keybindings
+-}
+
+import           Data.Map                            ( Map )
+import qualified Data.Map                       as M
+import           System.Exit
+import           System.IO
+
 {- XMonad core
---------------------------------------------------}
-import XMonad
-import qualified XMonad.StackSet as W
+-------------------------------------------------}
+import           XMonad
+import qualified XMonad.StackSet                as W
 
 {- Actions
---------------------------------------------------}
-import XMonad.Actions.CopyWindow (copyToAll, killAllOtherCopies)
+-------------------------------------------------}
+import           XMonad.Actions.CopyWindow
 
 {- Hooks
---------------------------------------------------}
-import XMonad.Hooks.DynamicLog (PP(..), dynamicLogWithPP, xmobarColor, wrap)
-import XMonad.Hooks.ManageDocks (avoidStruts, docksEventHook
-                                , docksStartupHook, manageDocks)
-import XMonad.Hooks.ManageHelpers (composeOne, isFullscreen, isDialog
-                                  , doFullFloat, doCenterFloat, (-?>))
-import XMonad.Hooks.SetWMName (setWMName)
-import XMonad.Hooks.EwmhDesktops (ewmh)
+-------------------------------------------------}
+import           XMonad.Hooks.DynamicLog
+import           XMonad.Hooks.ManageDocks
+import           XMonad.Hooks.ManageHelpers
+import           XMonad.Hooks.SetWMName
+import           XMonad.Hooks.EwmhDesktops
 
 {- Layout related stuff
---------------------------------------------------}
-import XMonad.Layout.NoBorders (noBorders, smartBorders)
-import XMonad.Layout.ResizableTile (ResizableTall(..))
-import XMonad.Layout.Spacing (spacing)
-import XMonad.Layout.Tabbed (Theme(..), tabbed, shrinkText)
-import XMonad.Layout.ToggleLayouts (ToggleLayout(Toggle), toggleLayouts)
-import XMonad.Layout.BinarySpacePartition
+-------------------------------------------------}
+import           XMonad.Layout.BinarySpacePartition
+import           XMonad.Layout.NoBorders
+import           XMonad.Layout.ResizableTile
+import           XMonad.Layout.Spacing
+import           XMonad.Layout.Tabbed
+import           XMonad.Layout.ToggleLayouts
 
 {- Utils
----------------------------------------------------}
-import XMonad.Util.Cursor (setDefaultCursor)
-import XMonad.Util.Run (spawnPipe, safeSpawn)
-import XMonad.Util.NamedScratchpad (NamedScratchpad(..)
-                                   , defaultFloating, namedScratchpadAction)
-
-import Data.Map (Map, fromList)
-import System.Exit (exitSuccess)
-import System.IO (Handle, hPutStrLn)
+-------------------------------------------------}
+import           XMonad.Util.Cursor
+import           XMonad.Util.Run
+import           XMonad.Util.NamedScratchpad
 
 myModMask :: KeyMask
 myModMask = mod4Mask
