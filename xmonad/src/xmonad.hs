@@ -280,7 +280,7 @@ myPP :: Handle -> PP
 myPP h = def
   { ppCurrent = xmobarColor "orange" ""
   , ppVisible = wrap "(" ")"
-  , ppTitle   = const ""
+  , ppTitle   = shorten 20
   , ppUrgent  = xmobarColor "red" "yellow"
   , ppLayout  = formatLayout
   , ppHidden  = hideScratchpad
