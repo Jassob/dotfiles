@@ -33,6 +33,7 @@ import           XMonad.Hooks.EwmhDesktops
 {- Layout related stuff
 -------------------------------------------------}
 import           XMonad.Layout.BinarySpacePartition
+import           XMonad.Layout.Gaps
 import           XMonad.Layout.NoBorders
 import           XMonad.Layout.ResizableTile
 import           XMonad.Layout.Spacing
@@ -268,11 +269,10 @@ help = unlines
 -- toggleLayouts makes it possible for us to toggle the first layout
 -- argument, while remembering the previous layout. Here we can toggle
 -- full-screen.
-myLayout = toggleLayouts (noBorders Full) $ borders $
-           spacedTiled ||| emptyBSP ||| tabs
+myLayout = toggleLayouts (noBorders Full) . avoidStruts . smartBorders $ layouts
   where
-    borders = avoidStruts . smartBorders
-    spacedTiled = spacing 5 $ ResizableTall 1 (2/100) (1/2) []
+    layouts = gaps [(U, 5), (R, 5), (D, 5), (L, 5)] $ spacing 5 $ (tiled ||| emptyBSP ||| tabs)
+    tiled = ResizableTall 1 (2/100) (1/2) []
     tabs = tabbed shrinkText $ def {fontName = "xft:Inconsolata:style=Regular"}
 
 -- | Log configuration
@@ -288,12 +288,10 @@ myPP h = def
   }
   where
     formatLayout x = case x of
-      "Spacing 5 ResizableTall" -> "[|]"
-      "Tabbed Simplest"         -> "[T]"
-      "Full"                    -> "[ ]"
-      "BSP"                     -> "[+]"
+      "Spacing ResizableTall"   -> "[|]"
+      "Spacing Tabbed Simplest" -> "[T]"
+      "Spacing BSP"             -> "[+]"
       _                         -> x
-
     hideScratchpad ws | ws == "NSP" = mempty
                       | otherwise = ws
 
