@@ -1,19 +1,16 @@
 #!/bin/sh
 
 userresources=$HOME/.Xresources
-usermodmap=$HOME/.Xmodmap
 sysresources=/etc/X11/xinit/.Xresources
-sysmodmap=/etc/X11/xinit/.Xmodmap
 
-STUMPWM_LOG=/var/log/stumpwm.log
 # merge in defaults and keymaps
 
-if [ -f $sysresources ]; then
-    xrdb -merge $sysresources
+if [ -f "$sysresources" ]; then
+    xrdb -merge "$sysresources"
 fi
 
-if [ -f $sysmodmap ]; then
-    xmodmap $sysmodmap
+if [ -f "$sysmodmap" ]; then
+    xmodmap "$sysmodmap"
 fi
 
 if [ -f "$userresources" ]; then
@@ -37,5 +34,16 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
     unset f
 fi
 
-/home/jassob/.local/bin/fix_layout
-exec stumpwm > $STUMPWM_LOG
+# Add /snap/bin to PATH if it exists
+if [ -d /snap/bin ]; then
+    export PATH=/snap/bin:$PATH
+fi
+
+# Set my keymap
+setxkbmap se -model emacs2 -option ctrl:nocaps,compose:rwin
+
+# Set background image
+feh --bg-scale ~/.background.jpg
+
+# Launch window manager
+exec xmonad
