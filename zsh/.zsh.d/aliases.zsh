@@ -21,6 +21,11 @@ alias plattan-disconnect='bluetoothctl disconnect 5C:EB:68:45:78:6D'
 alias gst='git status'
 alias gl='git log'
 alias gp='git pull'
+alias gm='git merge --ff-only'
+alias grst='git reset --hard HEAD'
+# Mnemonic: Git Rebase On Master
+alias grom='git fetch origin && git rebase origin/master'
+alias gsu='git submodule update --init --recursive'
 
 # Systemctl stuff
 alias restart='systemctl restart'
