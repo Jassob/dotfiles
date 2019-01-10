@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CMD=${1:?"Must pass in a command to run"}
+FILE=${2:?"Must pass in a file to run the command on"}
+
+# Run CMD on FILE and diff the output with the contents of FILE
+${CMD} ${FILE} | diff ${FILE} -
