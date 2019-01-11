@@ -56,3 +56,5 @@ fi
 
 # Add local/bin/ to PATH
 export PATH="~/.local/bin:$PATH"
+
+export PATH="$HOME/.cargo/bin:$PATH"
