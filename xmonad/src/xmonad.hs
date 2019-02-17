@@ -27,6 +27,7 @@ import           XMonad.Actions.CopyWindow
 import           XMonad.Hooks.DynamicLog
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
+import           XMonad.Hooks.Place
 import           XMonad.Hooks.SetWMName
 import           XMonad.Hooks.EwmhDesktops
 
@@ -129,6 +130,7 @@ myKeys XConfig {modMask = modm} = M.fromList $
 
   -- floating layer support
   , ((modm, xK_t), withFocused $ windows . W.sink)
+  , ((modm, xK_c), placeFocused $ withGaps (16,16,16,16) (smart (0.5,0.5)))
 
   -- increase or decrease number of windows in the master area
   , ((modm, xK_comma ), sendMessage (IncMasterN 1))
@@ -230,6 +232,7 @@ help = unlines
   , ""
   , "-- floating layer support"
   , "mod-t                  Push window back into tiling"
+  , "mod-c                  Put floating window in center"
   , ""
   , "-- increase or decrease number of windows in the master area"
   , "mod-comma  (mod-,)     Increment the number of windows in the master area"
