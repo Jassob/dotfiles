@@ -2,10 +2,12 @@
 # Multimedia keys
 #######
 {XF86AudioLowerVolume, ctrl + F11}
-     pulsemixer --change-volume -5
+     pulsemixer --change-volume -5 && \
+     notify-send "Volume: $(pulsemixer --get-volume | cut -d ' ' -f 1)%"
 
 {XF86AudioRaiseVolume, ctrl + F12}
-     pulsemixer --change-volume +5
+     pulsemixer --change-volume +5 && \
+     notify-send "Volume: $(pulsemixer --get-volume | cut -d ' ' -f 1)%"
 
 {XF86AudioMute, ctrl + F10}
      pulsemixer --toggle-mute
@@ -32,7 +34,10 @@ super + x ; e ; c
       emacsclient -c -e "(org-capture)"
 
 super + e
-      $HOME/.local/bin/startemacs
+      $HOME/.local/bin/startemacs -i "rofi -dmenu -p Emacs"
+
+super + o
+      $HOME/.local/bin/openfile -g -s "rofi -dmenu"
 
 #######
 # System stuff
