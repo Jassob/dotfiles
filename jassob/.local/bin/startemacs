@@ -1,3 +1,53 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-exec emacsclient --alternate-editor "" -c  "$@"
+set -eou pipefail
+
+EMACSNAME=""
+SELTOOL="fzf"
+
+# Print usage
+function usage() {
+    echo "Usage: $0 [OPTIONS] [FILE(s)]"
+    echo "Synopsis: Visit FILE(s) with emacsclient in a new frame. If FILE(s) is empty an empty frame is created."
+    echo "Options:"
+    echo -e "\t-n <server-name>\tName of server to connect to or create"
+    echo -e "\t-i <command>\t\tInteractive command to choose existing server with"
+}
+
+# Parse in options
+#
+# Available options:
+# -n NAME -- Name of emacs server to connect or create
+# -i CMD  -- Interactive command to choose instance from
+# -h      -- Print help
+while getopts ":n:i:h" o; do
+    case "${o}" in
+	n)
+	    EMACSNAME="${OPTARG}"
+	    shift 2
+	    ;;
+	i)
+	    SELTOOL="${OPTARG}"
+	    shift 2
+	    ;;
+	h)
+	    usage
+	    exit -1
+	    ;;
+	*)
+	    usage
+	    exit -1
+	    ;;
+    esac
+done
+
+if [[ ${EMACSNAME} == "" ]]; then
+    INSTANCES=$(ls "/tmp/emacs$(id -u)")
+    EMACSNAME=$(echo "$INSTANCES" | ${SELTOOL})
+fi
+
+exec emacsclient \
+     --socket-name="${EMACSNAME}" \
+     --frame-parameters="((title . \"${EMACSNAME}\"))" \
+     --alternate-editor "emacs --daemon=${EMACSNAME}" \
+     --create-frame "$@"
