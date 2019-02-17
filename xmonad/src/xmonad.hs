@@ -54,16 +54,15 @@ myTerminal :: String
 myTerminal = "termite"
 
 myScratchpads :: [NamedScratchpad]
-myScratchpads = [ NS "mupad" "spotify" (className =? "Spotify") floatInCenter
-                , NS "termpad" "termite -t termpad -e \"tmux new-session -A -s termpad\"" (title =? "termpad") floatInCenter
-                , NS "empad" "~/.local/bin/startemacs -n empad" (title =? "empad") floatInCenter
+myScratchpads = [ NS "mupad" "spotify" (className =? "Spotify") doFullFloat
+                , NS "termpad" "termite -t termpad -e \"tmux new-session -A -s termpad\"" (title =? "termpad") doFullFloat
+                , NS "empad" "~/.local/bin/startemacs -n empad" (title =? "empad") doCenterFloat
                 ]
-  where floatInCenter = customFloating $ W.RationalRect (1/11) (1/11) (9/11) (9/11)
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
 myStartupHook = setDefaultCursor xC_left_ptr
-  <+> (getXMonadDir >>= \dir -> safeSpawn "run" [dir ++ "/xmobar-trayer.sh"])
+  <+> (safeSpawn "pkill" ["trayer"] >> getXMonadDir >>= safeSpawn "run" . return . flip (++) "/xmobar-trayer.sh")
   <+> setWMName "LG3D"
   <+> docksStartupHook
 
@@ -74,6 +73,7 @@ myManageHook = composeOne [ isFullscreen -?> doFullFloat
                  , className =? "Gnome-panel" --> doIgnore
                  , className =? "Gtkdialog"   --> doFloat
                  , className =? "Pinentry"    --> doFloat
+                 , className =? "Spotify"     --> doCenterFloat
                  , title =? "xmessage"        --> doCenterFloat
                  ]
   <+> namedScratchpadManageHook myScratchpads
