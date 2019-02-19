@@ -6,21 +6,18 @@ usage() {
 	echo "Usage: $0 [OPTIONS]" 1>&2
 	echo "OPTIONS:" 1>&2
 	echo -e "-c <filepath> \t Command to open file with" 1>&2
-	echo -e "-s <filepath> \t Command to select file with" 1>&2
+	echo -e "-i <filepath> \t Command to select file with" 1>&2
        	exit 1;
 }
 
-EXEC_CMD="emacsclient -c"
+EXEC_CMD="startemacs"
 SELECTION_TOOL="fzf"
-while getopts ":gc:s:p:" o; do
+while getopts ":c:i:p:" o; do
 	case "${o}" in
-		g)
-			SELECTION_TOOL="rofi -dmenu -p Open"
-			;;
 		c)
 			EXEC_CMD=${OPTARG}
 			;;
-		s)
+		i)
 			SELECTION_TOOL=${OPTARG}
 			;;
 		*)
@@ -32,7 +29,13 @@ shift $((OPTIND-1))
 
 SELECTION=${1:-$PWD}
 while [[ ! -f ${SELECTION} ]]; do
-    SELECTION+="/$(echo ".." | ls "${SELECTION}" | grep -v '^\.$' | ${SELECTION_TOOL})"
+    RES="$(rg --files "${SELECTION}" | ${SELECTION_TOOL})"
+    if [[ -f ${RES} ]]; then
+	$EXEC_CMD "${RES}"
+	exit 0
+    elif [[ -d ${RES} ]]; then
+	SELECTION="${RES}"
+    else
+	SELECTION="${SELECTION}/${RES}"
+    fi
 done
-
-$EXEC_CMD "${SELECTION}"
