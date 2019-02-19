@@ -21,12 +21,16 @@
 XF86Audio{Pause,Play,Next,Prev}
      playerctl {pause,play,next,previous}
 
-super + x; o
-     rofi -show drun
-
 #######
 # Launching stuff
 #######
+
+super + x; o
+     rofi -show drun
+
+super + x; f
+      $HOME/.local/bin/openfile -i "rofi -dmenu"
+
 super + p
      rofi-pass
 
@@ -35,9 +39,6 @@ super + x ; e ; c
 
 super + e
       $HOME/.local/bin/startemacs -i "rofi -dmenu -p Emacs"
-
-super + o
-      $HOME/.local/bin/openfile -g -s "rofi -dmenu"
 
 #######
 # System stuff
