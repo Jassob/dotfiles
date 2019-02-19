@@ -17,6 +17,9 @@ alias back='cd -'
 alias plattan-connect='bluetoothctl connect 5C:EB:68:45:78:6D'
 alias plattan-disconnect='bluetoothctl disconnect 5C:EB:68:45:78:6D'
 
+# Bat is cat clone with wings https://github.com/sharkdp/bat
+alias cat=bat
+
 # Git aliases
 alias gst='git status'
 alias gl='git log'
@@ -24,7 +27,7 @@ alias gp='git pull'
 alias gm='git merge --ff-only'
 alias grst='git reset --hard HEAD'
 # Mnemonic: Git Rebase On Master
-alias grom='git fetch origin && git rebase origin/master'
+alias grom='git fetch origin && git rebase --autostash origin/master'
 alias gsu='git submodule update --init --recursive'
 
 # Systemctl stuff
