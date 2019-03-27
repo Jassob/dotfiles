@@ -221,3 +221,4 @@ rofi.font:                           Inconsolata 14
 ! "The display name of this browser" Set from: Default
 ! rofi.display-combi:
 #include "/etc/per-user-pkgs/jassob/share/rofi/themes//gruvbox-dark-soft.theme"
+rofi.theme: /usr/share/rofi/themes/gruvbox-dark.rasi
