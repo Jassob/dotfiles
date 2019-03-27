@@ -15,7 +15,7 @@ function usage() {
 }
 
 function oneof() {
-    collection=${1:?"You need to pass a collection"}
+    collection=${1:-""}
     item=${2:?"You need to pass an item to look for"}
 
     for elem in $collection; do
@@ -49,7 +49,7 @@ while getopts ":n:i:h" o; do
     esac
 done
 
-INSTANCES=$(find "/tmp/emacs$(id -u)" -type s -printf '%f\n' || echo "")
+INSTANCES=$(find -L "/run/user/$(id -u)/emacs" -type s -printf '%f\n' 2>/dev/null || echo "")
 if [[ ${EMACSNAME} == "" ]]; then
    EMACSNAME=$(echo "$INSTANCES" | ${SELTOOL})
 fi
