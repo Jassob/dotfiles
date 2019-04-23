@@ -277,11 +277,11 @@ myLayout = toggleLayouts (noBorders Full) . avoidStruts . smartBorders $ layouts
 -- | Log configuration
 myPP :: Handle -> PP
 myPP h = def
-  { ppCurrent = xmobarColor "orange" ""
+  { ppCurrent = xmobarColor "#83a598" ""
   , ppVisible = wrap "(" ")"
-  , ppTitle   = shorten 20
+  , ppTitle   = xmobarColor "#d3869b" "" . shorten 20
   , ppUrgent  = xmobarColor "red" "yellow"
-  , ppLayout  = formatLayout
+  , ppLayout  = xmobarColor "#fabd2f" "" . formatLayout
   , ppHidden  = hideScratchpad
   , ppOutput  = hPutStrLn h
   }
@@ -308,4 +308,6 @@ main = do
     , startupHook = myStartupHook
     , logHook = dynamicLogWithPP $ myPP xmproc
     , keys = myKeys
+    , normalBorderColor = "#474646"
+    , focusedBorderColor = "#83a598"
     }
