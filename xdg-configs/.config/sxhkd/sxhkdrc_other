@@ -10,7 +10,12 @@
      notify-send "Volume: $(pulsemixer --get-volume | cut -d ' ' -f 1)%"
 
 {XF86AudioMute, ctrl + F10}
-     pulsemixer --toggle-mute
+     pulsemixer --toggle-mute && \
+     notify-send "Muted: $(\
+     if [[ $(pulsemixer --get-mute | cut -d ' ' -f 1) == 0 ]]; \
+       then echo No; \
+       else echo Yes; \
+     fi)"
 
 {XF86MonBrightnessUp, ctrl + F6}
      light -A 5
