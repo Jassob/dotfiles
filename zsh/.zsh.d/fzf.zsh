@@ -16,7 +16,7 @@ if [[ -e ~/.fzf ]]; then
     source "/home/jassob/.fzf/shell/key-bindings.zsh"
 else
     # Find Nix path to FZF
-    FZF_PATH=$(whereis fzf | awk '{ print $2 }' | xargs dirname | xargs dirname)
+    FZF_PATH=$(whereis fzf | xargs readlink | xargs dirname | xargs dirname)
 
     # Auto-completion
     # ---------------
