@@ -54,6 +54,7 @@ setopt ALL_EXPORT
 ## Sourcing other files
 #####
 sourceIfExists "$ZDOTDIR/aliases.zsh"
+sourceIfExists "$ZDOTDIR/work.zsh"
 
 if [[ -f /etc/NIXOS ]]; then
     sourceIfExists "$ZDOTDIR/nix.zsh"
