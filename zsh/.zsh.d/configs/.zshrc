@@ -72,8 +72,7 @@ magenta"
 
 P_COLOR=$(echo $PROMPT_COLORS | sort -R | tail -n 1)
 
-PROMPT="%B%F{$P_COLOR}%}%3~%f %F{$P_COLOR}%D{%H:%M}%f%b
-%F{$P_COLOR}%}%n%f%F{white} %# %f"
+PROMPT="%B%F{$P_COLOR}%}%3~%f%b%f%F{white} %# %f"
 
 # Hack to ensure the startup path to be the last path opened in terminal
 # Override the cd command with this ..
