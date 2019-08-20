@@ -44,7 +44,8 @@ Config
       , "-x", ""
       ] 10
 
-    , Run Mail [ ("i:", "~/.mail/gmail/Inbox") ] "mail"
+    , Run ComX "sh" ["-c", "mu find flag:unread and maildir:/Inbox and not flag:trashed | wc -l"] "N/A" "inbox" 10
+    , Run ComX "sh" ["-c", "mu find flag:flagged and not flag:trashed | wc -l"] "N/A" "starred" 10
 
     , Run Com "sh" ["/home/jassob/.xmonad/xmobar-volume.sh"] "vol" 10
 
@@ -73,7 +74,7 @@ Config
          \| %awake% \
        \</action>\
        \<action=`$HOME/.local/bin/startemacs -e '(mu4e)'` button=1>\
-         \| <fn=1></fn> %mail% \
+         \| <fn=1></fn> (i: %inbox%, s: %starred%) \
         \</action>\
        \| %memory% \
        \<action=`pavucontrol` button=1>\
