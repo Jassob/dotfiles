@@ -4,3 +4,6 @@
 [submodule "stumpwm.d"]
 	path = stumpwm/.stumpwm.d
 	url = git@github.com:Jassob/.stumpwm.d
+[submodule "nix/.config/nixpkgs/home-manager"]
+	path = nix/.config/nixpkgs/home-manager
+	url = git@github.com:rycee/home-manager
