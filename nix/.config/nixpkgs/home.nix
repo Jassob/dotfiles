@@ -31,7 +31,6 @@
     pciutils
     ripgrep
     rofi-pass
-    rustup
     spotify
     sshfs
     stow
@@ -47,6 +46,11 @@
     haskellPackages.hlint
     haskellPackages.cabal-install
     haskellPackages.cabal2nix
+
+    # Rust programming
+    clang
+    llvmPackages.libclang
+    rustup
 
     # For my XMonad setup
     blueman
