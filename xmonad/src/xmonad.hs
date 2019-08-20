@@ -51,13 +51,14 @@ myModMask :: KeyMask
 myModMask = mod4Mask
 
 myTerminal :: String
-myTerminal = "termite"
+myTerminal = "alacritty"
 
 myScratchpads :: [NamedScratchpad]
 myScratchpads = [ NS "mupad" "spotify" (className =? "Spotify") doFullFloat
-                , NS "termpad" "termite -t termpad -e \"tmux new-session -A -s termpad\"" (title =? "termpad") doFullFloat
+                , NS "termpad" termpadArgs (title =? "termpad") doFullFloat
                 , NS "empad" "~/.local/bin/startemacs -n empad" (title =? "empad") doCenterFloat
                 ]
+                where termpadArgs = unwords [myTerminal, "-t", "termpad", "-e", "tmux new-session -A -s termpad"]
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
