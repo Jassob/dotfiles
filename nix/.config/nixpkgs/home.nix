@@ -56,6 +56,7 @@
     i3lock
     imagemagick
     libnotify
+    networkmanagerapplet
     pavucontrol
     pulsemixer
     rofi
