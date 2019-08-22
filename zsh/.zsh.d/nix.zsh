@@ -38,8 +38,4 @@ list-python2-packages () {
     nix-env -qaP -A pythonPackages
 }
 
-# Link ~/.nix-defexpr -> ~/nixpkgs
-rm -r ~/.nix-defexpr
-ln -s ~/nix/ ~/.nix-defexpr
-
 export NIX_PATH=$HOME/nix:nixos-config=/etc/nixos/configuration.nix
