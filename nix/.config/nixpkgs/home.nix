@@ -46,6 +46,7 @@
     haskellPackages.hlint
     haskellPackages.cabal-install
     haskellPackages.cabal2nix
+    haskellPackages.stack
 
     # Rust programming
     clang
