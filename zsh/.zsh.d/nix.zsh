@@ -39,3 +39,14 @@ list-python2-packages () {
 }
 
 export NIX_PATH=$HOME/nix:nixos-config=/etc/nixos/configuration.nix
+# Use nix-shell to run a missing program in a temporary environment
+export NIX_AUTO_RUN=true
+
+# Use NixOS command-not-found script
+command_not_found_handler() {
+    if [ ! -f /run/current-system/sw/bin/command-not-found ]; then
+	echo command not found: $1
+	exit 127
+    fi
+    command-not-found $1
+}
