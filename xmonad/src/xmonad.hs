@@ -54,11 +54,13 @@ myTerminal :: String
 myTerminal = "alacritty"
 
 myScratchpads :: [NamedScratchpad]
-myScratchpads = [ NS "mupad" "spotify" (className =? "Spotify") doFullFloat
-                , NS "termpad" termpadArgs (title =? "termpad") doFullFloat
-                , NS "empad" "~/.local/bin/startemacs -n empad" (title =? "empad") doCenterFloat
-                ]
-                where termpadArgs = unwords [myTerminal, "-t", "termpad", "-e", "tmux new-session -A -s termpad"]
+myScratchpads =
+  [ NS "mupad" "spotify" (className =? "Spotify") doFullFloat
+  , NS "termpad" (termArgs "termpad" "tmux new-session -A -s termpad") (title =? "termpad") doFullFloat
+  , NS "empad" "~/.local/bin/startemacs -n empad" (title =? "empad") doCenterFloat
+  , NS "chatpad" (termArgs "chatpad" "~/.local/bin/wchat") (title =? "chatpad") doFullFloat
+  ]
+  where termArgs tit cmd = unwords [myTerminal, "-t", tit, "-e", cmd]
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
@@ -157,6 +159,7 @@ myKeys XConfig {modMask = modm} = M.fromList $
   , ((modm, xK_Down), namedScratchpadAction myScratchpads "termpad")
   , ((modm, xK_Up), namedScratchpadAction myScratchpads "mupad")
   , ((modm, xK_Right), namedScratchpadAction myScratchpads "empad")
+  , ((modm, xK_Left), namedScratchpadAction myScratchpads "chatpad")
 
     -- Copy current window to every workspace
   , ((modm, xK_v ), windows copyToAll)
@@ -212,6 +215,7 @@ help = unlines
   , "mod-down                Open terminal scratchpad"
   , "mod-up                  Open music scratchpad"
   , "mod-right               Open Emacs scratchpad"
+  , "mod-left                Open Weechat scratchpad"
   , "mod-n                   Resize/refresh viewed windows to the correct size"
   , "mod-f                   Toggle fullscreen"
   , ""
