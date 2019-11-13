@@ -58,6 +58,7 @@ in rec {
       usbutils
       vlc
       xclip
+      zathura
 
       # Haskell development
       haskellPackages.ghc
