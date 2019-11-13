@@ -43,7 +43,6 @@ import           XMonad.Layout.ToggleLayouts
 
 {- Utils
 -------------------------------------------------}
-import           XMonad.Util.Cursor
 import           XMonad.Util.Run
 import           XMonad.Util.NamedScratchpad
 
@@ -64,10 +63,10 @@ myScratchpads =
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
-myStartupHook = setDefaultCursor xC_left_ptr
-  <+> (safeSpawn "pkill" ["trayer"] >> getXMonadDir >>= safeSpawn "run" . return . flip (++) "/xmobar-trayer.sh")
-  <+> setWMName "LG3D"
-  <+> docksStartupHook
+myStartupHook = safeSpawn "pkill" ["trayer"] >>
+  getXMonadDir >>= (safeSpawn "run" . return . flip (++) "/xmobar-trayer.sh")
+  >> setWMName "LG3D"
+  >> docksStartupHook
 
 myManageHook :: ManageHook
 myManageHook = composeOne [ isFullscreen -?> doFullFloat
