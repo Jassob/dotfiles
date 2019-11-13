@@ -177,6 +177,16 @@ in rec {
       browsers = [ "firefox" "chrome" ];
     };
 
+    bash.profileExtra = ''
+      # Setup GPG
+      export GPG_TTY=$(tty)
+      if ! pgrep -x "gpg-agent" > /dev/null; then
+        ${pkgs.gnupg}/bin/gpgconf --launch gpg-agent
+      fi
+      export PATH=$HOME/.local/bin:$PATH
+      export SSH_AUTH_SOCK=$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)
+    '';
+
     zsh = {
       enable = true;
       defaultKeymap = "emacs";
@@ -202,6 +212,7 @@ in rec {
         if ! pgrep -x "gpg-agent" > /dev/null; then
             ${pkgs.gnupg}/bin/gpgconf --launch gpg-agent
         fi
+        export SSH_AUTH_SOCK=$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)
         export PATH=$HOME/.local/bin:$PATH
       '';
 
@@ -224,7 +235,6 @@ in rec {
       };
 
       initExtra = lib.mkBefore ''
-        export SSH_AUTH_SOCK=$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)
         if [[ $TERM == dumb || $TERM == emacs || ! -o interactive ]]; then
             unsetopt zle
             unset zle_bracketed_paste
