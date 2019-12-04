@@ -211,6 +211,8 @@ in rec {
         PROMPT = "%B%F{$PROMPT_COLOR}%}%3~%f%b%f%F{white} %# %f";
         PROMPT_DIRTRIM = "2";
         RPROMPT = "";
+        # Download programs temporarily if missing
+        NIX_AUTO_RUN = true;
       };
 
       profileExtra = ''
