@@ -367,23 +367,80 @@ in rec {
       IMAPStore personal-remote
       Account personal
 
+      # LOCAL STORAGE (CREATE DIRECTORIES with mkdir -p Maildir/personal)
       MaildirStore personal-local
       Subfolders Verbatim
       # The trailing "/" is important
       Path ~/.mail/personal/
       Inbox ~/.mail/personal/Inbox
 
-      Channel personal
+      # CONNECTIONS SPECIFY LINKS BETWEEN REMOTE AND LOCAL FOLDERS
+      #
+      # CONNECTIONS ARE SPECIFIED USING PATTERNS, WHICH MATCH REMOTE MAIl
+      # FOLDERS. SOME COMMONLY USED PATTERS INCLUDE:
+      #
+      # 1 "*" TO MATCH EVERYTHING
+      # 2 "!DIR" TO EXCLUDE "DIR"
+      # 3 "DIR" TO MATCH DIR
+
+      Channel personal-inbox
       Master :personal-remote:
       Slave :personal-local:
-      # Exclude everything under the internal [Gmail] folder, except the interesting folders
-      #Patterns * ![Gmail]* "[Gmail]/Skickat" "[Gmail]/Stjärnmärkt" "[Gmail]/Alla mail" "[Gmail]/Utkast"
-      # Or include everything
-      Patterns * "![Gmail]/Skr&AOQ-ppost"
-      # Automatically create missing mailboxes, both locally and on the server
+      Patterns "INBOX"
       Create Both
-      # Save the synchronization state files in the relevant directory
+      Expunge Both
       SyncState *
+
+      Channel personal-reading
+      Master :personal-remote:"Reading"
+      Slave :personal-local:"reading"
+      Create Both
+      Expunge Both
+      SyncState *
+
+      Channel personal-trash
+      Master :personal-remote:"[Gmail]/Papperskorgen"
+      Slave :personal-local:"trash"
+      Create Both
+      Expunge Both
+      SyncState *
+
+      Channel personal-sent
+      Master :personal-remote:"[Gmail]/Skickat"
+      Slave :personal-local:"sent"
+      Create Both
+      Expunge Both
+      SyncState *
+
+      Channel personal-all
+      Master :personal-remote:"[Gmail]/Alla mail"
+      Slave :personal-local:"all"
+      Create Both
+      Expunge Both
+      SyncState *
+
+      Channel personal-starred
+      Master :personal-remote:"[Gmail]/Stj&AOQ-rnm&AOQ-rkta"
+      Slave :personal-local:"starred"
+      Create Both
+      Expunge Both
+      SyncState *
+
+      Channel personal-receipts
+      Master :personal-remote:"Receipts"
+      Slave :personal-local:"receipts"
+      Create Both
+      Expunge Both
+      SyncState *
+
+      Group personal
+      Channel personal-inbox
+      Channel personal-reading
+      Channel personal-receipts
+      Channel personal-sent
+      Channel personal-all
+      Channel personal-starred
+      Channel personal-trash
     '';
   };
 
