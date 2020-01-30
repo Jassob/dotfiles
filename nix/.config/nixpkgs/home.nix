@@ -214,6 +214,26 @@ in rec {
         fi
         export SSH_AUTH_SOCK=$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)
         export PATH=$HOME/.local/bin:$PATH
+        # Add keybindings
+        bindkey '^T' transpose-chars
+        bindkey '[T' transpose-words
+        bindkey '^X^A^F' fzf-file-widget
+        # Add keybindings from /etc/inputrc
+        bindkey "\e[1~" beginning-of-line
+        bindkey "\eOH" beginning-of-line
+        bindkey "\e[H" beginning-of-line
+        bindkey "\e[5~" beginning-of-history
+        bindkey "\e[6~" end-of-history
+        bindkey "\e[4~" end-of-line
+        bindkey "\e[8~" end-of-line
+        bindkey "\eOF" end-of-line
+        bindkey "\e[F" end-of-line
+        bindkey "\e[3~" delete-char
+        bindkey "\e[2~" quoted-insert
+        bindkey "\e[5C" forward-word
+        bindkey "\e[1;5C" forward-word
+        bindkey "\e[5D" backward-word
+        bindkey "\e[1;5D" backward-word
       '';
 
       shellAliases = {
