@@ -202,15 +202,6 @@ in rec {
       };
 
       sessionVariables = {
-        PROMPT_COLOR = ''
-          $(echo "yellow blue green cyan yellow magenta" \
-          | ${pkgs.coreutils}/bin/sort -R \
-          | ${pkgs.coreutils}/bin/tail -n 1 \
-          )
-        '';
-        PROMPT = "%B%F{$PROMPT_COLOR}%}%3~%f%b%f%F{white} %# %f";
-        PROMPT_DIRTRIM = "2";
-        RPROMPT = "";
         # Download programs temporarily if missing
         NIX_AUTO_RUN = true;
       };
@@ -253,6 +244,11 @@ in rec {
         # Setup fasd
         eval "$(${pkgs.fasd}/bin/fasd --init posix-alias zsh-hook \
              zsh-ccomp zsh-ccomp-install zsh-wcomp zsh-wcomp-install)"
+        # Setup prompt
+        PROMPT_COLOR=$(echo "yellow blue green cyan yellow magenta" | ${pkgs.coreutils}/bin/sort -R | ${pkgs.coreutils}/bin/tail -n 1)
+        PROMPT="%B%F{$PROMPT_COLOR}%}%3~%f%b%f%F{white} %# %f";
+        PROMPT_DIRTRIM="2";
+        RPROMPT="";
       '';
     };
 
