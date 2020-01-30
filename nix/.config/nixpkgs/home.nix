@@ -232,6 +232,13 @@ in rec {
         emproj = ''
           emacs --eval "(setq server-name \"$(basename $PWD)\")" \
                 --funcall server-start'';
+        emacs-sync-gcal = ''
+           emacs --batch --kill \\
+                 --load ~/.emacs.d/init.el \\
+                 --eval "(setq core/enabled-modules (quote (\"org\" \"org-gcal\")))" \\
+                 --funcall core/load-modules \\
+                 --eval "(setq org-directory \"/home/jassob/personal/\")" \\
+                 --funcall org-gcal-sync'';
       };
 
       initExtra = lib.mkBefore ''
