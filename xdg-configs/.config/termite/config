@@ -3,7 +3,7 @@
 #audible_bell = false
 #clickable_url = true
 #dynamic_title = true
-font = Inconsolata 12
+font = Iosevka Term 14
 #fullscreen = true
 #geometry = 640x480
 #icon_name = terminal
@@ -15,7 +15,7 @@ font = Inconsolata 12
 scrollback_lines = 10000
 #search_wrap = true
 #urgent_on_bell = true
-#hyperlinks = false
+hyperlinks = true
 
 # $BROWSER is used by default if set, with xdg-open as a fallback
 #browser = xdg-open
@@ -37,6 +37,15 @@ scrollback_lines = 10000
 
 # "off", "left" or "right"
 #scrollbar = off
+[hints]
+#font = Monospace 12
+#foreground = #dcdccc
+#background = #3f3f3f
+#padding = 2
+#border = #3f3f3f
+#border_width = 0.5
+#roundness = 2.0
+
 [colors]
 # hard contrast: background = #1d2021
 background = #282828
@@ -75,12 +84,3 @@ color14 = #8ec07c
 # light4 + light1
 color7 = #a89984
 color15 = #ebdbb2
-
-[hints]
-#font = Monospace 12
-#foreground = #dcdccc
-#background = #3f3f3f
-#padding = 2
-#border = #3f3f3f
-#border_width = 0.5
-#roundness = 2.0
