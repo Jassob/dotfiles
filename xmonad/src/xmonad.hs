@@ -8,15 +8,15 @@ TODO
 * Unify resize keybindings
 -}
 
-import           Data.Map                            ( Map )
-import qualified Data.Map                       as M
+import           Data.Map                       ( Map )
+import qualified Data.Map                      as M
 import           System.Exit
 import           System.IO
 
 {- XMonad core
 -------------------------------------------------}
 import           XMonad
-import qualified XMonad.StackSet                as W
+import qualified XMonad.StackSet               as W
 
 {- Actions
 -------------------------------------------------}
@@ -55,150 +55,190 @@ myTerminal = "alacritty"
 myScratchpads :: [NamedScratchpad]
 myScratchpads =
   [ NS "mupad" "spotify" (className =? "Spotify") doFullFloat
-  , NS "termpad" (termArgs "termpad" "tmux new-session -A -s termpad") (title =? "termpad") doFullFloat
-  , NS "empad" "~/.local/bin/startemacs -n empad" (title =? "empad") doCenterFloat
-  , NS "chatpad" (termArgs "chatpad" "~/.local/bin/wchat") (title =? "chatpad") doFullFloat
+  , NS "termpad"
+       (termArgs "termpad" "tmux new-session -A -s termpad")
+       (title =? "termpad")
+       doFullFloat
+  , NS "empad"
+       "~/.local/bin/startemacs -n server"
+       (title =? "server")
+       doCenterFloat
+  , NS "chatpad"
+       (termArgs "chatpad" "~/.local/bin/wchat")
+       (title =? "chatpad")
+       doFullFloat
   ]
   where termArgs tit cmd = unwords [myTerminal, "-t", tit, "-e", cmd]
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
-myStartupHook = safeSpawn "pkill" ["trayer"] >>
-  getXMonadDir >>= (safeSpawn "run" . return . flip (++) "/xmobar-trayer.sh")
-  >> setWMName "LG3D"
-  >> docksStartupHook
+myStartupHook =
+  safeSpawn "pkill" ["trayer"]
+    >>  getXMonadDir
+    >>= (safeSpawn "run" . return . flip (++) "/xmobar-trayer.sh")
+    >>  setWMName "LG3D"
+    >>  docksStartupHook
 
 myManageHook :: ManageHook
-myManageHook = composeOne [ isFullscreen -?> doFullFloat
-                          , isDialog     -?> doCenterFloat ]
-  <+> composeAll [ className =? "Gimp"        --> doFloat
-                 , className =? "Gnome-panel" --> doIgnore
-                 , className =? "Gtkdialog"   --> doFloat
-                 , className =? "Pinentry"    --> doFloat
-                 , className =? "Spotify"     --> doCenterFloat
-                 , title =? "xmessage"        --> doCenterFloat
-                 ]
-  <+> namedScratchpadManageHook myScratchpads
-  <+> manageDocks
+myManageHook =
+  composeOne [isFullscreen -?> doFullFloat, isDialog -?> doCenterFloat]
+    <+> composeAll
+          [ className =? "Gimp" --> doFloat
+          , className =? "Gnome-panel" --> doIgnore
+          , className =? "Gtkdialog" --> doFloat
+          , className =? "Pinentry" --> doFloat
+          , className =? "gcr-prompter" --> doCenterFloat
+          , className =? "Spotify" --> doCenterFloat
+          , title =? "xmessage" --> doCenterFloat
+          ]
+    <+> namedScratchpadManageHook myScratchpads
+    <+> manageDocks
 
 myWorkspaces :: [String]
 myWorkspaces = ws
-  where
-    ws :: [String]
-    ws = zipWith makeLabel [1..10] icons
+ where
+  ws :: [String]
+  ws = zipWith makeLabel [1 .. 10] icons
 
-    makeLabel :: Int -> Char -> String
-    makeLabel index icon = show index ++ ": <fn=1>" ++ icon : "</fn> "
+  makeLabel :: Int -> Char -> String
+  makeLabel index icon = show index ++ ": <fn=1>" ++ icon : "</fn> "
 
-    icons :: String
-    icons = "\xf269\xf120\xf121\xf02d\xf128\xf128\xf128\xf001\xf292\xf0e6"
+  icons :: String
+  icons = "\xf269\xf120\xf121\xf02d\xf128\xf128\xf128\xf001\xf292\xf0e6"
 
 myKeys :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
-myKeys XConfig {modMask = modm} = M.fromList $
-  workspaceKeybindings ++ screenWorkspaceKeybindings ++
+myKeys XConfig { modMask = modm } =
+  M.fromList
+    $  workspaceKeybindings
+    ++ screenWorkspaceKeybindings
+    ++
   -- launching and killing programs
-  [ ((modm .|. shiftMask, xK_Return), spawn myTerminal)
-  , ((modm .|. shiftMask, xK_c), kill)
-
-  , ((modm, xK_space ), sendMessage NextLayout)
-  , ((modm, xK_n), refresh)
+       [ ((modm .|. shiftMask, xK_Return), spawn myTerminal)
+       , ((modm .|. shiftMask, xK_c), kill)
+       , ((modm, xK_space), sendMessage NextLayout)
+       , ( (modm, xK_n)
+         , refresh
+         )
 
   -- move focus up or down the window stack
-  , ((modm, xK_Tab), windows W.focusDown)
-  , ((modm .|. shiftMask, xK_Tab), windows W.focusUp)
-  , ((modm, xK_j), windows W.focusDown)
-  , ((modm, xK_k), windows W.focusUp)
-  , ((modm, xK_m), windows W.focusMaster)
-  , ((modm, xK_w), spawn "rofi -show window")
+       , ((modm, xK_Tab), windows W.focusDown)
+       , ((modm .|. shiftMask, xK_Tab), windows W.focusUp)
+       , ((modm, xK_j), windows W.focusDown)
+       , ((modm, xK_k), windows W.focusUp)
+       , ((modm, xK_m), windows W.focusMaster)
+       , ( (modm, xK_w)
+         , spawn "rofi -show window"
+         )
 
   -- modifying the window order
-  , ((modm, xK_Return), windows W.swapMaster)
-  , ((modm .|. shiftMask, xK_j), windows W.swapDown)
-  , ((modm .|. shiftMask, xK_k), windows W.swapUp)
-
-  , ((modm .|. altMask, xK_l), sendMessage $ ExpandTowards R)
-  , ((modm .|. altMask, xK_h), sendMessage $ ExpandTowards L)
-  , ((modm .|. altMask, xK_j), sendMessage $ ExpandTowards D)
-  , ((modm .|. altMask, xK_k), sendMessage $ ExpandTowards U)
-  , ((modm .|. altMask, xK_r), sendMessage Rotate)
-  , ((modm .|. altMask, xK_m), sendMessage Swap)
-  , ((modm .|. altMask, xK_n), sendMessage FocusParent)
-  , ((modm .|. ctrlMask, xK_n), sendMessage SelectNode)
-  , ((modm .|. shiftMask, xK_n), sendMessage MoveNode)
+       , ((modm, xK_Return), windows W.swapMaster)
+       , ((modm .|. shiftMask, xK_j), windows W.swapDown)
+       , ((modm .|. shiftMask, xK_k), windows W.swapUp)
+       , ((modm .|. altMask, xK_l), sendMessage $ ExpandTowards R)
+       , ((modm .|. altMask, xK_h), sendMessage $ ExpandTowards L)
+       , ((modm .|. altMask, xK_j), sendMessage $ ExpandTowards D)
+       , ((modm .|. altMask, xK_k), sendMessage $ ExpandTowards U)
+       , ((modm .|. altMask, xK_r), sendMessage Rotate)
+       , ((modm .|. altMask, xK_m), sendMessage Swap)
+       , ((modm .|. altMask, xK_n), sendMessage FocusParent)
+       , ((modm .|. ctrlMask, xK_n), sendMessage SelectNode)
+       , ( (modm .|. shiftMask, xK_n)
+         , sendMessage MoveNode
+         )
 
   -- resizing the master/slave ratio
-  , ((modm, xK_h), sendMessage Shrink)
-  , ((modm, xK_l), sendMessage Expand)
+       , ((modm, xK_h), sendMessage Shrink)
+       , ( (modm, xK_l)
+         , sendMessage Expand
+         )
 
   -- floating layer support
-  , ((modm, xK_t), withFocused $ windows . W.sink)
-  , ((modm, xK_c), placeFocused $ withGaps (16,16,16,16) (smart (0.5,0.5)))
+       , ((modm, xK_t), withFocused $ windows . W.sink)
+       , ( (modm, xK_c)
+         , placeFocused $ withGaps (16, 16, 16, 16) (smart (0.5, 0.5))
+         )
 
   -- increase or decrease number of windows in the master area
-  , ((modm, xK_comma ), sendMessage (IncMasterN 1))
-  , ((modm, xK_period), sendMessage (IncMasterN (-1)))
+       , ((modm, xK_comma), sendMessage (IncMasterN 1))
+       , ( (modm, xK_period)
+         , sendMessage (IncMasterN (-1))
+         )
 
   -- quit
-  , ((modm .|. shiftMask, xK_q), io exitSuccess)
+       , ( (modm .|. shiftMask, xK_q)
+         , io exitSuccess
+         )
 
   -- restart
-  , ((modm, xK_q),
-      spawn "if type xmonad; then xmonad --recompile && xmonad --restart;\
-            \else xmessage xmonad not in \\$PATH: \"$PATH\"; fi")
+       , ( (modm, xK_q)
+         , spawn
+           "if type xmonad; then xmonad --recompile && xmonad --restart;\
+            \else xmessage xmonad not in \\$PATH: \"$PATH\"; fi"
+         )
 
   -- Run xmessage with a summary of the default keybindings (useful
   -- for beginners)
-  , ((modm .|. shiftMask, xK_plus),
-      spawn $ concat [ "echo \"" , help , "\" | xmessage -file -"])
+       , ( (modm .|. shiftMask, xK_plus)
+         , spawn $ concat ["echo \"", help, "\" | xmessage -file -"]
+         )
 
   -- Toggle fullscreen
-  , ((modm, xK_f), sendMessage (Toggle "Full"))
+       , ( (modm, xK_f)
+         , sendMessage (Toggle "Full")
+         )
 
     -- Hide or show named scratchpads
-  , ((modm, xK_Down), namedScratchpadAction myScratchpads "termpad")
-  , ((modm, xK_Up), namedScratchpadAction myScratchpads "mupad")
-  , ((modm, xK_Right), namedScratchpadAction myScratchpads "empad")
-  , ((modm, xK_Left), namedScratchpadAction myScratchpads "chatpad")
+       , ((modm, xK_Down), namedScratchpadAction myScratchpads "termpad")
+       , ((modm, xK_Up), namedScratchpadAction myScratchpads "mupad")
+       , ((modm, xK_Right), namedScratchpadAction myScratchpads "empad")
+       , ( (modm, xK_Left)
+         , namedScratchpadAction myScratchpads "chatpad"
+         )
 
     -- Copy current window to every workspace
-  , ((modm, xK_v ), windows copyToAll)
+       , ( (modm, xK_v)
+         , windows copyToAll
+         )
 
     -- Remove all other copies of this window
-  , ((modm .|. shiftMask, xK_v ), killAllOtherCopies)
-  ]
-  where ctrlMask = controlMask
-        altMask = mod1Mask
+       , ((modm .|. shiftMask, xK_v), killAllOtherCopies)
+       ]
+ where
+  ctrlMask = controlMask
+  altMask  = mod1Mask
 
 -- | Creates keybindings for workspaces.
 workspaceKeybindings :: [((KeyMask, KeySym), X ())]
 workspaceKeybindings = concatMap makeKeybinding pairs
-  where
-    pairs = zip myWorkspaces $ [xK_1 .. xK_9] ++ [xK_0]
+ where
+  pairs = zip myWorkspaces $ [xK_1 .. xK_9] ++ [xK_0]
 
-    -- | Creates two keybindings for every workspace, one for
-    -- switching to that workspace and one for moving the window
-    -- to that workspace.
-    makeKeybinding :: (String, KeySym) -> [((KeyMask, KeySym), X ())]
-    makeKeybinding (ws, key) =
-      [ ((myModMask              , key), windows $ W.greedyView ws)
-      , ((myModMask .|. shiftMask, key), windows $ W.shift ws)]
+  -- | Creates two keybindings for every workspace, one for
+  -- switching to that workspace and one for moving the window
+  -- to that workspace.
+  makeKeybinding :: (String, KeySym) -> [((KeyMask, KeySym), X ())]
+  makeKeybinding (ws, key) =
+    [ ((myModMask, key)              , windows $ W.greedyView ws)
+    , ((myModMask .|. shiftMask, key), windows $ W.shift ws)
+    ]
 
 
 -- mod-{a,s,d} %! Switch to physical/Xinerama screens 1, 2, or 3
 -- mod-shift-{a,s,d} %! Move client to screen 1, 2, or 3
 screenWorkspaceKeybindings :: [((KeyMask, KeySym), X ())]
 screenWorkspaceKeybindings = concatMap makeKeybinding pairs
-  where
-    pairs = zip [0..] [xK_a, xK_s, xK_d]
-    action sc f = screenWorkspace sc >>= flip whenJust (windows . f)
+ where
+  pairs = zip [0 ..] [xK_a, xK_s, xK_d]
+  action sc f = screenWorkspace sc >>= flip whenJust (windows . f)
 
-    -- | Creates two keybindings for every screenworkspace, one
-    -- for switching to that workspace and one for moving the
-    -- window to that workspace.
-    makeKeybinding :: (ScreenId, KeySym) -> [((KeyMask, KeySym), X ())]
-    makeKeybinding (sc, key) =
-      [ ((myModMask              , key), action sc W.view)
-      , ((myModMask .|. shiftMask, key), action sc W.shift)]
+  -- | Creates two keybindings for every screenworkspace, one
+  -- for switching to that workspace and one for moving the
+  -- window to that workspace.
+  makeKeybinding :: (ScreenId, KeySym) -> [((KeyMask, KeySym), X ())]
+  makeKeybinding (sc, key) =
+    [ ((myModMask, key)              , action sc W.view)
+    , ((myModMask .|. shiftMask, key), action sc W.shift)
+    ]
 
 
 -- | Finally, a copy of the default bindings in simple textual tabular format.
@@ -272,46 +312,48 @@ help = unlines
 -- toggleLayouts makes it possible for us to toggle the first layout
 -- argument, while remembering the previous layout. Here we can toggle
 -- full-screen.
-myLayout = toggleLayouts (noBorders Full) . avoidStruts . smartBorders $ layouts
-  where
-    layouts = gaps [(U, 5), (R, 5), (D, 5), (L, 5)] $ spacing 5 $ (tiled ||| emptyBSP ||| tabs)
-    tiled = ResizableTall 1 (2/100) (1/2) []
-    tabs = tabbed shrinkText $ def {fontName = "xft:Inconsolata:style=Regular"}
+myLayout =
+  toggleLayouts (noBorders Full) . avoidStruts . smartBorders $ layouts
+ where
+  layouts =
+    gaps [(U, 5), (R, 5), (D, 5), (L, 5)]
+      $ spacing 5
+      $ (tiled ||| emptyBSP ||| tabs)
+  tiled = ResizableTall 1 (2 / 100) (1 / 2) []
+  tabs  = tabbed shrinkText $ def { fontName = "xft:Inconsolata:style=Regular" }
 
 -- | Log configuration
 myPP :: Handle -> PP
-myPP h = def
-  { ppCurrent = xmobarColor "#83a598" ""
-  , ppVisible = wrap "(" ")"
-  , ppTitle   = xmobarColor "#d3869b" "" . shorten 20
-  , ppUrgent  = xmobarColor "red" "yellow"
-  , ppLayout  = xmobarColor "#fabd2f" "" . formatLayout
-  , ppHidden  = hideScratchpad
-  , ppOutput  = hPutStrLn h
-  }
-  where
-    formatLayout x = case x of
-      "Spacing ResizableTall"   -> "[|]"
-      "Spacing Tabbed Simplest" -> "[T]"
-      "Spacing BSP"             -> "[+]"
-      _                         -> x
-    hideScratchpad ws | ws == "NSP" = mempty
-                      | otherwise = ws
+myPP h = def { ppCurrent = xmobarColor "#83a598" ""
+             , ppVisible = wrap "(" ")"
+             , ppTitle   = xmobarColor "#d3869b" "" . shorten 20
+             , ppUrgent  = xmobarColor "red" "yellow"
+             , ppLayout  = xmobarColor "#fabd2f" "" . formatLayout
+             , ppHidden  = hideScratchpad
+             , ppOutput  = hPutStrLn h
+             }
+ where
+  formatLayout x = case x of
+    "Spacing ResizableTall"   -> "[|]"
+    "Spacing Tabbed Simplest" -> "[T]"
+    "Spacing BSP"             -> "[+]"
+    _                         -> x
+  hideScratchpad ws | ws == "NSP" = mempty
+                    | otherwise   = ws
 
 -- | Wire it all up and start XMonad
 main :: IO ()
 main = do
   xmproc <- getXMonadDir >>= \dir -> spawnPipe $ "xmobar " ++ dir ++ "/xmobarrc"
-  xmonad $ ewmh def
-    { modMask = myModMask
-    , terminal = myTerminal
-    , layoutHook = myLayout
-    , manageHook = myManageHook
-    , workspaces = myWorkspaces
-    , handleEventHook = docksEventHook <+> handleEventHook def
-    , startupHook = myStartupHook
-    , logHook = dynamicLogWithPP $ myPP xmproc
-    , keys = myKeys
-    , normalBorderColor = "#474646"
-    , focusedBorderColor = "#83a598"
-    }
+  xmonad $ ewmh def { modMask            = myModMask
+                    , terminal           = myTerminal
+                    , layoutHook         = myLayout
+                    , manageHook         = myManageHook
+                    , workspaces         = myWorkspaces
+                    , handleEventHook = docksEventHook <+> handleEventHook def
+                    , startupHook        = myStartupHook
+                    , logHook            = dynamicLogWithPP $ myPP xmproc
+                    , keys               = myKeys
+                    , normalBorderColor  = "#474646"
+                    , focusedBorderColor = "#83a598"
+                    }
