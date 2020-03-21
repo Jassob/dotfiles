@@ -103,7 +103,7 @@ monitor = 0
 #
 # If this option is set to mouse or keyboard, the monitor option
 # will be ignored.
-follow = none
+follow = keyboard
 
 # Should a notification popped up from history be sticky or timeout
 # as if it would normally do.
@@ -145,7 +145,7 @@ separator_color = frame
 startup_notification = false
 
 # dmenu path.
-dmenu = /etc/per-user-pkgs/jassob/bin/rofi -dmenu -p dunst:
+dmenu = rofi -dmenu -p dunst:
 
 # Browser for opening urls in context menu.
 browser = /etc/per-user-pkgs/jassob/bin/firefox
