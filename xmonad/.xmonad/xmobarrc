@@ -45,7 +45,7 @@ Config
       ] 10
 
     , Run ComX "sh" ["-c", "mu find flag:unread and maildir:/Inbox and not flag:trashed | wc -l"] "N/A" "inbox" 10
-    , Run ComX "sh" ["-c", "mu find flag:flagged and not flag:trashed | wc -l"] "N/A" "starred" 10
+    , Run ComX "sh" ["-c", "mu find flag:flagged and not flag:trashed | uniq | wc -l"] "N/A" "starred" 10
 
     , Run Com "sh" ["/home/jassob/.xmonad/xmobar-volume.sh"] "vol" 10
 
