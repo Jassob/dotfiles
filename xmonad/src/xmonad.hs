@@ -5,7 +5,6 @@
 
 TODO
 ---------
-* Unify resize keybindings
 -}
 
 import           Data.Map                       ( Map )
@@ -146,22 +145,10 @@ myKeys XConfig { modMask = modm } =
          , sendMessage MoveNode
          )
 
-  -- resizing the master/slave ratio
-       , ((modm, xK_h), sendMessage Shrink)
-       , ( (modm, xK_l)
-         , sendMessage Expand
-         )
-
   -- floating layer support
        , ((modm, xK_t), withFocused $ windows . W.sink)
        , ( (modm, xK_c)
          , placeFocused $ withGaps (16, 16, 16, 16) (smart (0.5, 0.5))
-         )
-
-  -- increase or decrease number of windows in the master area
-       , ((modm, xK_comma), sendMessage (IncMasterN 1))
-       , ( (modm, xK_period)
-         , sendMessage (IncMasterN (-1))
          )
 
   -- quit
@@ -270,17 +257,9 @@ help = unlines
   , "mod-Shift-j            Swap the focused window with the next window"
   , "mod-Shift-k            Swap the focused window with the previous window"
   , ""
-  , "-- resizing the master/slave ratio"
-  , "mod-h                  Shrink the master area"
-  , "mod-l                  Expand the master area"
-  , ""
   , "-- floating layer support"
   , "mod-t                  Push window back into tiling"
   , "mod-c                  Put floating window in center"
-  , ""
-  , "-- increase or decrease number of windows in the master area"
-  , "mod-comma  (mod-,)     Increment the number of windows in the master area"
-  , "mod-period (mod-.)     Decrement the number of windows in the master area"
   , ""
   , "-- quit, or restart"
   , "mod-Shift-q            Quit xmonad"
@@ -318,8 +297,7 @@ myLayout =
   layouts =
     gaps [(U, 5), (R, 5), (D, 5), (L, 5)]
       $ spacing 5
-      $ (tiled ||| emptyBSP ||| tabs)
-  tiled = ResizableTall 1 (2 / 100) (1 / 2) []
+      $ (emptyBSP ||| tabs)
   tabs  = tabbed shrinkText $ def { fontName = "xft:Inconsolata:style=Regular" }
 
 -- | Log configuration
