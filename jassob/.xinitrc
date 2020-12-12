@@ -45,5 +45,11 @@ setxkbmap se -model emacs2 -option ctrl:nocaps,compose:rwin
 # Set background image
 feh --bg-scale ~/.background.jpg
 
+# Set default cursor
+xsetroot -cursor_name left_ptr &
+
+# Start policykit agent
+/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
+
 # Launch window manager
 exec xmonad
