@@ -6,7 +6,7 @@ export EMAILSERVER="smtp.gmail.com"
 # Print using Chalmers printers
 export CUPS_GSSSERVICENAME=HTTP
 
-if [ ! $BROWSER ]; then
+if [ ! "$BROWSER" ]; then
     export BROWSER="google-chrome"
 fi
 
@@ -23,36 +23,15 @@ export LC_TELEPHONE="en_US.UTF-8"
 export LC_MEASUREMENT="sv_SE.UTF-8"
 export LC_IDENTIFICATION="en_US.UTF-8"
 
-# User installed programs
-if [ -d ~/bin ] ; then
-    export PATH="${HOME}/bin:${PATH}"
-fi
-if [ -d ~/sbin ] ; then
-    export PATH="${HOME}/sbin:${PATH}"
-fi
-if [ -d ~/man ] ; then
-    export MANPATH="${HOME}/man:${MANPATH}"
-fi
-if [ -d ~/share/man ] ; then
-    export MANPATH="${HOME}/share/man:${MANPATH}"
-fi
-if [ -d ~/.local/bin ] ; then
-    export PATH="${HOME}/.local/bin:${PATH}"
-fi
-if [ -d ~/.cabal/bin ] ; then
-    export PATH="${HOME}/.cabal/bin:${PATH}"
-fi
+[ -d "${HOME}/.local/bin" ] && export PATH="${HOME}/.local/bin:${PATH}"
+[ -d "${HOME}/.cabal/bin" ] && export PATH="${HOME}/.cabal/bin:${PATH}"
+[ -d "/opt/local/bin" ] && export PATH="/opt/local/bin:${PATH}"
+[ -d "/opt/local/bin" ] && export PATH="/opt/local/sbin:${PATH}"
 
-# Installed programs
-if [ -d /opt/local/bin ] ; then
-    export PATH="/opt/local/bin:${PATH}"
-    if [ -d /opt/local/sbin ] ; then
-	export PATH="/opt/local/sbin:${PATH}"
-    fi
-    if [ -d /opt/local/man ] ; then
-	export MANPATH="/opt/local/man:${MANPATH}"
-    fi
-fi
+[ -d "/opt/local/man" ] && export MANPATH="/opt/local/man:${MANPATH}"
+
+GPG_TTY=$(tty)
+export GPG_TTY
 
 # Add local/bin/ to PATH
 export PATH="~/.local/bin:$PATH"
