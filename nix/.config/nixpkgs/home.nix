@@ -258,6 +258,10 @@ in rec {
                  --funcall core/load-modules \\
                  --eval "(setq org-directory \"/home/jassob/personal/\")" \\
                  --funcall org-gcal-sync'';
+
+        dock = "~/.configurations/work-from-home.sh";
+        dock-ask = "~/.configurations/work-from-home.sh -i";
+        undock = "~/.configurations/laptop.sh";
       };
 
       initExtra = lib.mkBefore ''
