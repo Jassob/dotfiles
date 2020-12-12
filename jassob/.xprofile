@@ -1,7 +1,11 @@
+# -*- mode: sh -*-
+
 # Autostart if session is XMonad
-if [ -n "$DESKTOP_SESSION" ] && [ "$DESKTOP_SESSION" = "none+xmonad" ]; then
-    bash ~/dotfiles/jassob/autostart.sh
+if [[ -n "$DESKTOP_SESSION" && ("$DESKTOP_SESSION" = "none+xmonad" || "$DESKTOP_SESSION" = "xmonad") ]]; then
+	feh --bg-fill ~/.wallpaper.png
+	sxhkd & disown %1
+	nm-applet & disown %1
 fi
 
-# Add local/bin/ to PATH
-export PATH="~/.local/bin:$PATH"
+source ${HOME}/.profile
+xsetroot -cursor_name left_ptr
