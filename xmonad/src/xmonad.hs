@@ -296,8 +296,7 @@ myLayout =
  where
   layouts =
     gaps [(U, 5), (R, 5), (D, 5), (L, 5)]
-      $ spacing 5
-      $ (emptyBSP ||| tabs)
+      $ (spacing 5 emptyBSP ||| tabs)
   tabs  = tabbed shrinkText $ def { fontName = "xft:Inconsolata:style=Regular" }
 
 -- | Log configuration
