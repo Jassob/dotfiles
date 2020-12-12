@@ -55,7 +55,7 @@ Config
 
     , Run Com "sh" ["/home/jassob/.xmonad/xmobar-awake.sh"] "awake" 10
 
-    , Run Memory [ "-t", "<used> MB" ] 10
+    , Run Memory [ "-t", "Mem: <usedratio>%" ] 10
     ]
 
    , sepChar = "%"
