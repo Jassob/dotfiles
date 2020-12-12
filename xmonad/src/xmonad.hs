@@ -312,10 +312,9 @@ myPP h = def { ppCurrent = xmobarColor "#83a598" ""
              }
  where
   formatLayout x = case x of
-    "Spacing ResizableTall"   -> "[|]"
-    "Spacing Tabbed Simplest" -> "[T]"
-    "Spacing BSP"             -> "[+]"
-    _                         -> x
+    "Tabbed Simplest" -> "[T]"
+    "Spacing BSP"     -> "[+]"
+    _                 -> x
   hideScratchpad ws | ws == "NSP" = mempty
                     | otherwise   = ws
 
