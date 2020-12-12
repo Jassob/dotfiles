@@ -36,9 +36,7 @@ in rec {
       fzf
       gnupg
       graphviz
-      keybase
       light
-      mosh
       mu
       networkmanager
       openssh
@@ -95,7 +93,6 @@ in rec {
       xorg.xmessage
 
       # For my work
-      gotools
       google-chrome
 
       # Because I'm stupid and mixing different OSes
@@ -174,11 +171,6 @@ in rec {
     };
 
     home-manager.enable = true;
-
-    browserpass = {
-      enable = true;
-      browsers = [ "firefox" "chrome" ];
-    };
 
     bash.profileExtra = ''
       # Setup GPG
@@ -490,8 +482,6 @@ in rec {
     configFile = "${xdg.configHome}/mbsyncrc";
     postExec = "${pkgs.mu}/bin/mu index --maildir=~/.mail/personal";
   };
-
-  services.keybase.enable = true;
 
   # Enable redshift
   services.redshift = {
