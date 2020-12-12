@@ -307,28 +307,28 @@ in rec {
         draw_bold_text_with_bright_colors = true;
         colors = {
           primary = {
-            background = "0x1d2021";
-            foreground = "0xebdbbd2";
+            background = "#1d2021";
+            foreground = "#ebdbbd";
           };
           normal = {
-            black = "0x000000";
-            red = "0xd54e53";
-            green = "0xb9ca4a";
-            yellow = "0xe6c547";
-            blue = "0x7aa6da";
-            magenta = "0xc397d8";
-            cyan = "0x70c0ba";
-            white = "0xeaeaea";
+            black = "#000000";
+            red = "#d54e53";
+            green = "#b9ca4a";
+            yellow = "#e6c547";
+            blue = "#7aa6da";
+            magenta = "#c397d8";
+            cyan = "#70c0ba";
+            white = "#eaeaea";
           };
           bright = {
-            black = "0x666666";
-            red = "0xff3334";
-            green = "0x9ec400";
-            yellow = "0xe7c547";
-            blue = "0x7aa6da";
-            magenta = "0xb77ee0";
-            cyan = "0x54ced6";
-            white = "0xffffff";
+            black = "#666666";
+            red = "#ff3334";
+            green = "#9ec400";
+            yellow = "#e7c547";
+            blue = "#7aa6da";
+            magenta = "#b77ee0";
+            cyan = "#54ced6";
+            white = "#ffffff";
           };
         };
         url.modifiers = "Control";
@@ -336,7 +336,7 @@ in rec {
           semantic_escape_chars = ",|`|:\"' ()[]{}<>";
           save_to_clipboard = true;
         };
-        dynamic_title = true;
+        window.dynamic_title = true;
         cursor = {
           style = "Block";
           unfocused_hollow = true;
