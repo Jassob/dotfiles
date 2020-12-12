@@ -97,6 +97,9 @@ in rec {
       # For my work
       gotools
       google-chrome
+
+      # Because I'm stupid and mixing different OSes
+      glibcLocales
     ];
 
     file = {
@@ -204,6 +207,8 @@ in rec {
       sessionVariables = {
         # Download programs temporarily if missing
         NIX_AUTO_RUN = true;
+        NIX_PATH = "~/nix";
+        LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale-archive";
       };
 
       profileExtra = ''
@@ -234,6 +239,8 @@ in rec {
         bindkey "\e[1;5C" forward-word
         bindkey "\e[5D" backward-word
         bindkey "\e[1;5D" backward-word
+
+        if [ -f "$HOME/.xsessionrc" ]; then . $HOME/.xsessionrc; fi
       '';
 
       shellAliases = {
