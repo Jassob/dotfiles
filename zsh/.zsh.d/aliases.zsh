@@ -43,6 +43,8 @@ alias balena-login="pass notes/balena-api-key | xargs sudo balena login -t"
 # Emacs aliases
 alias emproj='emacs --eval "(setq server-name \"$(basename $PWD)\")" \
       		    --eval "(server-start)"'
+alias e="emacsclient -nw -s server"
+alias emacs-rebuild='make -C ~/.emacs.d byte-compile'
 
 # Configurations
 alias dock='~/.configurations/work-from-home.sh'

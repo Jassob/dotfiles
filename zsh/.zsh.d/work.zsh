@@ -1,30 +1,3 @@
-# Functions and scripts for my work setup
-
-# Go Test, run go test -race -cover -count=1
-# TODO: Find out why this is bork
-function gt() {
-    set -o pipefail
-    NUM=${1:-10}
-    PACKAGES=${2:-./...}
-    shift
-    shift
-    if [[ $# -gt 0 ]]; then TESTFLAGS="$@"; else TESTFLAGS="-race -cover -count=1"; fi
-    FAILED=0
-    for i in $(seq 1 $NUM); do
-	echo "Round $i..."
-	go test $(echo $TESTFLAGS) $(echo $PACKAGES) || FAILED=$((FAILED + 1))
-    done
-    echo "$FAILED tests out of $NUM failed"
-}
-
-function git-cleanup-branches() {
-    local REMOVED=0
-    for b in $(git branch | grep -v \* | grep -v master); do
-	git branch -r | grep ${b} > /dev/null || REMOVED=$((REMOVED + 1)); git branch -D ${b}
-    done
-    echo "Cleaned up $REMOVED branches"
-}
-
 # Select Go version and update environment to use
 #
 # Usage: use-go 1.13      -- Uses Go version 1.13
@@ -41,4 +14,17 @@ function use-go() {
     export PATH=$GOROOT/bin:$OLDPATH
     export GOPRIVATE=github.com/einride/*
     echo "Go environment set up for Go $GO_VERSION"
+}
+
+# Get a list of commit messages and their hash
+#
+# Usage: git-new-release-note v0.5.3   -- Uses v0.5.3 as last tag
+# Usage: git-new-release-note          -- Prompts the user for a tag
+function git-new-release-note() {
+    if [ -n "$1" ]; then
+	LAST_TAG="$1"
+    else
+	read "LAST_TAG?Please enter the latest current Git tag (or release): "
+    fi
+    git log --pretty='format:- %s %h' ${LAST_TAG}..HEAD
 }

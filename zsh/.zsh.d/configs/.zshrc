@@ -74,12 +74,6 @@ P_COLOR=$(echo $PROMPT_COLORS | sort -R | tail -n 1)
 
 PROMPT="%B%F{$P_COLOR}%}%3~%f%b%f%F{white} %# %f"
 
-# Hack to ensure the startup path to be the last path opened in terminal
-# Override the cd command with this ..
-function chpwd() {
-	pwd >! ~/.cache/last_dir
-}
-
 # Restore the last saved path
 if [ -f ~/.last_dir ]
 	then cd "$(cat ~/.cache/last_dir)"
