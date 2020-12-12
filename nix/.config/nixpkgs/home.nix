@@ -253,8 +253,8 @@ in rec {
         dv =
         "${pkgs.xorg.xkbcomp}/bin/xkbcomp -I$HOME/.xkb ~/.xkb/keymap/mydvorak $DISPLAY 2> /dev/null";
         # Bluetooth
-        plattan-connect = "bluetoothctl connect 5C:EB:68:45:78:6D";
-        plattan-disconnect = "bluetoothctl disconnect 5C:EB:68:45:78:6D";
+        sony-connect = "bluetoothctl connect 38:18:4C:D3:1A:20";
+        sony-disconnect = "bluetoothctl disconnect 38:18:4C:D3:1A:20";
         # Emacs
         emproj = ''
           emacs --eval "(setq server-name \"$(basename $PWD)\")" \

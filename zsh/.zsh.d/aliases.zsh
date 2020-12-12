@@ -14,8 +14,10 @@ alias py='python'
 alias back='cd -'
 
 # Bluetooth
-alias plattan-connect='bluetoothctl connect 5C:EB:68:45:78:6D'
-alias plattan-disconnect='bluetoothctl disconnect 5C:EB:68:45:78:6D'
+alias sony-connect='bluetoothctl connect 38:18:4C:D3:1A:20'
+alias sony-disconnect='bluetoothctl disconnect 38:18:4C:D3:1A:20'
+alias jabra-connect='bluetoothctl connect 70:BF:92:2A:37:DD'
+alias jabra-disconnect='bluetoothctl disconnect 70:BF:92:2A:37:DD'
 
 # Bat is cat clone with wings https://github.com/sharkdp/bat
 alias cat=bat
