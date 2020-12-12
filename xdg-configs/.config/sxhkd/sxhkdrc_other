@@ -18,10 +18,12 @@
      fi)"
 
 {XF86MonBrightnessUp, ctrl + F6}
-     light -A 5
+     light -A 5 && \
+     notify-send "Brightness: $(light | cut -f 1 -d .)%"
 
 {XF86MonBrightnessDown, ctrl + F5}
-     light -U 5
+      light -U 5 && \
+      notify-send "Brightness: $(light | cut -f 1 -d .)%"
 
 XF86Audio{Pause,Play,Next,Prev}
      playerctl {pause,play,next,previous}
