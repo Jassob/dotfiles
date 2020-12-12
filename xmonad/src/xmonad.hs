@@ -71,12 +71,12 @@ myScratchpads =
 
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
-myStartupHook =
+myStartupHook = do
   safeSpawn "pkill" ["trayer"]
-    >>  getXMonadDir
-    >>= (safeSpawn "run" . return . flip (++) "/xmobar-trayer.sh")
-    >>  setWMName "LG3D"
-    >>  docksStartupHook
+  dir <- getXMonadDir
+  safeSpawn "run" [dir ++ "/xmobar-trayer.sh"]
+  setWMName "LG3D"
+  docksStartupHook
 
 myManageHook :: ManageHook
 myManageHook =
