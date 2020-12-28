@@ -23,17 +23,15 @@ export LC_TELEPHONE="en_US.UTF-8"
 export LC_MEASUREMENT="sv_SE.UTF-8"
 export LC_IDENTIFICATION="en_US.UTF-8"
 
-[ -d "${HOME}/.local/bin" ] && export PATH="${HOME}/.local/bin:${PATH}"
-[ -d "${HOME}/.cabal/bin" ] && export PATH="${HOME}/.cabal/bin:${PATH}"
 [ -d "/opt/local/bin" ] && export PATH="/opt/local/bin:${PATH}"
 [ -d "/opt/local/bin" ] && export PATH="/opt/local/sbin:${PATH}"
+[ -d "${HOME}/.local/bin" ] && export PATH="${HOME}/.local/bin:${PATH}"
+[ -d "${HOME}/.cabal/bin" ] && export PATH="${HOME}/.cabal/bin:${PATH}"
+[ -d "${HOME}/.cargo/bin" ] && export PATH="${HOME}/.cargo/bin:${PATH}"
+[ -d "${HOME}/.ghcup/bin" ] && export PATH="${HOME}/.ghcup/bin:${PATH}"
 
 [ -d "/opt/local/man" ] && export MANPATH="/opt/local/man:${MANPATH}"
 
 GPG_TTY=$(tty)
 export GPG_TTY
 
-# Add local/bin/ to PATH
-export PATH="~/.local/bin:$PATH"
-
-export PATH="$HOME/.cargo/bin:$PATH"
