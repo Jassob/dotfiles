@@ -1,18 +1,5 @@
 # ~/.zshrc
 
-source ~/.profile
-
-# Source FILE if it exists
-function sourceIfExists {
-    FILE=${1:-undefined}
-
-    if [[ "$FILE" == undefined ]]; then return 0; fi
-
-    if [[ -f "$FILE" ]]; then
-	source "$FILE"
-    fi
-}
-
 setopt NO_CLOBBER
 setopt NO_PROMPT_CR
 setopt NO_BEEP
@@ -53,11 +40,11 @@ setopt ALL_EXPORT
 ######
 ## Sourcing other files
 #####
-sourceIfExists "$ZDOTDIR/aliases.zsh"
-sourceIfExists "$ZDOTDIR/work.zsh"
+source "$ZDOTDIR/aliases.zsh"
+source "$ZDOTDIR/work.zsh"
 
 if [[ -f /etc/NIXOS ]]; then
-    sourceIfExists "$ZDOTDIR/nix.zsh"
+    source "$ZDOTDIR/nix.zsh"
 fi
 
 ######
