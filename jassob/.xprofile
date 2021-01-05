@@ -7,5 +7,4 @@ if [[ -n "$DESKTOP_SESSION" && ("$DESKTOP_SESSION" = "none+xmonad" || "$DESKTOP_
 	nm-applet & disown %1
 fi
 
-source ${HOME}/.profile
 xsetroot -cursor_name left_ptr
