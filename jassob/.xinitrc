@@ -34,11 +34,6 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
     unset f
 fi
 
-# Add /snap/bin to PATH if it exists
-if [ -d /snap/bin ]; then
-    export PATH=/snap/bin:$PATH
-fi
-
 # Set my keymap
 setxkbmap se -model emacs2 -option ctrl:nocaps,compose:rwin
 
