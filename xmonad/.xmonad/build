@@ -23,8 +23,11 @@ fi
 
 ################################################################################
 
-# Build with nix
-nix-build "$SRC_DIR/release.nix"
+(
+    # Build with nix
+    cd "${SRC_DIR}"
+    cabal v2-install --bindir "${HOME}/.cabal/bin" --overwrite-policy=always
 
-# Move the binary out into the root directory
-cp "result/bin/$EXE_NAME" "$output_file"
+    # Move the binary out into the root directory
+    cp "${HOME}/.cabal/bin/$EXE_NAME" "$output_file"
+)
