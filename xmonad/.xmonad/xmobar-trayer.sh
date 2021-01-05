@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-trayer --edge top --align right --width 5 --transparent true --alpha 255 -l --monitor primary --height 22
+trayer --edge top --align right \
+       --transparent true --alpha 175 --tint 0x000000 \
+       --monitor primary -l \
+       --width 5 --height 29

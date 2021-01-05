@@ -11,7 +11,7 @@ fi
 STAY_AWAKE=$(cat "${ENV_FILE}")
 
 if [ "${STAY_AWAKE}" = "true" ]; then
-    echo "<fn=3></fn>"
+    echo ""
 elif [ "${STAY_AWAKE}" = "false" ]; then
-    echo "<fn=2></fn>"
+    echo ""
 fi

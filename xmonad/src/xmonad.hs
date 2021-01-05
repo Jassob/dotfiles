@@ -103,7 +103,7 @@ myWorkspaces = ws
   makeLabel index icon = show index ++ ": <fn=1>" ++ icon : "</fn> "
 
   icons :: String
-  icons = "\xf269\xf120\xf121\xf02d\xf128\xf128\xf128\xf001\xf292\xf0e6"
+  icons = "\xf269\xf120\xf121\xf02d\xf128\xf128\xf128\xf001\xf292\xf086"
 
 myKeys :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
 myKeys XConfig { modMask = modm } =
@@ -297,7 +297,7 @@ myLayout =
   layouts =
     gaps [(U, 5), (R, 5), (D, 5), (L, 5)]
       $ (spacing 5 emptyBSP ||| tabs)
-  tabs  = tabbed shrinkText $ def { fontName = "xft:Inconsolata:style=Regular" }
+  tabs  = tabbed shrinkText $ def { fontName = "xft:Iosevka Nerd Font Mono:style=Regular" }
 
 -- | Log configuration
 myPP :: Handle -> PP
