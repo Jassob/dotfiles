@@ -294,10 +294,8 @@ help = unlines
 myLayout =
   toggleLayouts (noBorders Full) . avoidStruts . smartBorders $ layouts
  where
-  layouts =
-    gaps [(U, 5), (R, 5), (D, 5), (L, 5)]
-      $ (spacing 5 emptyBSP ||| tabs)
-  tabs  = tabbed shrinkText $ def { fontName = "xft:Iosevka Nerd Font Mono:style=Regular" }
+  layouts = gaps [(U, 5), (R, 5), (D, 5), (L, 5)] $ (spacing 5 emptyBSP ||| tabs)
+  tabs  = noBorders $ tabbed shrinkText $ def { fontName = "xft:Iosevka Nerd Font Mono:style=Regular" }
 
 -- | Log configuration
 myPP :: Handle -> PP
