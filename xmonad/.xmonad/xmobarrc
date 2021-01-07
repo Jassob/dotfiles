@@ -31,7 +31,7 @@ Config
       \<action=`pavucontrol` button=1>\
       \| %vol%\
       \</action> \
-      \| %battery% \
+      \| %battery0% %battery1% %battery% \
       \| <action=`/home/jassob/.local/bin/logout` button=1>\
       \<fn=1><raw=1:/></fn>\
       \</action> "
@@ -40,25 +40,31 @@ Config
 
       , Run Date "<action=`$BROWSER https://calendar.google.com`>%b %d, %H:%M</action>" "date" 10
 
-      , Run Battery
-        [ "--template" , "<acstatus> <left>"
-        , "-L", "10"
-        , "-H", "75"
-        , "--", "-P" -- Add percentage
-        , "-L", "25"
-        , "-H", "75"
-        , "-h", "green"
-        , "-m", "darkorange"
-        , "-l", "darkred"
-        , "-i", ""
-        , "-O", ""
-        , "-o", ""
-        , "--highs"  , ""
-        , "--mediums", ""
-        , "--lows"   , ""
-        , "-A", "10"
-        , "-a", "notify-send -u critical 'Battery level low, connect charger!'"
-        ] 5
+      , Run BatteryN ["BAT0"]
+        [ "--template" , "<acstatus>"
+        , "-L", "25", "-H", "75"
+        , "-h", "white", "-n", "darkorange", "-l", "darkred"
+        , "--"
+        , "-L", "25", "-H", "75"
+        , "--idle", "", "--on", "", "--off", "" -- use highs, mediums, lows for off status
+        , "--highs", "", "--mediums", "", "--lows", ""
+        ] 60 "battery0"
+
+      , Run BatteryN ["BAT1"]
+        [ "--template" , "<acstatus>"
+        , "-L", "25" , "-H", "75"
+        , "-h", "white" , "-n", "darkorange" , "-l", "darkred"
+        , "--"
+        , "-L", "25", "-H", "75"
+        , "--on", "", "--idle", "", "--off", "" -- use highs, mediums, lows for off status
+        , "--highs", "", "--mediums", "", "--lows" , ""
+        ] 60 "battery1"
+
+      -- total battery level
+      , Run BatteryN ["BAT0", "BAT1"]
+        [ "-t", "<left>", "--", "-P" -- show percentage in left
+        , "-A", "10", "-a", "notify-send -u critical 'Battery level low, connect charger!'"
+        ] 60 "battery"
 
       , Run Mpris2 "spotify"
         ["-t", "<action=`playerctl play-pause`><artist> - <title></action>"
