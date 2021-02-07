@@ -199,8 +199,8 @@ in rec {
       sessionVariables = {
         # Download programs temporarily if missing
         NIX_AUTO_RUN = true;
-        NIX_PATH = "~/nix";
         LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale-archive";
+        NIX_PATH = "$HOME/nix";
       };
 
       profileExtra = ''
