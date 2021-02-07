@@ -125,48 +125,28 @@ in rec {
   programs = {
     git = {
       enable = true;
+      delta.enable = true;
       userEmail = "jacob.t.jonsson@gmail.com";
       userName = "Jacob Jonsson";
 
-      signing = {
-        key = "D822DFB8049AF39ADF43EA0A7E30B9B047F7202E";
-        signByDefault = true;
-      };
+      signing.key = "D822DFB8049AF39ADF43EA0A7E30B9B047F7202E";
+      signing.signByDefault = true;
 
       aliases = {
         amend = "commit --amend -C HEAD";
-        authors = ''
-          !${pkgs.git}/bin/git log --pretty=format:%aN \
-                     | ${pkgs.coreutils}/bin/sort \
-                     | ${pkgs.coreutils}/bin/uniq -c \
-                     | ${pkgs.coreutils}/bin/sort -rn'';
-        changes = "diff --name-status -r";
-        cp = "cherry-pick";
-        ls-ignored = "ls-files --exclude-standard --ignored --others";
-        rom = ''
-          !${pkgs.git}/bin/git fetch \
-                     && ${pkgs.git}/bin/git rebase --autostash origin/master'';
+        fp = "push --force-with-lease";
+        rom = "!${pkgs.git}/bin/git fetch && ${pkgs.git}/bin/git rebase --autostash origin/master";
+        sha = "rev-parse --short HEAD";
       };
 
       extraConfig = {
         core.whitespace = "trailing-space,space-before-tab";
-        commit.gpgsign = true;
         github.user = "Jassob";
         pull.rebase = true;
         rebase.autosquash = true;
         rerere.enabled = true;
 
-        color = {
-          status = "auto";
-          diff = "auto";
-          branch = "auto";
-          interactive = "auto";
-          ui = "auto";
-          sh = "auto";
-        };
-
-        "url \"git@github.com:einride/\"".insteadOf =
-          "https://github.com/einride/";
+        "url \"git@github.com:einride/\"".insteadOf = "https://github.com/einride/";
       };
     };
 
