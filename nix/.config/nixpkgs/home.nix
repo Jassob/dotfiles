@@ -475,7 +475,7 @@ in rec {
   services.gpg-agent = {
     enable = true;
     extraConfig = ''
-      pinentry-program ${pkgs.pinentry}/bin/pinentry-gtk-2
+      pinentry-program ${pkgs.pinentry}/bin/pinentry
       allow-emacs-pinentry
       enable-ssh-support
     '';
