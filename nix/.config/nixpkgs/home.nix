@@ -94,9 +94,6 @@ in rec {
 
       # For my work
       google-chrome
-
-      # Because I'm stupid and mixing different OSes
-      glibcLocales
     ];
 
     file = {
@@ -179,7 +176,6 @@ in rec {
       sessionVariables = {
         # Download programs temporarily if missing
         NIX_AUTO_RUN = true;
-        LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale-archive";
         NIX_PATH = "$HOME/nix";
       };
 
