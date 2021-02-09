@@ -120,6 +120,62 @@ in rec {
   manual.html.enable = true;
 
   programs = {
+    alacritty = {
+      enable = true;
+      settings = {
+        window.decorations = "none";
+        window.startup_mode = "Maximized";
+        font.normal.family = "Iosevka";
+        draw_bold_text_with_bright_colors = true;
+        colors.primary = { background = "#1d2021"; foreground = "#ebdbbd"; };
+        colors.normal = {
+          black = "#000000";
+          red = "#d54e53";
+          green = "#b9ca4a";
+          yellow = "#e6c547";
+          blue = "#7aa6da";
+          magenta = "#c397d8";
+          cyan = "#70c0ba";
+          white = "#eaeaea";
+        };
+        colors.bright = {
+          black = "#666666";
+          red = "#ff3334";
+          green = "#9ec400";
+          yellow = "#e7c547";
+          blue = "#7aa6da";
+          magenta = "#b77ee0";
+          cyan = "#54ced6";
+          white = "#ffffff";
+        };
+        url.modifiers = "Control";
+        selection.save_to_clipboard = true;
+        key_bindings = [
+          { key = "Key0"; mods = "Control"; action = "ResetFontSize"; }
+          { key = "Add"; mods = "Control"; action  = "IncreaseFontSize"; }
+          { key = "Subtract"; mods = "Control"; action = "DecreaseFontSize"; }
+        ];
+      };
+    };
+
+    bash.profileExtra = ''
+      # Setup GPG
+      export GPG_TTY=$(tty)
+      if ! pgrep -x "gpg-agent" > /dev/null; then
+        ${pkgs.gnupg}/bin/gpgconf --launch gpg-agent
+      fi
+      export PATH=$HOME/.local/bin:$PATH
+      export SSH_AUTH_SOCK=$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)
+    '';
+
+    command-not-found.enable = true;
+
+    fzf = {
+      enable = true;
+      enableBashIntegration = true;
+      enableZshIntegration = true;
+    };
+
     git = {
       enable = true;
       delta.enable = true;
@@ -147,27 +203,23 @@ in rec {
       };
     };
 
-    home-manager.enable = true;
+    gpg = {
+      enable = true;
+      settings = {
+        keyserver = "hkps://hkps.pool.sks-keyservers.net";
+        keyserver-options = "no-honor-keyserver-url";
+        keyid-format = "0xlong";
+      };
+    };
 
-    bash.profileExtra = ''
-      # Setup GPG
-      export GPG_TTY=$(tty)
-      if ! pgrep -x "gpg-agent" > /dev/null; then
-        ${pkgs.gnupg}/bin/gpgconf --launch gpg-agent
-      fi
-      export PATH=$HOME/.local/bin:$PATH
-      export SSH_AUTH_SOCK=$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)
-    '';
+    home-manager.enable = true;
 
     zsh = {
       enable = true;
       defaultKeymap = "emacs";
-      dotDir = ".zsh.d";
       enableCompletion = true;
       enableAutosuggestions = true;
       history = {
-        size = 50000;
-        save = 500000;
         path = ".shell_history";
         ignoreDups = true;
         share = true;
@@ -177,6 +229,8 @@ in rec {
         # Download programs temporarily if missing
         NIX_AUTO_RUN = true;
         NIX_PATH = "$HOME/nix";
+        # Only show the last two directories in current path
+        PROMPT_DIRTRIM="2";
       };
 
       profileExtra = ''
@@ -218,15 +272,12 @@ in rec {
         l = "ls -CF";
         # Keyboard layouts
         se = "setxkbmap -model emacs2 -option ctrl:nocaps,compose:rwin se";
-        dv =
-        "${pkgs.xorg.xkbcomp}/bin/xkbcomp -I$HOME/.xkb ~/.xkb/keymap/mydvorak $DISPLAY 2> /dev/null";
+        dv = "${pkgs.xorg.xkbcomp}/bin/xkbcomp -I$HOME/.xkb ~/.xkb/keymap/mydvorak $DISPLAY";
         # Bluetooth
         sony-connect = "bluetoothctl connect 38:18:4C:D3:1A:20";
         sony-disconnect = "bluetoothctl disconnect 38:18:4C:D3:1A:20";
         # Emacs
-        emproj = ''
-          emacs --eval "(setq server-name \"$(basename $PWD)\")" \
-                --funcall server-start'';
+        emproj = ''emacs --eval "(setq server-name \"$(basename $PWD)\")" --funcall server-start'';
         emacs-sync-gcal = ''
            emacs --batch --kill \\
                  --load ~/.emacs.d/init.el \\
@@ -234,7 +285,6 @@ in rec {
                  --funcall core/load-modules \\
                  --eval "(setq org-directory \"/home/jassob/personal/\")" \\
                  --funcall org-gcal-sync'';
-
         dock = "~/.configurations/work-from-home.sh";
         dock-ask = "~/.configurations/work-from-home.sh -i";
         undock = "~/.configurations/laptop.sh";
@@ -253,63 +303,7 @@ in rec {
         # Setup prompt
         PROMPT_COLOR=$(echo yellow blue green cyan magenta | ${pkgs.findutils}/bin/xargs ${pkgs.coreutils}/bin/shuf -n 1 -e)
         PROMPT="%B%F{$PROMPT_COLOR}%}%3~%f%b%f%F{white} %# %f";
-        PROMPT_DIRTRIM="2";
-        RPROMPT="";
       '';
-    };
-
-    fzf = {
-      enable = true;
-      enableBashIntegration = true;
-      enableZshIntegration = true;
-    };
-
-    alacritty = {
-      enable = true;
-      settings = {
-        window.decorations = "none";
-        window.startup_mode = "Maximized";
-        font.normal.family = "Iosevka";
-        draw_bold_text_with_bright_colors = true;
-        colors.primary = { background = "#1d2021"; foreground = "#ebdbbd"; };
-        colors.normal = {
-          black = "#000000";
-          red = "#d54e53";
-          green = "#b9ca4a";
-          yellow = "#e6c547";
-          blue = "#7aa6da";
-          magenta = "#c397d8";
-          cyan = "#70c0ba";
-          white = "#eaeaea";
-        };
-        colors.bright = {
-          black = "#666666";
-          red = "#ff3334";
-          green = "#9ec400";
-          yellow = "#e7c547";
-          blue = "#7aa6da";
-          magenta = "#b77ee0";
-          cyan = "#54ced6";
-          white = "#ffffff";
-        };
-        url.modifiers = "Control";
-        selection.save_to_clipboard = true;
-        key_bindings = [
-          { key = "Key0"; mods = "Control"; action = "ResetFontSize"; }
-          { key = "Add"; mods = "Control"; action  = "IncreaseFontSize"; }
-          { key = "Subtract"; mods = "Control"; action = "DecreaseFontSize"; }
-        ];
-      };
-    };
-
-    command-not-found.enable = true;
-    gpg = {
-      enable = true;
-      settings = {
-        keyserver = "hkps://hkps.pool.sks-keyservers.net";
-        keyserver-options = "no-honor-keyserver-url";
-        keyid-format = "0xlong";
-      };
     };
   };
 
