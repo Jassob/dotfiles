@@ -271,61 +271,41 @@ in rec {
     alacritty = {
       enable = true;
       settings = {
-        window = {
-          decorations = "none";
-          startup_mode = "Maximized";
-        };
-        font = {
-          normal.family = "Iosevka";
-          size = 10.0;
-          use_thin_strokes = true;
-        };
+        window.decorations = "none";
+        window.startup_mode = "Maximized";
+        font.normal.family = "Iosevka";
         draw_bold_text_with_bright_colors = true;
-        colors = {
-          primary = {
-            background = "#1d2021";
-            foreground = "#ebdbbd";
-          };
-          normal = {
-            black = "#000000";
-            red = "#d54e53";
-            green = "#b9ca4a";
-            yellow = "#e6c547";
-            blue = "#7aa6da";
-            magenta = "#c397d8";
-            cyan = "#70c0ba";
-            white = "#eaeaea";
-          };
-          bright = {
-            black = "#666666";
-            red = "#ff3334";
-            green = "#9ec400";
-            yellow = "#e7c547";
-            blue = "#7aa6da";
-            magenta = "#b77ee0";
-            cyan = "#54ced6";
-            white = "#ffffff";
-          };
+        colors.primary = { background = "#1d2021"; foreground = "#ebdbbd"; };
+        colors.normal = {
+          black = "#000000";
+          red = "#d54e53";
+          green = "#b9ca4a";
+          yellow = "#e6c547";
+          blue = "#7aa6da";
+          magenta = "#c397d8";
+          cyan = "#70c0ba";
+          white = "#eaeaea";
+        };
+        colors.bright = {
+          black = "#666666";
+          red = "#ff3334";
+          green = "#9ec400";
+          yellow = "#e7c547";
+          blue = "#7aa6da";
+          magenta = "#b77ee0";
+          cyan = "#54ced6";
+          white = "#ffffff";
         };
         url.modifiers = "Control";
-        selection = {
-          semantic_escape_chars = ",|`|:\"' ()[]{}<>";
-          save_to_clipboard = true;
-        };
-        window.dynamic_title = true;
-        cursor = {
-          style = "Block";
-          unfocused_hollow = true;
-        };
-        live_config_reload = true;
+        selection.save_to_clipboard = true;
         key_bindings = [
-          { key = "Insert"; mods = "Shift"; action = "PasteSelection"; }
           { key = "Key0"; mods = "Control"; action = "ResetFontSize"; }
           { key = "Add"; mods = "Control"; action  = "IncreaseFontSize"; }
           { key = "Subtract"; mods = "Control"; action = "DecreaseFontSize"; }
         ];
       };
     };
+
     command-not-found.enable = true;
     gpg = {
       enable = true;
@@ -343,7 +323,6 @@ in rec {
     dataHome = "${home_directory}/.local/share";
     configFile."${home_directory}/.tmux.conf".source = ../../../xdg-configs/.tmux.conf;
     configFile."mbsyncrc".source = ../../../mail/.mbsyncrc;
-    configFile."alacritty".source = ../../../xdg-configs/.config/alacritty;
     configFile."dunst".source = ../../../xdg-configs/.config/dunst;
   };
 
