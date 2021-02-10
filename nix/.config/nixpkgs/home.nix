@@ -7,16 +7,9 @@ let
   ca-bundle_crt = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
   lib = pkgs.stdenv.lib;
 
-  # Custom packages
-  emacs = (import /etc/nixos/packages/emacs.nix { inherit pkgs; });
-
 in rec {
   # Allow non-free software (fonts, drivers, etc..):
-  nixpkgs.config = {
-    allowUnfree = true;
-    allowBroken = false;
-    allowUnsupportedSystem = false;
-  };
+  nixpkgs.config = import ./config.nix;
 
   home = {
     packages = with pkgs; [
@@ -28,7 +21,6 @@ in rec {
       diffutils
       drive
       dropbox-cli
-      emacs
       entr
       fasd
       file
@@ -94,6 +86,11 @@ in rec {
 
       # For my work
       google-chrome
+
+      (emacsWithPackagesFromUsePackage {
+        config = ../../../emacs/init.el;
+        extraEmacsPackages = epkgs: [ epkgs.use-package epkgs.delight ];
+      })
     ];
 
     file = {
@@ -312,8 +309,10 @@ in rec {
     configHome = "${home_directory}/.config";
     dataHome = "${home_directory}/.local/share";
     configFile."${home_directory}/.tmux.conf".source = ../../../xdg-configs/.tmux.conf;
+    configFile."${home_directory}/.emacs".source = ../../../emacs/init.el;
     configFile."mbsyncrc".source = ../../../mail/.mbsyncrc;
     configFile."dunst".source = ../../../xdg-configs/.config/dunst;
+    configFile."nixpkgs/conig.nix".source = ./config.nix;
   };
 
   services.gpg-agent = {
