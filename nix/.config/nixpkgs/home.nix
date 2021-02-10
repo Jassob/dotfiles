@@ -77,7 +77,6 @@ in rec {
       networkmanagerapplet
       pavucontrol
       pulsemixer
-      rofi
       scrot
       sxhkd
       trayer
@@ -210,6 +209,13 @@ in rec {
     };
 
     home-manager.enable = true;
+
+    rofi = {
+      enable = true;
+      fullscreen = true;
+      pass.enable = true;
+      theme = "gruvbox-dark";
+    };
 
     zsh = {
       enable = true;
