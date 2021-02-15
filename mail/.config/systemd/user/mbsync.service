@@ -2,7 +2,8 @@
 Description=Mailbox synchronization service
 
 [Service]
-Environment="PATH=$PATH:/run/current-system/sw/bin/nix-shell"
 Type=oneshot
-ExecStart=/home/jassob/dotfiles/mail/notmuch-tag-script.sh
-ExecStartPost=/home/jassob/.nix-profile/bin/mu index --maildir=~/.mail/gmail
+ExecStart=mbsync -a
+ExecStartPost=mu index --maildir=$HOME/.mail/ \
+		 --my-address=jacob.t.jonsson@gmail.com \
+		 --my-address=jassob@live.se
