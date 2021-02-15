@@ -215,6 +215,7 @@ in rec {
       fullscreen = true;
       pass.enable = true;
       theme = "gruvbox-dark";
+      package = pkgs.rofi.override { plugins = [ pkgs.rofi-emoji ]; };
     };
 
     zsh = {

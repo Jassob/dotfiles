@@ -44,6 +44,9 @@ super + p
 super + x ; e ; c
       emacsclient -c -e "(org-capture)"
 
+super + x; r
+      rofi -show emoji
+
 super + e
       $HOME/.local/bin/startemacs -i "rofi -dmenu -p Emacs"
 
