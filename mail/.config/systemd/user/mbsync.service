@@ -6,4 +6,5 @@ Type=oneshot
 ExecStart=mbsync -a
 ExecStartPost=mu index --maildir=$HOME/.mail/ \
 		 --my-address=jacob.t.jonsson@gmail.com \
-		 --my-address=jassob@live.se
+		 --my-address=jassob@live.se \
+		 --my-address=jacob.jonsson@einride.tech
