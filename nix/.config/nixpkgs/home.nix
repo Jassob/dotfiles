@@ -1,9 +1,7 @@
 { config, pkgs, ... }:
-
 let
   home_directory = builtins.getEnv "HOME";
   log_directory = "${home_directory}/.logs";
-  tmp_directory = "/tmp";
   ca-bundle_crt = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
   lib = pkgs.stdenv.lib;
 
@@ -159,7 +157,7 @@ in rec {
         selection.save_to_clipboard = true;
         key_bindings = [
           { key = "Key0"; mods = "Control"; action = "ResetFontSize"; }
-          { key = "Add"; mods = "Control"; action  = "IncreaseFontSize"; }
+          { key = "Add"; mods = "Control"; action = "IncreaseFontSize"; }
           { key = "Subtract"; mods = "Control"; action = "DecreaseFontSize"; }
         ];
       };
@@ -256,7 +254,7 @@ in rec {
         NIX_AUTO_RUN = true;
         NIX_PATH = "$HOME/nix";
         # Only show the last two directories in current path
-        PROMPT_DIRTRIM="2";
+        PROMPT_DIRTRIM = "2";
       };
 
       profileExtra = ''
@@ -305,12 +303,12 @@ in rec {
         # Emacs
         emproj = ''emacs --eval "(setq server-name \"$(basename $PWD)\")" --funcall server-start'';
         emacs-sync-gcal = ''
-           emacs --batch --kill \\
-                 --load ~/.emacs.d/init.el \\
-                 --eval "(setq core/enabled-modules (quote (\"org\" \"org-gcal\")))" \\
-                 --funcall core/load-modules \\
-                 --eval "(setq org-directory \"/home/jassob/personal/\")" \\
-                 --funcall org-gcal-sync'';
+          emacs --batch --kill \\
+                --load ~/.emacs.d/init.el \\
+                --eval "(setq core/enabled-modules (quote (\"org\" \"org-gcal\")))" \\
+                --funcall core/load-modules \\
+                --eval "(setq org-directory \"/home/jassob/personal/\")" \\
+                --funcall org-gcal-sync'';
         dock = "~/.configurations/work-from-home.sh";
         dock-ask = "~/.configurations/work-from-home.sh -i";
         undock = "~/.configurations/laptop.sh";
