@@ -339,9 +339,11 @@ in rec {
     dataHome = "${home_directory}/.local/share";
     configFile."${home_directory}/.tmux.conf".source = ../../../xdg-configs/.tmux.conf;
     configFile."${home_directory}/.emacs".source = ../../../emacs/init.el;
-    configFile."dunst".source = ../../../xdg-configs/.config/dunst;
+    configFile."dunst/dunstrc".source = ../../../xdg-configs/.config/dunst/dunstrc;
     configFile."nixpkgs/config.nix".source = ./nixpkgs-config.nix;
   };
+
+  services.dunst.enable = true;
 
   services.emacs = {
     enable = true;
