@@ -427,6 +427,10 @@ in rec {
     SyncState *
   '';
 
+  services.picom = {
+    enable = true;
+    vSync = true;
+    inactiveOpacity = "0.9";
   };
 
   # Enable redshift
@@ -440,4 +444,25 @@ in rec {
 
   # Ensure fonts installed via Nix are picked up.
   fonts.fontconfig.enable = true;
+
+  xsession = {
+    enable = true;
+    pointerCursor.package = pkgs.vanilla-dmz;
+    pointerCursor.name = "Vanilla-DMZ";
+    windowManager.xmonad = {
+      enable = true;
+      extraPackages = hpkgs: [
+        hpkgs.xmonad-contrib
+        hpkgs.xmonad-extras
+        hpkgs.xmobar
+      ];
+    };
+
+    profileExtra = ''
+      # Set wallpaper
+      ${pkgs.feh}/bin/feh --bg-fill ~/.wallpaper.png
+      # Launch hotkey daemon (and make it detect keymap changes)
+      ${pkgs.sxhkd}/bin/sxhkd -m -1 & disown %1
+    '';
+  };
 }
