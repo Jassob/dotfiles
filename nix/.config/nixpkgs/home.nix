@@ -65,7 +65,6 @@ in rec {
       # Appearance
       adapta-gtk-theme
       gnome3.adwaita-icon-theme
-      input-fonts
 
       # For my XMonad setup
       blueman
@@ -87,6 +86,19 @@ in rec {
       # For my work
       google-chrome
 
+      # Fonts
+      corefonts # Microsoft free fonts
+      dejavu_fonts
+      fira-code
+      fira-code-symbols
+      hasklig
+      inconsolata
+      input-fonts
+      iosevka
+      ubuntu_font_family
+      xits-math
+      # TODO: package only iosevka-nerdfont
+      nerdfonts
     ];
 
     file = {
@@ -118,7 +130,7 @@ in rec {
       settings = {
         window.decorations = "none";
         window.startup_mode = "Maximized";
-        font.normal.family = "Iosevka";
+        font.normal.family = "Iosevka Nerd Font";
         draw_bold_text_with_bright_colors = true;
         colors.primary = { background = "#1d2021"; foreground = "#ebdbbd"; };
         colors.normal = {
