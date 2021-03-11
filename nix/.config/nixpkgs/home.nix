@@ -45,11 +45,13 @@ in rec {
       stow
       tdesktop
       tmux
+      translate-shell
       unzip
       usbutils
       vlc
       xclip
       zathura
+      zoom-us
 
       # Haskell development
       haskellPackages.ghc
