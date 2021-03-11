@@ -27,7 +27,6 @@ in rec {
       fasd
       file
       firefox
-      fzf
       gnupg
       graphviz
       light
@@ -40,7 +39,6 @@ in rec {
       playerctl
       pciutils
       ripgrep
-      rofi-pass
       spotify
       sshfs
       steam
