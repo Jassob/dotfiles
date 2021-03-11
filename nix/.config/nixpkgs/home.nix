@@ -18,6 +18,7 @@ in rec {
       ag
       alacritty
       bat
+      clang-tools # clang-format
       coreutils
       diffutils
       drive
@@ -31,6 +32,7 @@ in rec {
       graphviz
       light
       mu
+      nixpkgs-fmt
       networkmanager
       openssh
       pass
