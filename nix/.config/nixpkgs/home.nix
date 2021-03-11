@@ -9,7 +9,8 @@ let
 
 in rec {
   # Allow non-free software (fonts, drivers, etc..):
-  nixpkgs.config = import ./config.nix;
+  nixpkgs.config = import ./nixpkgs-config.nix;
+  nixpkgs.overlays = [ (import (builtins.fetchTarball { url = https://github.com/nix-community/emacs-overlay/archive/master.tar.gz; })) ];
 
   home = {
     packages = with pkgs; [
@@ -86,10 +87,6 @@ in rec {
       # For my work
       google-chrome
 
-      (emacsWithPackagesFromUsePackage {
-        config = ../../../emacs/init.el;
-        extraEmacsPackages = epkgs: [ epkgs.use-package epkgs.delight ];
-      })
     ];
 
     file = {
@@ -165,6 +162,14 @@ in rec {
     '';
 
     command-not-found.enable = true;
+
+    emacs = {
+      enable = true;
+      package = (pkgs.emacsWithPackagesFromUsePackage {
+        config = ../../../emacs/init.el;
+        extraEmacsPackages = epkgs: [ epkgs.use-package ];
+      });
+    };
 
     fzf = {
       enable = true;
@@ -319,7 +324,11 @@ in rec {
     configFile."${home_directory}/.emacs".source = ../../../emacs/init.el;
     configFile."mbsyncrc".source = ../../../mail/.mbsyncrc;
     configFile."dunst".source = ../../../xdg-configs/.config/dunst;
-    configFile."nixpkgs/conig.nix".source = ./config.nix;
+    configFile."nixpkgs/config.nix".source = ./nixpkgs-config.nix;
+  };
+
+  services.emacs = {
+    enable = true;
   };
 
   services.gpg-agent = {
