@@ -336,7 +336,6 @@ in rec {
     dataHome = "${home_directory}/.local/share";
     configFile."${home_directory}/.tmux.conf".source = ../../../xdg-configs/.tmux.conf;
     configFile."${home_directory}/.emacs".source = ../../../emacs/init.el;
-    configFile."mbsyncrc".source = ../../../mail/.mbsyncrc;
     configFile."dunst".source = ../../../xdg-configs/.config/dunst;
     configFile."nixpkgs/config.nix".source = ./nixpkgs-config.nix;
   };
@@ -354,10 +353,75 @@ in rec {
     '';
   };
 
+  # Mail synchronization
   services.mbsync = {
     enable = true;
     configFile = "${xdg.configHome}/mbsyncrc";
-    postExec = "${pkgs.mu}/bin/mu index --maildir=~/.mail/personal";
+    postExec = "${pkgs.mu}/bin/mu index";
+  };
+  xdg.configFile."mbsyncrc".text = ''
+    IMAPAccount personal
+    Host imap.gmail.com
+    Port 993
+    User jacob.t.jonsson@gmail.com
+    PassCmd "${pkgs.pass}/bin/pass notes/gmail-app-password"
+    SSLType IMAPS
+    SSLVersions TLSv1.2
+    CertificateFile ${ca-bundle_crt}
+
+    IMAPStore personal-remote
+    Account personal
+
+    MaildirStore personal-local
+    Path ~/.mail/personal/
+    Inbox ~/.mail/personal/Inbox
+
+    Channel personal-inbox
+    Master :personal-remote:
+    Slave :personal-local:
+    Create Slave
+    Expunge Both
+    SyncState *
+
+    Channel personal-all
+    Master :personal-remote:"[Gmail]/All Mail"
+    Slave :personal-local:"all"
+    Create Slave
+    Expunge Both
+    SyncState *
+
+    Channel personal-sent
+    Master :personal-remote:"[Gmail]/Sent Mail"
+    Slave :personal-local:"sent"
+    Create Slave
+    Expunge Both
+    SyncState *
+
+    Channel personal-starred
+    Master :personal-remote:"[Gmail]/Starred"
+    Slave :personal-local:"starred"
+    Create Slave
+    Expunge Both
+    SyncState *
+
+    Channel personal-trash
+    Master :personal-remote:"[Gmail]/Trash"
+    Slave :personal-local:"trash"
+    Create Slave
+    Expunge Both
+    SyncState *
+
+    Group personal
+    Channel personal-inbox
+    Channel personal-all
+    Channel personal-sent
+    Channel personal-starred
+    Channel personal-trash
+
+    Create Slave
+    SyncState *
+  '';
+
   };
 
   # Enable redshift
