@@ -227,7 +227,10 @@ in rec {
       };
     };
 
-    home-manager.enable = true;
+    home-manager = {
+      enable = true;
+      path = "$HOME/nix/home-manager";
+    };
 
     rofi = {
       enable = true;
