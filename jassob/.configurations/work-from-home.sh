@@ -19,3 +19,7 @@ xkbcomp -I$HOME/.xkb ~/.xkb/keymap/mydvorak $DISPLAY 2> /dev/null
 # Rerun sxhkd
 pkill sxhkd
 run sxhkd
+
+# Rerun trayer
+pkill trayer
+run ~/.xmonad/xmobar-trayer.sh

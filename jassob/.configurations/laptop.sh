@@ -14,3 +14,7 @@ setxkbmap -model emacs2 -option ctrl:nocaps,compose:rwin se
 # Rerun sxhkd
 pkill sxhkd
 run sxhkd
+
+# Rerun trayer
+pkill trayer
+run ~/.xmonad/xmobar-trayer.sh
