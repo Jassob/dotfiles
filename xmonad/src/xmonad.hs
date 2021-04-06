@@ -20,6 +20,7 @@ import qualified XMonad.StackSet               as W
 {- Actions
 -------------------------------------------------}
 import           XMonad.Actions.CopyWindow
+import           XMonad.Actions.UpdatePointer   ( updatePointer )
 
 {- Hooks
 -------------------------------------------------}
@@ -326,7 +327,9 @@ main = do
                     , workspaces         = myWorkspaces
                     , handleEventHook = docksEventHook <+> handleEventHook def
                     , startupHook        = myStartupHook
-                    , logHook            = dynamicLogWithPP $ myPP xmproc
+                    , logHook            = do
+                        dynamicLogWithPP $ myPP xmproc
+                        updatePointer (0.5, 0.5) (0.0, 0.0)
                     , keys               = myKeys
                     , normalBorderColor  = "#474646"
                     , focusedBorderColor = "#83a598"
