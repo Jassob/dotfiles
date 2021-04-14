@@ -7,6 +7,11 @@ TODO
 ---------
 -}
 
+import           Data.IORef                     ( IORef
+                                                , newIORef
+                                                , readIORef
+                                                , modifyIORef'
+                                                )
 import           Data.Map                       ( Map )
 import qualified Data.Map                      as M
 import           System.Exit
@@ -106,8 +111,8 @@ myWorkspaces = ws
   icons :: String
   icons = "\xf269\xf120\xf121\xf02d\xf128\xf128\xf128\xf001\xf292\xf086"
 
-myKeys :: XConfig Layout -> Map (KeyMask, KeySym) (X ())
-myKeys XConfig { modMask = modm } =
+myKeys :: IORef Bool -> XConfig Layout -> Map (KeyMask, KeySym) (X ())
+myKeys updateVar XConfig { modMask = modm } =
   M.fromList
     $  workspaceKeybindings
     ++ screenWorkspaceKeybindings
@@ -129,6 +134,8 @@ myKeys XConfig { modMask = modm } =
        , ( (modm, xK_w)
          , spawn "rofi -show window"
          )
+       , ((modm .|. shiftMask, xK_f), liftIO $ modifyIORef' updateVar not)
+
 
   -- modifying the window order
        , ((modm, xK_Return), windows W.swapMaster)
@@ -252,6 +259,7 @@ help = unlines
   , "mod-j                  Move focus to the next window"
   , "mod-k                  Move focus to the previous window"
   , "mod-m                  Move focus to the master window"
+  , "mod-Shift-f            Toggle mouse follows focus"
   , ""
   , "-- modifying the window order"
   , "mod-Return             Swap the focused window and the master window"
@@ -320,6 +328,7 @@ myPP h = def { ppCurrent = xmobarColor "#83a598" ""
 main :: IO ()
 main = do
   xmproc <- getXMonadDir >>= \dir -> spawnPipe $ "xmobar " ++ dir ++ "/xmobarrc"
+  updateVar <- newIORef True
   xmonad $ ewmh def { modMask            = myModMask
                     , terminal           = myTerminal
                     , layoutHook         = myLayout
@@ -329,8 +338,9 @@ main = do
                     , startupHook        = myStartupHook
                     , logHook            = do
                         dynamicLogWithPP $ myPP xmproc
-                        updatePointer (0.5, 0.5) (0.0, 0.0)
-                    , keys               = myKeys
+                        whenX (liftIO $ readIORef updateVar) $
+                          updatePointer (0.5, 0.5) (0.0, 0.0)
+                    , keys               = myKeys updateVar
                     , normalBorderColor  = "#474646"
                     , focusedBorderColor = "#83a598"
                     }
