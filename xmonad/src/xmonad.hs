@@ -106,7 +106,7 @@ myWorkspaces = ws
   ws = zipWith makeLabel [1 .. 10] icons
 
   makeLabel :: Int -> Char -> String
-  makeLabel index icon = show index ++ ": <fn=1>" ++ icon : "</fn> "
+  makeLabel index icon = show index ++ ": " ++ icon : " "
 
   icons :: String
   icons = "\xf269\xf120\xf121\xf02d\xf128\xf128\xf128\xf001\xf292\xf086"
