@@ -26,6 +26,7 @@ alias cat=bat
 alias gst='git status'
 alias gl='git log'
 alias gp='git pull'
+alias gpfl='git push --force-with-lease'
 alias gm='git merge --ff-only'
 alias grst='git reset --hard HEAD'
 # Mnemonic: Git Rebase On Master
