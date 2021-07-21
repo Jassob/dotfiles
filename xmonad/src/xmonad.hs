@@ -25,6 +25,7 @@ import qualified XMonad.StackSet               as W
 {- Actions
 -------------------------------------------------}
 import           XMonad.Actions.CopyWindow
+import           XMonad.Actions.PhysicalScreens
 import           XMonad.Actions.UpdatePointer   ( updatePointer )
 
 {- Hooks
@@ -224,15 +225,14 @@ screenWorkspaceKeybindings :: [((KeyMask, KeySym), X ())]
 screenWorkspaceKeybindings = concatMap makeKeybinding pairs
  where
   pairs = zip [0 ..] [xK_a, xK_s, xK_d]
-  action sc f = screenWorkspace sc >>= flip whenJust (windows . f)
 
   -- | Creates two keybindings for every screenworkspace, one
   -- for switching to that workspace and one for moving the
   -- window to that workspace.
-  makeKeybinding :: (ScreenId, KeySym) -> [((KeyMask, KeySym), X ())]
+  makeKeybinding :: (PhysicalScreen, KeySym) -> [((KeyMask, KeySym), X ())]
   makeKeybinding (sc, key) =
-    [ ((myModMask, key)              , action sc W.view)
-    , ((myModMask .|. shiftMask, key), action sc W.shift)
+    [ ((myModMask, key)              , viewScreen def sc)
+    , ((myModMask .|. shiftMask, key), sendToScreen def sc)
     ]
 
 
