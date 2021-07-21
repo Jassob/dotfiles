@@ -191,43 +191,6 @@
    #+end_src
 
    Now, pressing =C-c h= will hide all hidden files in Dired.
-** Move to beginning of line
-
-  [[http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line][Source]]
-
-  The default behaviour of calling =C-a= is to jump directly to the
-  beginning of the line, although we probably would like to go to
-  the beginning of the text on the line (and skip all the
-  indentation whitespace).
-
-  #+begin_src emacs-lisp :tangle init.el
-    (defun local/smarter-move-beginning-of-line (arg)
-      "Move point back to indentation of beginning of line.
-
-       Move point to the first non-whitespace character on this line.
-       If point is already there, move to the beginning of the line.
-       Effectively toggle between the first non-whitespace character and
-       the beginning of the line.
-
-       If ARG is not nil or 1, move forward ARG - 1 lines first.  If
-       point reaches the beginning or end of the buffer, stop there."
-       (interactive "^p")
-       (setq arg (or arg 1))
-
-       ;; Move lines first
-       (when (/= arg 1)
-         (let ((line-move-visual nil))
-           (forward-line (1- arg))))
-
-       (let ((orig-point (point)))
-         (back-to-indentation)
-         (when (= orig-point (point))
-           (move-beginning-of-line 1))))
-
-    ;; remap C-a to smarter-move-beginning-of-line
-    (global-set-key [remap move-beginning-of-line]
-                    'local/smarter-move-beginning-of-line)
-  #+end_src
 
 ** Parsing to terminal keys correctly
 
