@@ -91,18 +91,13 @@
      (use-package delight :ensure t)
    #+end_src
 
-   I found the =no-littering= package while browsing around, and
-   decided I'll give it a go rather than doing that work myself.
+** Backups and auto-save
+
+   Emacs should not litter the working directory by creating auto-save files and
+   backups there.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package no-littering :ensure t
-       :config
-       ;; Save automatic backups in var dir
-       (setq auto-save-file-name-transforms
-           `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-
-       ;; Save custom settings in etc dir
-       (setq custom-file (no-littering-expand-etc-file-name "custom.el")))
+     (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
    #+end_src
 
 ** Encoding system
