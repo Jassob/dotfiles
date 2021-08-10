@@ -157,8 +157,8 @@ in rec {
         selection.save_to_clipboard = true;
         key_bindings = [
           { key = "Key0"; mods = "Control"; action = "ResetFontSize"; }
-          { key = "Add"; mods = "Control"; action = "IncreaseFontSize"; }
-          { key = "Subtract"; mods = "Control"; action = "DecreaseFontSize"; }
+          { key = "Plus"; mods = "Control"; action = "IncreaseFontSize"; }
+          { key = "Minus"; mods = "Control"; action = "DecreaseFontSize"; }
         ];
       };
     };
@@ -179,6 +179,7 @@ in rec {
       enable = true;
       package = (pkgs.emacsWithPackagesFromUsePackage {
         config = ../../../emacs/init.el;
+        alwaysEnsure = true;
         extraEmacsPackages = epkgs: [ epkgs.use-package ];
       });
     };
@@ -191,7 +192,6 @@ in rec {
 
     git = {
       enable = true;
-      delta.enable = true;
       userEmail = "jacob.t.jonsson@gmail.com";
       userName = "Jacob Jonsson";
 
@@ -449,6 +449,8 @@ in rec {
     pointerCursor.name = "Vanilla-DMZ";
     windowManager.xmonad = {
       enable = true;
+      config = ./../../../xmonad/src/xmonad.hs;
+      enableContribAndExtras = true;
       extraPackages = hpkgs: [
         hpkgs.xmonad-contrib
         hpkgs.xmonad-extras
