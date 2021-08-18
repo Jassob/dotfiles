@@ -24,7 +24,6 @@ in rec {
       entr
       fasd
       file
-      firefox
       gnupg
       graphviz
       light
@@ -172,6 +171,10 @@ in rec {
       export PATH=$HOME/.local/bin:$PATH
       export SSH_AUTH_SOCK=$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)
     '';
+    browserpass = {
+      enable = true;
+      browsers = ["chrome" "firefox"];
+    };
 
     command-not-found.enable = true;
 
@@ -182,6 +185,26 @@ in rec {
         alwaysEnsure = true;
         extraEmacsPackages = epkgs: [ epkgs.use-package ];
       });
+    };
+
+    firefox.enable = true;
+    firefox.profiles.jassob = {
+      isDefault = true;
+      userChrome = ''
+        @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+        #tabbrowser-tabs {
+          visibility: collapse !important;
+        }
+
+        #TabsToolbar {
+          visibility: collapse;
+        }
+
+        #titlebar {
+          display: none;
+        }
+      '';
     };
 
     fzf = {
