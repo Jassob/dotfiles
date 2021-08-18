@@ -118,6 +118,21 @@ in rec {
         gtk-xft-hintstyle="hintfull"
         gtk-xft-rgba="rgb"
       '';
+      "${home_directory}/.shell/aliases".text = ''
+        alias ls="ls --color=auto"
+        alias ll="ls -alF"
+        # Keyboard layouts
+        alias se="${pkgs.xlibs.setxkbmap}/bin/setxkbmap -model emacs2 -option ctrl:nocaps,compose:rwin se"
+        alias dv="${pkgs.xlibs.setxkbmap}/bin/setxkbmap -variant dvorak -model emacs2 -option ctrl:nocaps,compose:rwin se"
+        # Bluetooth
+        alias sony-connect="${pkgs.bluez}/bin/bluetoothctl connect 38:18:4C:D3:1A:20"
+        alias sony-disconnect="${pkgs.bluez}/bin/bluetoothctl disconnect 38:18:4C:D3:1A:20"
+        # Emacs
+        alias emproj='emacs --eval "(setq server-name \"$(basename $PWD)\")" --funcall server-start'
+        alias dock="~/.configurations/work-from-home.sh"
+        alias dock-ask="~/.configurations/work-from-home.sh -i"
+        alias undock="~/.configurations/laptop.sh"
+      '';
     };
   };
 
@@ -162,15 +177,40 @@ in rec {
       };
     };
 
-    bash.profileExtra = ''
-      # Setup GPG
-      export GPG_TTY=$(tty)
-      if ! pgrep -x "gpg-agent" > /dev/null; then
-        ${pkgs.gnupg}/bin/gpgconf --launch gpg-agent
-      fi
-      export PATH=$HOME/.local/bin:$PATH
-      export SSH_AUTH_SOCK=$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)
-    '';
+    bash = {
+      enable = true;
+      enableVteIntegration = true;
+      historyControl = [ "ignoredups" "ignorespace" ];
+      historyFile = "${home_directory}/.shell/history";
+      initExtra = ''
+        PROMPT_COLOR=$(echo 33 34 32 36 35 | ${pkgs.findutils}/bin/xargs ${pkgs.coreutils}/bin/shuf -n 1 -e)
+        PS1="\[\e[''${PROMPT_COLOR}m\]\w\[\e[00m\] \$ "
+        # Setup fasd
+        eval "$(${pkgs.fasd}/bin/fasd --init auto)"
+        # Source shell aliases
+        . ${home_directory}/.shell/aliases
+      '';
+      profileExtra = ''
+        # Setup GPG
+        export GPG_TTY=$(tty)
+        if ! pgrep -x "gpg-agent" > /dev/null; then
+          ${pkgs.gnupg}/bin/gpgconf --launch gpg-agent
+        fi
+        export PATH=$HOME/.local/bin:$PATH
+        export SSH_AUTH_SOCK=$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)
+       if [ -f "$HOME/.xsessionrc" ]; then . $HOME/.xsessionrc; fi
+      '';
+
+      sessionVariables = {
+        # Download programs temporarily if missing
+        NIX_AUTO_RUN = true;
+        # Only show the last two directories in current path
+        PROMPT_DIRTRIM = "2";
+        # Update shell history on every command
+        PROMPT_COMMAND="history -a;$PROMPT_COMMAND";
+      };
+    };
+
     browserpass = {
       enable = true;
       browsers = ["chrome" "firefox"];
@@ -267,7 +307,7 @@ in rec {
       enableCompletion = true;
       enableAutosuggestions = true;
       history = {
-        path = ".shell_history";
+        path = "${home_directory}/.shell/history";
         ignoreDups = true;
         share = true;
       };
@@ -312,31 +352,6 @@ in rec {
         if [ -f "$HOME/.xsessionrc" ]; then . $HOME/.xsessionrc; fi
       '';
 
-      shellAliases = {
-        ls = "ls --color=auto";
-        ll = "ls -alF";
-        la = "ls -A";
-        l = "ls -CF";
-        # Keyboard layouts
-        se = "setxkbmap -model emacs2 -option ctrl:nocaps,compose:rwin se";
-        dv = "${pkgs.xorg.xkbcomp}/bin/xkbcomp -I$HOME/.xkb ~/.xkb/keymap/mydvorak $DISPLAY";
-        # Bluetooth
-        sony-connect = "bluetoothctl connect 38:18:4C:D3:1A:20";
-        sony-disconnect = "bluetoothctl disconnect 38:18:4C:D3:1A:20";
-        # Emacs
-        emproj = ''emacs --eval "(setq server-name \"$(basename $PWD)\")" --funcall server-start'';
-        emacs-sync-gcal = ''
-          emacs --batch --kill \\
-                --load ~/.emacs.d/init.el \\
-                --eval "(setq core/enabled-modules (quote (\"org\" \"org-gcal\")))" \\
-                --funcall core/load-modules \\
-                --eval "(setq org-directory \"/home/jassob/personal/\")" \\
-                --funcall org-gcal-sync'';
-        dock = "~/.configurations/work-from-home.sh";
-        dock-ask = "~/.configurations/work-from-home.sh -i";
-        undock = "~/.configurations/laptop.sh";
-      };
-
       initExtra = lib.mkBefore ''
         if [[ $TERM == dumb || $TERM == emacs || ! -o interactive ]]; then
             unsetopt zle
@@ -350,6 +365,9 @@ in rec {
         # Setup prompt
         PROMPT_COLOR=$(echo yellow blue green cyan magenta | ${pkgs.findutils}/bin/xargs ${pkgs.coreutils}/bin/shuf -n 1 -e)
         PROMPT="%B%F{$PROMPT_COLOR}%}%3~%f%b%f%F{white} %# %f";
+
+        # Source .shell/aliases
+        . ${home_directory}/.shell/aliases
       '';
     };
   };
