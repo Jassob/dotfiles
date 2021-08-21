@@ -410,11 +410,17 @@
 
 ** Rust
 
-   I want to format Rust buffers on save:
+   I want to format Rust buffers on save, and have the rest of the LSP
+  experience with Rust, especially with rust-analyzer.
 
    #+begin_src emacs-lisp :tangle init.el
-    (use-package rust-mode :ensure t :init (setq rust-format-on-save t)
-      :hook (rust-mode . lsp-deferred))
+     (use-package rust-mode :ensure t :hook (rust-mode . lsp-deferred)
+       :init (setq rust-format-on-save t
+                   rust-format-show-buffer nil
+                   rust-format-goto-problem nil
+                   lsp-rust-analyzer-call-info-full nil
+                   lsp-rust-server 'rust-analyzer
+                   lsp-rust-clippy-preference "on"))
   #+end_src
 
 ** Golang
