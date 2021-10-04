@@ -820,34 +820,6 @@
    )
    #+end_src
 
-* EVIL mode
-
-  I'm experimenting with EVIL mode in an attempt to learn Vi(m)
-  keybindings. Since I am used to quitting and escaping stuff by =C-g=
-  I want EVIL to transition to normal mode when I press =C-g=.
-
-  #+begin_src emacs-lisp :tangle init.el
-    (defun evil-keyboard-quit ()
-      "Keyboard quit and force normal state."
-      (interactive)
-      (and evil-mode (evil-force-normal-state))
-      (keyboard-quit))
-  #+end_src
-
-  When EVIL is loaded I therefore want bind =C-g= to
-  ~evil-keyboard-quit~.
-
-  #+begin_src emacs-lisp :tangle init.el
-    (use-package evil :commands 'evil-mode
-      :bind
-      (:map evil-normal-state-map   ("C-g" . #'evil-keyboard-quit))
-      (:map evil-motion-state-map   ("C-g" . #'evil-keyboard-quit))
-      (:map evil-motion-state-map   ("C-g" . #'evil-keyboard-quit))
-      (:map evil-insert-state-map   ("C-g" . #'evil-keyboard-quit))
-      (:map evil-window-map         ("C-g" . #'evil-keyboard-quit))
-      (:map evil-operator-state-map ("C-g" . #'evil-keyboard-quit)))
-  #+end_src
-
 * Key stroke reminders
 
  To help me remember my commands I use =guide-key=, which displays a
@@ -964,6 +936,40 @@
     (setq eshell-smart-space-goes-to-end t)
   #+end_src
 
+
+* Experiments
+
+  Here I group every package or feature that I am currently checking
+  out, with the hope of time boxing the experiment and either folding
+  it into my configuration proper or removing it.
+
+** EVIL mode
+
+   I'm experimenting with EVIL mode in an attempt to learn Vi(m)
+   keybindings. Since I am used to quitting and escaping stuff by =C-g=
+   I want EVIL to transition to normal mode when I press =C-g=.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (defun evil-keyboard-quit ()
+       "Keyboard quit and force normal state."
+       (interactive)
+       (and evil-mode (evil-force-normal-state))
+       (keyboard-quit))
+   #+end_src
+
+   When EVIL is loaded I therefore want bind =C-g= to
+   ~evil-keyboard-quit~.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package evil :commands 'evil-mode
+       :bind
+       (:map evil-normal-state-map   ("C-g" . #'evil-keyboard-quit))
+       (:map evil-motion-state-map   ("C-g" . #'evil-keyboard-quit))
+       (:map evil-motion-state-map   ("C-g" . #'evil-keyboard-quit))
+       (:map evil-insert-state-map   ("C-g" . #'evil-keyboard-quit))
+       (:map evil-window-map         ("C-g" . #'evil-keyboard-quit))
+       (:map evil-operator-state-map ("C-g" . #'evil-keyboard-quit)))
+   #+end_src
 
 * TODO Add linters and formatters to common-code-mode
   Variable =buffer-file-name= could be used together with a asynch
