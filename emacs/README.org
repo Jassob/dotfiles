@@ -970,6 +970,34 @@
        (:map evil-operator-state-map ("C-g" . #'evil-keyboard-quit)))
    #+end_src
 
+** Tree-sitter
+
+   Tree-sitter is a new parsing system with Emacs bindings, it was
+   presented on StrangeLoop [[https://www.thestrangeloop.com/2018/tree-sitter---a-new-parsing-system-for-programming-tools.html][here]].
+
+   #+begin_src emacs-lisp :tangle init.el
+     ;; Install tree-sitter dynamic modules and languages in a writable directory.
+     (let ((vars-and-directories-alist
+            `((tsc-dyn-dir . ,(expand-file-name "tree-sitter/tsc-dyn" user-emacs-directory))
+              (tree-sitter-langs-grammar-dir . ,(expand-file-name "tree-sitter/langs" user-emacs-directory))
+              (tree-sitter-langs--dir . ,(expand-file-name "tree-sitter/langs" user-emacs-directory)))))
+       (dolist (el vars-and-directories-alist)
+         (let ((var (car el))
+               (dir (cdr el)))
+           (make-directory dir t)
+           (set var dir))))
+
+     ;; Enable tree-sitter for all programming derived modes.
+     (use-package tree-sitter :ensure t :delight
+       :init (add-hook 'tree-sitter-after-on-hook 'tree-sitter-hl-mode)
+       :config
+       (require 'tree-sitter-langs)
+       (global-tree-sitter-mode))
+
+     ;; Install the language bundle.
+     (use-package tree-sitter-langs :ensure t)
+   #+end_src
+
 * TODO Add linters and formatters to common-code-mode
   Variable =buffer-file-name= could be used together with a asynch
   shell command.
