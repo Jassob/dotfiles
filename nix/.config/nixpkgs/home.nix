@@ -463,12 +463,6 @@ in rec {
     Channel personal-trash
   '';
 
-  services.picom = {
-    enable = true;
-    vSync = true;
-    inactiveOpacity = "0.9";
-  };
-
   # Enable redshift
   services.redshift = {
     enable = true;
