@@ -1,9 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   home_directory = builtins.getEnv "HOME";
   log_directory = "${home_directory}/.logs";
   ca-bundle_crt = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
-  lib = pkgs.stdenv.lib;
+
 
 in rec {
   # Allow non-free software (fonts, drivers, etc..):
@@ -421,37 +421,37 @@ in rec {
     Inbox ~/.mail/personal/Inbox
 
     Channel personal-inbox
-    Master :personal-remote:
-    Slave :personal-local:
-    Create Slave
+    Far :personal-remote:
+    Near :personal-local:
+    Create Near
     Expunge Both
     SyncState *
 
     Channel personal-all
-    Master :personal-remote:"[Gmail]/All Mail"
-    Slave :personal-local:"all"
-    Create Slave
+    Far :personal-remote:"[Gmail]/All Mail"
+    Near :personal-local:"all"
+    Create Near
     Expunge Both
     SyncState *
 
     Channel personal-sent
-    Master :personal-remote:"[Gmail]/Sent Mail"
-    Slave :personal-local:"sent"
-    Create Slave
+    Far :personal-remote:"[Gmail]/Sent Mail"
+    Near :personal-local:"sent"
+    Create Near
     Expunge Both
     SyncState *
 
     Channel personal-starred
-    Master :personal-remote:"[Gmail]/Starred"
-    Slave :personal-local:"starred"
-    Create Slave
+    Far :personal-remote:"[Gmail]/Starred"
+    Near :personal-local:"starred"
+    Create Near
     Expunge Both
     SyncState *
 
     Channel personal-trash
-    Master :personal-remote:"[Gmail]/Trash"
-    Slave :personal-local:"trash"
-    Create Slave
+    Far :personal-remote:"[Gmail]/Trash"
+    Near :personal-local:"trash"
+    Create Near
     Expunge Both
     SyncState *
 
@@ -461,9 +461,6 @@ in rec {
     Channel personal-sent
     Channel personal-starred
     Channel personal-trash
-
-    Create Slave
-    SyncState *
   '';
 
   services.picom = {
