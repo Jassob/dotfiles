@@ -295,10 +295,12 @@ in rec {
 
     rofi = {
       enable = true;
-      fullscreen = true;
       pass.enable = true;
       theme = "gruvbox-dark";
       package = pkgs.rofi.override { plugins = [ pkgs.rofi-emoji ]; };
+      extraConfig = {
+        modi = "window,drun,ssh,emoji";
+      };
     };
 
     zsh = {
