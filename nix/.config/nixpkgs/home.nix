@@ -4,11 +4,12 @@ let
   log_directory = "${home_directory}/.logs";
   ca-bundle_crt = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
 
-
 in rec {
   # Allow non-free software (fonts, drivers, etc..):
   nixpkgs.config = import ./nixpkgs-config.nix;
   nixpkgs.overlays = [ (import (builtins.fetchTarball { url = https://github.com/nix-community/emacs-overlay/archive/master.tar.gz; })) ];
+
+  imports = [ ./work.nix ];
 
   home = {
     packages = with pkgs; [
@@ -16,7 +17,6 @@ in rec {
       ag
       alacritty
       bat
-      clang-tools # clang-format
       coreutils
       diffutils
       drive
@@ -26,6 +26,7 @@ in rec {
       file
       gnupg
       graphviz
+      htop
       light
       mu
       nixpkgs-fmt
@@ -57,10 +58,6 @@ in rec {
       haskellPackages.cabal2nix
       haskellPackages.stack
 
-      # Rust programming
-      llvmPackages.libclang
-      rustup
-
       # Appearance
       adapta-gtk-theme
       gnome3.adwaita-icon-theme
@@ -81,9 +78,6 @@ in rec {
       trayer
       haskellPackages.xmobar
       xorg.xmessage
-
-      # For my work
-      google-chrome
 
       # Fonts
       corefonts # Microsoft free fonts
@@ -107,7 +101,7 @@ in rec {
         # file will be lost on next home-generation.
 
         include "${home_directory}/.gtkrc-2.0.mine"
-        gtk-theme-name="Adapta-Eta"
+        gtk-theme-name="Adapta-Nokto-Eta"
         gtk-icon-theme-name="Adwaita"
         gtk-font-name="Sans 10"
         gtk-cursor-theme-name="Adwaita"
@@ -129,6 +123,7 @@ in rec {
         alias sony-disconnect="${pkgs.bluez}/bin/bluetoothctl disconnect 38:18:4C:D3:1A:20"
         # Emacs
         alias emproj='emacs --eval "(setq server-name \"$(basename $PWD)\")" --funcall server-start'
+        alias e='emacsclient -nw'
         alias dock="~/.configurations/work-from-home.sh"
         alias dock-ask="~/.configurations/work-from-home.sh -i"
         alias undock="~/.configurations/laptop.sh"
@@ -189,6 +184,8 @@ in rec {
         eval "$(${pkgs.fasd}/bin/fasd --init auto)"
         # Source shell aliases
         . ${home_directory}/.shell/aliases
+        # Source secrets
+        [ -f ${home_directory}/.shell/secrets ] && . ${home_directory}/.shell/secrets || true
       '';
       profileExtra = ''
         # Setup GPG
@@ -198,7 +195,7 @@ in rec {
         fi
         export PATH=$HOME/.local/bin:$PATH
         export SSH_AUTH_SOCK=$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)
-       if [ -f "$HOME/.xsessionrc" ]; then . $HOME/.xsessionrc; fi
+        if [ -f "$HOME/.xsessionrc" ]; then . $HOME/.xsessionrc; fi
       '';
 
       sessionVariables = {
@@ -222,8 +219,8 @@ in rec {
       enable = true;
       package = (pkgs.emacsWithPackagesFromUsePackage {
         config = ../../../emacs/init.el;
-        alwaysEnsure = true;
         extraEmacsPackages = epkgs: [ epkgs.use-package ];
+        package = pkgs.emacsPgtk;
       });
     };
 
@@ -293,6 +290,12 @@ in rec {
       path = "$HOME/nix/home-manager";
     };
 
+    nix-index = {
+      enable = true;
+      enableBashIntegration = false;
+      enableZshIntegration = false;
+    };
+
     rofi = {
       enable = true;
       pass.enable = true;
@@ -317,7 +320,6 @@ in rec {
       sessionVariables = {
         # Download programs temporarily if missing
         NIX_AUTO_RUN = true;
-        NIX_PATH = "$HOME/nix";
         # Only show the last two directories in current path
         PROMPT_DIRTRIM = "2";
       };
@@ -397,6 +399,12 @@ in rec {
       allow-emacs-pinentry
       enable-ssh-support
     '';
+    sshKeys = [
+      # Work key
+      "311DB14C780C09477671F917302D5325E3A4E529"
+      # Private key
+      "7CBDF43A766C3CC98F5BE4FDB2FB383740484839"
+    ];
   };
 
   # Mail synchronization
@@ -478,7 +486,7 @@ in rec {
   fonts.fontconfig.enable = true;
 
   xsession = {
-    enable = true;
+    enable = false;
     pointerCursor.package = pkgs.vanilla-dmz;
     pointerCursor.name = "Vanilla-DMZ";
     windowManager.xmonad = {
@@ -492,9 +500,14 @@ in rec {
       ];
     };
 
+    initExtra = ''
+      # Set correct keyboard layout
+      setxkbmap se -model emacs2 -option ctrl:nocaps
+    '';
+
     profileExtra = ''
       # Set wallpaper
-      ${pkgs.feh}/bin/feh --bg-fill ~/.wallpaper.png
+      ${pkgs.feh}/bin/feh --bg-fill ~/.wallpapers.d/*
       # Launch hotkey daemon (and make it detect keymap changes)
       ${pkgs.sxhkd}/bin/sxhkd -m -1 & disown %1
     '';
