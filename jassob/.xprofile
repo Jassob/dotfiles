@@ -2,7 +2,7 @@
 
 # Autostart if session is XMonad
 if [[ -n "$DESKTOP_SESSION" && ("$DESKTOP_SESSION" = "none+xmonad" || "$DESKTOP_SESSION" = "xmonad") ]]; then
-	feh --bg-fill ~/.wallpaper.png
+	~/.fehbg
 	sxhkd -m -1 & disown %1
 	nm-applet & disown %1
 fi
