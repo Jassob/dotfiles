@@ -443,7 +443,9 @@
   I want to be able to run tests directly from within Emacs.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package gotest :ensure t :after go-mode :config (setq go-test-verbose t)
+    (use-package gotest :ensure t :after go-mode
+      :config (setq go-test-verbose t
+                    go-test-args "-race -cover -timeout=10s")
       :bind (:map go-mode-map
                   ("C-c C-t t" . go-test-current-test)
                   ("C-c C-t f" . go-test-current-file)
