@@ -450,6 +450,28 @@
                   ("C-c C-t p" . go-test-current-project)))
   #+end_src
 
+** TypeScript and Web stuff
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package typescript-mode :ensure t :mode "\\.ts\\'")
+
+     (use-package tide :ensure t :after typescript-mode
+       :hook ((typescript-mode . tide-setup)
+              (typescript-mode . tide-hl-identifier-mode))
+       :config
+       (setq company-tooltip-align-annotations t))
+
+     (add-to-list 'prog-mode-formatters '(typescript-mode . prettier-prettify))
+   #+end_src
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package web-mode
+       :mode "\\.tsx\\'"
+       :hook (web-mode . (lambda ()
+                           (when (string-equal "tsx" (file-name-extension buffer-file-name))
+                             (setup-tide-mode))))
+       :config (flycheck-add-mode 'typescript-tslint 'web-mode))
+   #+end_src
 
 * Personal customization
   Give my setup a personal touch.
