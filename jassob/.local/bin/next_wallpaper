@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+find ~/.wallpapers.d -type f -printf "\"%h/%f\"\n" \
+      | shuf \
+      | head -n 1 \
+      | xargs feh --bg-fill
