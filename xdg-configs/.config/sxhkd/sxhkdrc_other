@@ -28,6 +28,9 @@
 XF86Audio{Pause,Play,Next,Prev}
      playerctl {pause,play,next,previous}
 
+XF86KbdBrightness{Up,Down}
+     asus_kbd_backlight {increase,decrease}
+
 #######
 # Launching stuff
 #######
