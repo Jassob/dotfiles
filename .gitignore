@@ -8,3 +8,4 @@
 *result
 *dist/
 *dist-newstyle/
+/xdg-configs/.config/alacritty/alacritty.yml
