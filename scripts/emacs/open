@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# [SESSION] opens a terminal Emacs client to SESSION.
+#
+# If SESSION is omitted the directory basename will be used instead.
+
+set -euo pipefail
+
+SESSION="${1:-"$(basename "${PWD}")"}"
+
+emacsclient -nw -s "${SESSION}" $@

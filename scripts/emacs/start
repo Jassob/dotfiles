@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# start an Emacs session in the current directory
+
+set -euo pipefail
+SESSION="${1:-"$(basename "${PWD}")"}"
+
+echo "Starting Emacs session ${SESSION}..."
+emacs --bg-daemon --eval "(setq server-name \"${SESSION}\")"

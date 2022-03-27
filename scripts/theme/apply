@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# <theme> apply theme to system
+
+set -euo pipefail
+
+# Set alacritty theme
+cat ~/.config/alacritty/base.yml \
+    ~/.config/alacritty/colors-$1.yml \
+    > ~/.config/alacritty/alacritty.yml
+
+# Set Emacs theme
+for s in /run/user/1000/emacs/*; do
+    SERVER=$(basename $s)
+    emacsclient -s $SERVER -e "(load-theme '$1 t nil)" >/dev/null
+done

@@ -1,0 +1,12 @@
+* My script directory
+
+  This is the cozy nest for my scripts, to be used in conjunction with
+  https://github.com/ianthehenry/sd.
+
+** Getting started
+
+   * Install sd according to https://github.com/ianthehenry/sd.
+   * Symlink the this directory somewhere
+     e.g. ~ln -s ~/dotfiles/scripts ~/scripts~
+   * Update SD_ROOT env var to that location
+     e.g. ~echo SD_ROOT=~/scripts > ~/.zshrc~
