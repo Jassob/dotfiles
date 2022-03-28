@@ -6,4 +6,4 @@ set -euo pipefail
 SESSION="${1:-"$(basename "${PWD}")"}"
 
 echo "Starting Emacs session ${SESSION}..."
-emacs --bg-daemon --eval "(setq server-name \"${SESSION}\")"
+emacs -nw --eval "(setq server-name \"${SESSION}\")" --eval "(server-start)"

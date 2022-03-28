@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# [SESSION] kill Emacs session
+#
+# If no session is provided a list of running sessions is shown.
+
+set -euo pipefail
+
+SESSION=${1:-unset}
+
+if [[ "${SESSION}" == "unset" ]]; then
+    SESSION=$(ls /run/user/$(id -u)/emacs/ | fzf)
+fi
+
+# Kill the session, or if that doesn't work the socket is probably
+# just left-over and can be deleted.
+emacsclient -s ${SESSION} -e '(kill-emacs)' \
+    || rm /run/user/$(id -u)/emacs/${SESSION}
