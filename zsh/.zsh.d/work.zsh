@@ -15,16 +15,3 @@ function use-go() {
     export GOPRIVATE=github.com/einride/*
     echo "Go environment set up for Go $GO_VERSION"
 }
-
-# Get a list of commit messages and their hash
-#
-# Usage: git-new-release-note v0.5.3   -- Uses v0.5.3 as last tag
-# Usage: git-new-release-note          -- Prompts the user for a tag
-function git-new-release-note() {
-    if [ -n "$1" ]; then
-	LAST_TAG="$1"
-    else
-	read "LAST_TAG?Please enter the latest current Git tag (or release): "
-    fi
-    git log --pretty='format:- %s %h' ${LAST_TAG}..HEAD
-}

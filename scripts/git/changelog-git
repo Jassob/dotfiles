@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# <FROM> <TO> <REPO> generate a changelog with GitHub links from rev FROM to TO
+#
+# Format is - %SHORT_SHA %SUBJECT by %AUTHOR
+
+set -euo pipefail
+
+git log --reverse --format="- %s by %an (https://github.com/$3/commit/%h)" $1..$2
