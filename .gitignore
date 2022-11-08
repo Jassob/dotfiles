@@ -9,3 +9,4 @@
 *dist/
 *dist-newstyle/
 /xdg-configs/.config/alacritty/alacritty.yml
+/xmonad/.config/xmobar/xmobar

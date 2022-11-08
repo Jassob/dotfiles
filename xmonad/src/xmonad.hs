@@ -327,7 +327,7 @@ myPP h = def { ppCurrent = xmobarColor "#83a598" ""
 -- | Wire it all up and start XMonad
 main :: IO ()
 main = do
-  xmproc <- getXMonadDir >>= \dir -> spawnPipe $ "xmobar " ++ dir ++ "/xmobarrc"
+  xmproc <- spawnPipe "xmobar"
   updateVar <- newIORef True
   xmonad $ ewmh def { modMask            = myModMask
                     , terminal           = myTerminal

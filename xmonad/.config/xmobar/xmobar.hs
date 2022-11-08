@@ -1,21 +1,22 @@
--- -*- mode: haskell; -*-
+import Xmobar
 
-Config
-  { font = "xft:Iosevka Nerd Font Mono:antialias=true:size=14"
+config :: Config
+config = defaultConfig
+  { font            = "Iosevka Nerd Font Mono 16"
   , alpha           = 0x50
   , bgColor         = "black"
   , fgColor         = "#f8f8f8"
-  , position        = TopW L 95
+  , position        = TopSize L 95 29
 
   -- general behavior
   , allDesktops = True    -- show on all desktops
   , sepChar = "%"
   , alignSep = "}{"
   , template =
-      "%UnsafeStdinReader%\
+      "%XMonadLog%\
       \ } \
       \<action=`$HOME/.local/bin/startemacs -e '(org-agenda-list)'` button=1>\
-      \ %date%\
+      \\61555 %date%\
       \</action>\
       \ { \
       \<action=`$HOME/.local/bin/toggle-dunst` button=1>\
@@ -25,22 +26,19 @@ Config
       \| %awake% \
       \</action>\
       \<action=`$HOME/.local/bin/startemacs -e '(mu4e)'` button=1>\
-      \|  (personal: %personal%, work: %work%) \
+      \| \61664 (personal: %personal%, work: %work%) \
       \</action>\
       \| %memory% \
       \<action=`pavucontrol` button=1>\
       \| %vol%\
       \</action> \
-      \| %battery% \
-      \| <action=`/home/jassob/.local/bin/logout` button=1>\
-      \<fn=1><raw=1:/></fn>\
-      \</action> "
+      \| %battery% "
   , commands =
-      [ Run UnsafeStdinReader
+      [ Run XMonadLog
 
-      , Run Date "<action=`$BROWSER https://calendar.google.com`>%b %d, %H:%M</action>" "date" 10
+      , Run $ Date "<action=`$BROWSER https://calendar.google.com`>%b %d, %H:%M</action>" "date" 10
 
-      , Run Battery
+      , Run $ Battery
         [ "--template" , "<acstatus> <left>"
         , "-L", "10"
         , "-H", "75"
@@ -50,37 +48,40 @@ Config
         , "-h", "green"
         , "-m", "darkorange"
         , "-l", "darkred"
-        , "-i", ""
-        , "-O", ""
+        , "-i", "\62840"
+        , "-O", "\62851"
         , "-o", ""
-        , "--highs"  , ""
-        , "--mediums", ""
-        , "--lows"   , ""
+        , "--highs"  , "\62849"
+        , "--mediums", "\62845"
+        , "--lows"   , "\62850"
         , "-A", "10"
         , "-a", "notify-send -u critical 'Battery level low, connect charger!'"
         ] 5
 
-      , Run Mpris2 "spotify"
+      , Run $ Mpris2 "spotify"
         ["-t", "<action=`playerctl play-pause`><artist> - <title></action>"
          , "-M", "20"
          , "-x", ""
          ] 10
 
-      , Run ComX "sh" [ "-c"
+      , Run $ ComX "sh" [ "-c"
                       , "mu find flag:unread and maildir:/personal/INBOX and not flag:trashed | wc -l"
                       ] "N/A" "personal" 10
-      , Run ComX "sh" [ "-c"
+      , Run $ ComX "sh" [ "-c"
                       , "mu find flag:unread and maildir:/work/INBOX not flag:trashed | wc -l"
                       ] "N/A" "work" 10
 
-      , Run Com "sh" ["/home/jassob/.xmonad/xmobar-volume.sh"] "vol" 10
+      , Run $ Com "sh" ["/home/jassob/.xmonad/xmobar-volume.sh"] "vol" 10
 
-      , Run Com "sh" ["-c", "checkupdates | wc -l"] "checkupdates" 3600
+      , Run $ Com "sh" ["-c", "checkupdates | wc -l"] "checkupdates" 3600
 
-      , Run Com "sh" ["/home/jassob/.xmonad/xmobar-disturb.sh"] "disturb" 10
+      , Run $ Com "sh" ["/home/jassob/.xmonad/xmobar-disturb.sh"] "disturb" 10
 
-      , Run Com "sh" ["/home/jassob/.xmonad/xmobar-awake.sh"] "awake" 10
+      , Run $ Com "sh" ["/home/jassob/.xmonad/xmobar-awake.sh"] "awake" 10
 
-      , Run Memory [ "-t", "Mem: <usedratio>%" ] 10
+      , Run $ Memory [ "-t", "Mem: <usedratio>%" ] 10
       ]
   }
+
+main :: IO ()
+main = xmobar config
