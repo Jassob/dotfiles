@@ -56,8 +56,11 @@ super + e
 #######
 # System stuff
 #######
+super + x ; L
+      i3lock && systemctl suspend
+
 super + x ; l
-      i3lock
+      i3lock && xset dpms force off
 
 super + x ; p
       scrot -u -e 'mv $f ~/pictures/screenshots/'
