@@ -73,6 +73,7 @@ myScratchpads =
        "~/.local/bin/startemacs -n server"
        (title =? "server")
        doCenterFloat
+  , NS "notepad" "logseq" (className =? "Logseq") doCenterFloat
   , NS "chatpad"
        (termArgs "chatpad" "~/.local/bin/wchat")
        (title =? "chatpad")
@@ -193,6 +194,7 @@ myKeys updateVar XConfig { modMask = modm } =
        , ( (modm, xK_Left)
          , namedScratchpadAction myScratchpads "chatpad"
          )
+       , ((modm, xK_Page_Up), namedScratchpadAction myScratchpads "notepad")
 
     -- Copy current window to every workspace
        , ( (modm, xK_v)
