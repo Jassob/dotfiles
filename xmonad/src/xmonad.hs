@@ -35,6 +35,10 @@ import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Hooks.Place
 import           XMonad.Hooks.SetWMName
+import           XMonad.Hooks.StatusBar         ( StatusBarConfig
+                                                , statusBarProp
+                                                , withSB )
+import           XMonad.Hooks.StatusBar.PP      ( xmobarPP )
 import           XMonad.Hooks.EwmhDesktops
 
 {- Layout related stuff
@@ -80,10 +84,9 @@ myScratchpads =
 myStartupHook :: X ()
 myStartupHook = do
   safeSpawn "pkill" ["trayer"]
-  dir <- getXMonadDir
-  safeSpawn "run" [dir ++ "/xmobar-trayer.sh"]
+  dir <- asks (cfgDir . directories)
+  safeSpawn (dir ++ "/xmobar-trayer.sh") []
   setWMName "LG3D"
-  docksStartupHook
 
 myManageHook :: ManageHook
 myManageHook =
@@ -307,40 +310,39 @@ myLayout =
   tabs  = noBorders $ tabbed shrinkText $ def { fontName = "xft:Iosevka Nerd Font Mono:style=Regular" }
 
 -- | Log configuration
-myPP :: Handle -> PP
-myPP h = def { ppCurrent = xmobarColor "#83a598" ""
-             , ppVisible = wrap "(" ")"
-             , ppTitle   = xmobarColor "#d3869b" "" . shorten 20
-             , ppUrgent  = xmobarColor "red" "yellow"
-             , ppLayout  = xmobarColor "#fabd2f" "" . formatLayout
-             , ppHidden  = hideScratchpad
-             , ppOutput  = hPutStrLn h
-             }
+myPP :: PP
+myPP = filterOutWsPP [scratchpadWorkspaceTag]
+  $ def { ppCurrent = xmobarColor "#83a598" ""
+        , ppVisible = wrap "(" ")"
+        , ppTitle   = xmobarColor "#d3869b" "" . shorten 20
+        , ppUrgent  = xmobarColor "red" "yellow"
+        , ppLayout  = xmobarColor "#fabd2f" "" . formatLayout
+        }
  where
   formatLayout x = case x of
     "Tabbed Simplest" -> "[T]"
     "Spacing BSP"     -> "[+]"
     _                 -> x
-  hideScratchpad ws | ws == "NSP" = mempty
-                    | otherwise   = ws
+
+-- | Log configuration
+mySB :: StatusBarConfig
+mySB = statusBarProp "xmobar" (pure myPP)
 
 -- | Wire it all up and start XMonad
 main :: IO ()
 main = do
-  xmproc <- spawnPipe "xmobar"
   updateVar <- newIORef True
-  xmonad $ ewmh def { modMask            = myModMask
-                    , terminal           = myTerminal
-                    , layoutHook         = myLayout
-                    , manageHook         = myManageHook
-                    , workspaces         = myWorkspaces
-                    , handleEventHook = docksEventHook <+> handleEventHook def
-                    , startupHook        = myStartupHook
-                    , logHook            = do
-                        dynamicLogWithPP $ myPP xmproc
-                        whenX (liftIO $ readIORef updateVar) $
-                          updatePointer (0.5, 0.5) (0.0, 0.0)
-                    , keys               = myKeys updateVar
-                    , normalBorderColor  = "#474646"
-                    , focusedBorderColor = "#83a598"
-                    }
+  xmonad . withSB mySB . ewmh . docks $ def { modMask            = myModMask
+                                            , terminal           = myTerminal
+                                            , layoutHook         = myLayout
+                                            , manageHook         = myManageHook
+                                            , workspaces         = myWorkspaces
+                                            , handleEventHook    = handleEventHook def
+                                            , startupHook        = myStartupHook
+                                            , logHook            = do
+                                                whenX (liftIO $ readIORef updateVar) $
+                                                  updatePointer (0.5, 0.5) (0.0, 0.0)
+                                            , keys               = myKeys updateVar
+                                            , normalBorderColor  = "#474646"
+                                            , focusedBorderColor = "#83a598"
+                                            }

@@ -1,0 +1,15 @@
+# Launch keyboard shortcut daemon and other tools
+sxhkd &
+nm-applet &
+udiskie --appindicator &
+setxkbmap se -option ctrl:nocaps -model emacs2
+
+# Set X settings
+xrdb -merge ~/.Xresources
+xsetroot -cursor_name left_ptr
+
+# Set display layout
+autorandr -c
+
+# Set background 
+~/.fehbg
