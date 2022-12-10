@@ -85,6 +85,7 @@ myScratchpads =
 myStartupHook :: X ()
 myStartupHook = do
   safeSpawn "pkill" ["trayer"]
+  safeSpawn "pkill" ["picom"]
   dir <- asks (cfgDir . directories)
   safeSpawn (dir ++ "/xmobar-trayer.sh") []
   setWMName "LG3D"
@@ -191,9 +192,7 @@ myKeys updateVar XConfig { modMask = modm } =
        , ((modm, xK_Down), namedScratchpadAction myScratchpads "termpad")
        , ((modm, xK_Up), namedScratchpadAction myScratchpads "mupad")
        , ((modm, xK_Right), namedScratchpadAction myScratchpads "empad")
-       , ( (modm, xK_Left)
-         , namedScratchpadAction myScratchpads "chatpad"
-         )
+       , ((modm, xK_Left), namedScratchpadAction myScratchpads "chatpad")
        , ((modm, xK_Page_Up), namedScratchpadAction myScratchpads "notepad")
 
     -- Copy current window to every workspace
@@ -328,23 +327,27 @@ myPP = filterOutWsPP [scratchpadWorkspaceTag]
 
 -- | Log configuration
 mySB :: StatusBarConfig
-mySB = statusBarProp "xmobar" (pure myPP)
+mySB = statusBarProp "~/.xmonad/xmobar" (pure myPP)
 
 -- | Wire it all up and start XMonad
 main :: IO ()
 main = do
   updateVar <- newIORef True
-  xmonad . withSB mySB . ewmh . docks $ def { modMask            = myModMask
-                                            , terminal           = myTerminal
-                                            , layoutHook         = myLayout
-                                            , manageHook         = myManageHook
-                                            , workspaces         = myWorkspaces
-                                            , handleEventHook    = handleEventHook def
-                                            , startupHook        = myStartupHook
-                                            , logHook            = do
-                                                whenX (liftIO $ readIORef updateVar) $
-                                                  updatePointer (0.5, 0.5) (0.0, 0.0)
-                                            , keys               = myKeys updateVar
-                                            , normalBorderColor  = "#474646"
-                                            , focusedBorderColor = "#83a598"
-                                            }
+  xmonad
+    . withSB mySB
+    . ewmh
+    . docks
+    $ def { modMask            = myModMask
+          , terminal           = myTerminal
+          , layoutHook         = myLayout
+          , manageHook         = myManageHook
+          , workspaces         = myWorkspaces
+          , handleEventHook    = handleEventHook def
+          , startupHook        = myStartupHook
+          , logHook            = do
+              whenX (liftIO $ readIORef updateVar) $
+                updatePointer (0.5, 0.5) (0.0, 0.0)
+          , keys               = myKeys updateVar
+          , normalBorderColor  = "#474646"
+          , focusedBorderColor = "#83a598"
+          }

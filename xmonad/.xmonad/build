@@ -28,3 +28,7 @@ nix-build "${SRC_DIR}/default.nix" > /dev/null
 
 # Move the binary out into the root directory
 cp "result/bin/${EXE_NAME}" "$output_file"
+
+if [ -f result/bin/xmobar ]; then
+	cp -f result/bin/xmobar "${HOME}/.xmonad/xmobar"
+fi
