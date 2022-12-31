@@ -8,15 +8,14 @@ TODO
 -}
 
 import           Data.IORef                     ( IORef
+                                                , modifyIORef'
                                                 , newIORef
                                                 , readIORef
-                                                , modifyIORef'
                                                 )
 import           Data.Map                       ( Map )
 import qualified Data.Map                      as M
 import           System.Exit
 import           System.IO
-
 {- XMonad core
 -------------------------------------------------}
 import           XMonad
@@ -27,20 +26,19 @@ import qualified XMonad.StackSet               as W
 import           XMonad.Actions.CopyWindow
 import           XMonad.Actions.PhysicalScreens
 import           XMonad.Actions.UpdatePointer   ( updatePointer )
-
 {- Hooks
 -------------------------------------------------}
 import           XMonad.Hooks.DynamicLog
+import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.ManageHelpers
 import           XMonad.Hooks.Place
 import           XMonad.Hooks.SetWMName
 import           XMonad.Hooks.StatusBar         ( StatusBarConfig
                                                 , statusBarProp
-                                                , withSB )
+                                                , withSB
+                                                )
 import           XMonad.Hooks.StatusBar.PP      ( xmobarPP )
-import           XMonad.Hooks.EwmhDesktops
-
 {- Layout related stuff
 -------------------------------------------------}
 import           XMonad.Layout.BinarySpacePartition
@@ -59,8 +57,8 @@ import           XMonad.Layout.WindowNavigation ( windowNavigation )
 
 {- Utils
 -------------------------------------------------}
-import           XMonad.Util.Run
 import           XMonad.Util.NamedScratchpad
+import           XMonad.Util.Run
 
 myModMask :: KeyMask
 myModMask = mod4Mask
@@ -129,28 +127,23 @@ myKeys updateVar XConfig { modMask = modm } =
     $  workspaceKeybindings
     ++ screenWorkspaceKeybindings
     ++
-  -- launching and killing programs
+      -- launching and killing programs
        [ ((modm .|. shiftMask, xK_Return), spawn myTerminal)
        , ((modm .|. shiftMask, xK_c), kill)
        , ((modm, xK_space), sendMessage NextLayout)
-       , ( (modm, xK_n)
-         , refresh
-         )
-
-  -- move focus up or down the window stack
-       , ((modm, xK_Tab), windows W.focusDown)
+       , ((modm, xK_n), refresh)
+       ,
+        -- move focus up or down the window stack
+         ((modm, xK_Tab), windows W.focusDown)
        , ((modm .|. shiftMask, xK_Tab), windows W.focusUp)
        , ((modm, xK_j), windows W.focusDown)
        , ((modm, xK_k), windows W.focusUp)
        , ((modm, xK_m), windows W.focusMaster)
-       , ( (modm, xK_w)
-         , spawn "rofi -show window"
-         )
+       , ((modm, xK_w), spawn "rofi -show window")
        , ((modm .|. shiftMask, xK_f), liftIO $ modifyIORef' updateVar not)
-
-
-  -- modifying the window order
-       , ((modm, xK_Return), windows W.swapMaster)
+       ,
+        -- modifying the window order
+         ((modm, xK_Return), windows W.swapMaster)
        , ((modm .|. shiftMask, xK_j), windows W.swapDown)
        , ((modm .|. shiftMask, xK_k), windows W.swapUp)
        , ((modm .|. controlMask, xK_period), onGroup W.focusUp')
@@ -178,44 +171,38 @@ myKeys updateVar XConfig { modMask = modm } =
        , ( (modm, xK_c)
          , placeFocused $ withGaps (16, 16, 16, 16) (smart (0.5, 0.5))
          )
-
-  -- quit
-       , ( (modm .|. shiftMask, xK_q)
-         , io exitSuccess
-         )
-
-  -- restart
-       , ( (modm, xK_q)
+       ,
+        -- quit
+         ((modm .|. shiftMask, xK_q), io exitSuccess)
+       ,
+        -- restart
+         ( (modm, xK_q)
          , spawn
            "if type xmonad; then xmonad --recompile && xmonad --restart;\
             \else xmessage xmonad not in \\$PATH: \"$PATH\"; fi"
          )
-
-  -- Run xmessage with a summary of the default keybindings (useful
-  -- for beginners)
-       , ( (modm .|. shiftMask, xK_plus)
+       ,
+        -- Run xmessage with a summary of the default keybindings (useful
+        -- for beginners)
+         ( (modm .|. shiftMask, xK_plus)
          , spawn $ concat ["echo \"", help, "\" | xmessage -file -"]
          )
-
-  -- Toggle fullscreen
-       , ( (modm, xK_f)
-         , sendMessage (Toggle "Full")
-         )
-
-    -- Hide or show named scratchpads
-       , ((modm, xK_Down), namedScratchpadAction myScratchpads "termpad")
+       ,
+        -- Toggle fullscreen
+         ((modm, xK_f), sendMessage (Toggle "Full"))
+       ,
+        -- Hide or show named scratchpads
+         ((modm, xK_Down), namedScratchpadAction myScratchpads "termpad")
        , ((modm, xK_Up), namedScratchpadAction myScratchpads "mupad")
        , ((modm, xK_Right), namedScratchpadAction myScratchpads "empad")
        , ((modm, xK_Left), namedScratchpadAction myScratchpads "chatpad")
        , ((modm, xK_Page_Up), namedScratchpadAction myScratchpads "notepad")
-
-    -- Copy current window to every workspace
-       , ( (modm, xK_v)
-         , windows copyToAll
-         )
-
-    -- Remove all other copies of this window
-       , ((modm .|. shiftMask, xK_v), killAllOtherCopies)
+       ,
+        -- Copy current window to every workspace
+         ((modm, xK_v), windows copyToAll)
+       ,
+        -- Remove all other copies of this window
+         ((modm .|. shiftMask, xK_v), killAllOtherCopies)
        ]
  where
   ctrlMask = controlMask
@@ -236,7 +223,6 @@ workspaceKeybindings = concatMap makeKeybinding pairs
     , ((myModMask .|. shiftMask, key), windows $ W.shift ws)
     ]
 
-
 -- mod-{a,s,d} %! Switch to physical/Xinerama screens 1, 2, or 3
 -- mod-shift-{a,s,d} %! Move client to screen 1, 2, or 3
 screenWorkspaceKeybindings :: [((KeyMask, KeySym), X ())]
@@ -252,7 +238,6 @@ screenWorkspaceKeybindings = concatMap makeKeybinding pairs
     [ ((myModMask, key)              , viewScreen def sc)
     , ((myModMask .|. shiftMask, key), sendToScreen def sc)
     ]
-
 
 -- | Finally, a copy of the default bindings in simple textual tabular format.
 help :: String
@@ -340,13 +325,13 @@ myLayout =
 
 -- | Log configuration
 myPP :: PP
-myPP = filterOutWsPP [scratchpadWorkspaceTag]
-  $ def { ppCurrent = xmobarColor "#83a598" ""
-        , ppVisible = wrap "(" ")"
-        , ppTitle   = xmobarColor "#d3869b" "" . shorten 20
-        , ppUrgent  = xmobarColor "red" "yellow"
-        , ppLayout  = xmobarColor "#fabd2f" "" . formatLayout
-        }
+myPP = filterOutWsPP [scratchpadWorkspaceTag] $ def
+  { ppCurrent = xmobarColor "#83a598" ""
+  , ppVisible = wrap "(" ")"
+  , ppTitle   = xmobarColor "#d3869b" "" . shorten 20
+  , ppUrgent  = xmobarColor "red" "yellow"
+  , ppLayout  = xmobarColor "#fabd2f" "" . formatLayout
+  }
  where
   formatLayout x = case x of
     "Tabbed Simplest"    -> "[T]"
@@ -361,21 +346,18 @@ mySB = statusBarProp "~/.xmonad/xmobar" (pure myPP)
 main :: IO ()
 main = do
   updateVar <- newIORef True
-  xmonad
-    . withSB mySB
-    . ewmh
-    . docks
-    $ def { modMask            = myModMask
-          , terminal           = myTerminal
-          , layoutHook         = myLayout
-          , manageHook         = myManageHook
-          , workspaces         = myWorkspaces
-          , handleEventHook    = handleEventHook def
-          , startupHook        = myStartupHook
-          , logHook            = do
-              whenX (liftIO $ readIORef updateVar) $
-                updatePointer (0.5, 0.5) (0.0, 0.0)
-          , keys               = myKeys updateVar
-          , normalBorderColor  = "#474646"
-          , focusedBorderColor = "#83a598"
-          }
+  xmonad . withSB mySB . ewmh . docks $ def
+    { modMask            = myModMask
+    , terminal           = myTerminal
+    , layoutHook         = myLayout
+    , manageHook         = myManageHook
+    , workspaces         = myWorkspaces
+    , handleEventHook    = handleEventHook def
+    , startupHook        = myStartupHook
+    , logHook            = do
+                             whenX (liftIO $ readIORef updateVar)
+                               $ updatePointer (0.5, 0.5) (0.0, 0.0)
+    , keys               = myKeys updateVar
+    , normalBorderColor  = "#474646"
+    , focusedBorderColor = "#83a598"
+    }
