@@ -498,7 +498,9 @@
 ** TypeScript and Web stuff
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package typescript-mode :ensure t :mode "\\.ts\\'")
+     (use-package typescript-mode :ensure t
+       :mode "\\.ts\\'"
+       :hook (typescript-mode . prettier-mode))
 
      (use-package tide :ensure t :after typescript-mode
        :hook ((typescript-mode . tide-setup)
@@ -509,13 +511,27 @@
      (add-to-list 'prog-mode-formatters '(typescript-mode . prettier-prettify))
    #+end_src
 
+   TSX files should be treated as TypeScript files.
+
    #+begin_src emacs-lisp :tangle init.el
      (use-package web-mode
        :mode "\\.tsx\\'"
-       :hook (web-mode . (lambda ()
+       :hook ((web-mode . (lambda ()
                            (when (string-equal "tsx" (file-name-extension buffer-file-name))
                              (setup-tide-mode))))
-       :config (flycheck-add-mode 'typescript-tslint 'web-mode))
+              (web-mode . prettier-mode))
+       :bind (:map web-mode-map ("C-c C-RET" . company-complete))
+       :config (flycheck-add-mode 'typescript-tslint 'web-mode)
+       :ensure t)
+   #+end_src
+
+   =prettier= should automatically format my web files.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package prettier
+       :after (web-mode typescript-mode)
+       :commands (prettier-mode)
+       :ensure t)
    #+end_src
 
 * Personal customization
