@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: handle-err
+# key: handle
+# binding: C-c C-s r
+# type: command
+# --
+(insert (concat "if err != nil { " (meain/go-return-string) " }"))

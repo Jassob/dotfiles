@@ -435,7 +435,8 @@
       :hook ((go-mode . lsp-deferred)
              (go-mode . (lambda ()
                          (add-hook 'before-save-hook #'lsp-format-buffer t t)
-                         (add-hook 'before-save-hook #'lsp-organize-imports t t))))
+                         (add-hook 'before-save-hook #'lsp-organize-imports t t)))
+             (go-mode . yas-minor-mode))
       :bind (:map go-mode-map
                   ("C-c C-k" . godoc)))
   #+end_src
@@ -450,6 +451,49 @@
                   ("C-c C-t t" . go-test-current-test)
                   ("C-c C-t f" . go-test-current-file)
                   ("C-c C-t p" . go-test-current-project)))
+  #+end_src
+
+  Error handling in Go is a bit tedious when you have multiple return
+  values. With the help of Tree sitter we can automate that code
+  generation. Thanks to [[https://blog.meain.io/2021/intelligent-snippets-treesitter/][meain for the tip]].
+
+  #+begin_src emacs-lisp :tangle init.el
+    ;; Source: https://blog.meain.io/2021/intelligent-snippets-treesitter/
+    (defun meain/go-default-returns (type)
+        "Making it a function instead of an alist so that we can handle unknown TYPE."
+        (pcase type
+            ("error" "err")
+            ("string" "\"\"")
+            ("rune" "0")
+            ("int" "0")
+            ("uint" "0")
+            ("float64" "0.0")
+            ("bool" "false")
+            ("chan" "nil")
+            ((pred (string-prefix-p "<-")) "nil") ; channels
+            ((pred (string-prefix-p "[")) "nil") ; arrays
+            ((pred (string-match " ")) nil) ; for situations with return name
+            (_ (concat type "{}"))))
+    (defun meain/go-return-string ()
+      "Get return string for go by looking up the return type of current func."
+      (interactive)
+      (let* ((func-node (tree-sitter-node-at-point 'function_declaration))
+             (return-node (tsc-get-child-by-field func-node ':result)))
+        ;; remove extra whitespace if nothing at end
+        (replace-regexp-in-string " $" ""
+          (concat "return "
+            (if return-node
+              (let ((return-node-type (tsc-node-type return-node))
+                    (return-node-text (tsc-node-text return-node)))
+                (pcase return-node-type
+                    ('parameter_list (string-join
+                                       (remove-if (lambda (x) (equal nil x))
+                                         (mapcar 'meain/go-default-returns
+                                           (mapcar 'string-trim
+                                             (split-string (string-trim return-node-text "(" ")") ","))))
+                                       ", "))
+                    (_ (meain/go-default-returns return-node-text)))))))))
+
   #+end_src
 
 ** TypeScript and Web stuff
