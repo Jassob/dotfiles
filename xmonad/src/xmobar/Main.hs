@@ -12,27 +12,7 @@ config = defaultConfig
   , allDesktops = True    -- show on all desktops
   , sepChar     = "%"
   , alignSep    = "}{"
-  , template    =
-    "%XMonadLog%\
-      \ } \
-      \<action=`$HOME/.local/bin/startemacs -e '(org-agenda-list)'` button=1>\
-      \\61555 %date%\
-      \</action>\
-      \ { \
-      \<action=`$HOME/.local/bin/toggle-dunst` button=1>\
-      \%disturb%\
-      \</action> \
-      \<action=`$HOME/.local/bin/toggle-awake` button=1>\
-      \| %awake% \
-      \</action>\
-      \<action=`$HOME/.local/bin/startemacs -e '(mu4e)'` button=1>\
-      \| \61664 (personal: %personal%, work: %work%) \
-      \</action>\
-      \| %memory% \
-      \<action=`pavucontrol` button=1>\
-      \| %vol%\
-      \</action> \
-      \| %battery% "
+  , template    = myTemplate
   , commands    =
     [ Run XMonadLog
     , Run $ Date
@@ -107,6 +87,20 @@ config = defaultConfig
     , Run $ Memory ["-t", "Mem: <usedratio>%"] 10
     ]
   }
+
+myTemplate :: String
+myTemplate = unwords
+  [ "%XMonadLog%"
+  , "}"
+  , "<action=`$HOME/.local/bin/startemacs -e '(org-agenda-list)'` button=1> \61555 %date%</action>"
+  , "{"
+  , "<action=`$HOME/.local/bin/toggle-dunst` button=1>%disturb%</action>"
+  , "| <action=`$HOME/.local/bin/toggle-awake` button=1>%awake%</action>"
+  , "| <action=`$HOME/.local/bin/startemacs -e '(mu4e)'` button=1>\61664 (personal: %personal%, work: %work%)</action>"
+  , "| %memory%"
+  , "| <action=`pavucontrol` button=1>%vol%</action>"
+  , "| %battery% "
+  ]
 
 main :: IO ()
 main = xmobar config
