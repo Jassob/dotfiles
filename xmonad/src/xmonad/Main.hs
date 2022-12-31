@@ -48,8 +48,14 @@ import           XMonad.Layout.Gaps
 import           XMonad.Layout.NoBorders
 import           XMonad.Layout.ResizableTile
 import           XMonad.Layout.Spacing
+import           XMonad.Layout.SubLayouts       ( GroupMsg(..)
+                                                , onGroup
+                                                , pullGroup
+                                                , subTabbed
+                                                )
 import           XMonad.Layout.Tabbed
 import           XMonad.Layout.ToggleLayouts
+import           XMonad.Layout.WindowNavigation ( windowNavigation )
 
 {- Utils
 -------------------------------------------------}
@@ -147,6 +153,8 @@ myKeys updateVar XConfig { modMask = modm } =
        , ((modm, xK_Return), windows W.swapMaster)
        , ((modm .|. shiftMask, xK_j), windows W.swapDown)
        , ((modm .|. shiftMask, xK_k), windows W.swapUp)
+       , ((modm .|. controlMask, xK_period), onGroup W.focusUp')
+       , ((modm .|. controlMask, xK_comma), onGroup W.focusDown')
        , ((modm .|. altMask, xK_l), sendMessage $ ExpandTowards R)
        , ((modm .|. altMask, xK_h), sendMessage $ ExpandTowards L)
        , ((modm .|. altMask, xK_j), sendMessage $ ExpandTowards D)
@@ -155,12 +163,18 @@ myKeys updateVar XConfig { modMask = modm } =
        , ((modm .|. altMask, xK_m), sendMessage Swap)
        , ((modm .|. altMask, xK_n), sendMessage FocusParent)
        , ((modm .|. ctrlMask, xK_n), sendMessage SelectNode)
-       , ( (modm .|. shiftMask, xK_n)
-         , sendMessage MoveNode
-         )
-
-  -- floating layer support
-       , ((modm, xK_t), withFocused $ windows . W.sink)
+       , ((modm .|. shiftMask, xK_n), sendMessage MoveNode)
+       ,
+        -- tabs
+         ((modm .|. controlMask, xK_h), sendMessage $ pullGroup L)
+       , ((modm .|. controlMask, xK_l), sendMessage $ pullGroup R)
+       , ((modm .|. controlMask, xK_k), sendMessage $ pullGroup U)
+       , ((modm .|. controlMask, xK_j), sendMessage $ pullGroup D)
+       , ((modm .|. controlMask, xK_m), withFocused (sendMessage . MergeAll))
+       , ((modm .|. controlMask, xK_u), withFocused (sendMessage . UnMerge))
+       ,
+        -- floating layer support
+         ((modm, xK_t), withFocused $ windows . W.sink)
        , ( (modm, xK_c)
          , placeFocused $ withGaps (16, 16, 16, 16) (smart (0.5, 0.5))
          )
@@ -263,6 +277,8 @@ help = unlines
   , "mod-j                  Move focus to the next window"
   , "mod-k                  Move focus to the previous window"
   , "mod-m                  Move focus to the master window"
+  , "mod-Ctrl-,             Move focus up inside a tabbed window group"
+  , "mod-Ctrl-.             Move focus down inside a tabbed window group"
   , "mod-Shift-f            Toggle mouse follows focus"
   , ""
   , "-- modifying the window order"
@@ -285,10 +301,14 @@ help = unlines
   , "mod-Shift-{a,s,d}      Move client to screen 1, 2, or 3"
   , "mod-v                  Show current window on every workspace"
   , "mod-Shift-v            Remove all other copies of current window"
+  , "-- Resizing and rotating"
   , "mod-Alt-[l,h,j,k]      Expand window towards right, left, down and up"
   , "mod-Alt-r              Rotate the partition tree"
   , "mod-Alt-s              Swap two nodes in the partition tree"
   , "mod-Alt-n              Focus on the parent node in the partition tree"
+  , "mod-Ctrl-[l,h,j,k]     Pull in window from right, left, up and down into group with selected window/group"
+  , "mod-Ctrl-u             Unmerge focused window from tab group"
+  , "mod-Ctrl-m             Merge all windows into a tab group"
   , "mod-Ctrl-n             Select focused node"
   , "mod-Shift-n            Move selected node"
   , ""
@@ -305,10 +325,18 @@ help = unlines
 -- argument, while remembering the previous layout. Here we can toggle
 -- full-screen.
 myLayout =
-  toggleLayouts (noBorders Full) . avoidStruts . smartBorders $ layouts
+  toggleLayouts (noBorders Full)
+    .   avoidStruts
+    .   smartBorders
+    .   gaps (zip [U, R, D, L] (repeat spaceWidth))
+    .   windowNavigation
+    $   tabbedBSP
+    ||| tabs
  where
-  layouts = gaps [(U, 5), (R, 5), (D, 5), (L, 5)] $ (spacing 5 emptyBSP ||| tabs)
-  tabs  = noBorders $ tabbed shrinkText $ def { fontName = "xft:Iosevka Nerd Font Mono:style=Regular" }
+  tabbedBSP = subTabbed (spacing spaceWidth emptyBSP)
+  tabs      = tabbed shrinkText
+    $ def { fontName = "xft:Iosevka Nerd Font Mono:style=Regular" }
+  spaceWidth = 5
 
 -- | Log configuration
 myPP :: PP
@@ -321,9 +349,9 @@ myPP = filterOutWsPP [scratchpadWorkspaceTag]
         }
  where
   formatLayout x = case x of
-    "Tabbed Simplest" -> "[T]"
-    "Spacing BSP"     -> "[+]"
-    _                 -> x
+    "Tabbed Simplest"    -> "[T]"
+    "Tabbed Spacing BSP" -> "[+]"
+    _                    -> x
 
 -- | Log configuration
 mySB :: StatusBarConfig
