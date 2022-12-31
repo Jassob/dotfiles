@@ -274,21 +274,28 @@
   makes sense.
 
   #+begin_src emacs-lisp :tangle init.el
-    ;; LSP mode is loaded whenever #'lsp or #'lsp-deferred is called
-    (use-package lsp-mode :ensure t :commands (lsp-deferred)
-      :hook (prog-mode . lsp-deferred)
-      :bind (:map lsp-signature-mode-map ("M-n" . nil))
-      :config (define-key lsp-mode-map (kbd "C-c l")
-                (lookup-key lsp-mode-map (kbd "s-l"))))
+    (use-package eglot :ensure t
+      :commands (eglot-ensure
+                 eglot-code-actions
+                 eglot-code-action-organize-imports
+                 eglot-rename
+                 eglot format
+                 eglot-format-buffer)
+      :hook ((prog-mode . eglot-ensure)
+             (eglot--managed-mode . (lambda ()
+                             (add-hook 'before-save-hook
+                                       (lambda () (eglot-format)) 0 t))))
+      :bind (("C-c l a a" . eglot-code-actions)
+             ("C-c l a i" . eglot-code-action-organize-imports)
+             ("C-c ! l"   . flymake-show-buffer-diagnostics)
+             ("C-c ! a"   . flymake-show-project-diagnostics)
+             ("C-c ! n"   . flymake-goto-next-error)
+             ("C-c ! p"   . flymake-goto-prev-error)
+             ("C-c l r r" . eglot-rename)
+             ("C-c l f f" . eglot-format)
+             ("C-c l f b" . eglot-format-buffer)))
 
-    (use-package yasnippet :after lsp-mode :hook (lsp-mode . yas-minor-mode) :ensure t)
-    (use-package lsp-ui :after lsp-mode :ensure t
-      :hook (lsp-mode . lsp-ui-mode)
-      :bind (:map lsp-mode-map ("C-x C-h ." . lsp-ui-doc-show))
-      :config (setq lsp-ui-flycheck-enable t
-                    lsp-ui-doc-enable nil
-                    lsp-ui-doc-use-child-frame nil
-                    lsp-ui-sideline-enable nil))
+    (use-package yasnippet :after eglot :hook (eglot-mode . yas-minor-mode) :ensure t)
   #+end_src
 
   I want trailing white space to be removed automatically before saving.
@@ -317,8 +324,6 @@
     (use-package projectile :ensure t :delight :init (projectile-mode)
       :bind (("C-c p" . #'projectile-command-map)
              ("M-p" . #'projectile-command-map)))
-
-    (use-package flycheck :ensure t :hook (prog-mode . flycheck-mode))
 
     ;; Hide modes in modeline
     (use-package delight :ensure t)
@@ -416,13 +421,10 @@
   experience with Rust, especially with rust-analyzer.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package rust-mode :ensure t :hook (rust-mode . lsp-deferred)
+     (use-package rust-mode :ensure t
        :init (setq rust-format-on-save t
                    rust-format-show-buffer nil
-                   rust-format-goto-problem nil
-                   lsp-rust-analyzer-call-info-full nil
-                   lsp-rust-server 'rust-analyzer
-                   lsp-rust-clippy-preference "on"))
+                   rust-format-goto-problem nil))
   #+end_src
 
 ** Golang
@@ -432,14 +434,10 @@
   linter and formatters etc.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package go-mode :mode "\\.go\\'" :defer t
-      :hook ((go-mode . lsp-deferred)
-             (go-mode . (lambda ()
-                         (add-hook 'before-save-hook #'lsp-format-buffer t t)
-                         (add-hook 'before-save-hook #'lsp-organize-imports t t)))
-             (go-mode . yas-minor-mode))
-      :bind (:map go-mode-map
-                  ("C-c C-k" . godoc)))
+        (use-package go-mode :mode "\\.go\\'" :defer t
+          :hook ((go-mode . yas-minor-mode))
+          :bind (:map go-mode-map
+                      ("C-c C-k" . godoc)))
   #+end_src
 
   I want to be able to run tests directly from within Emacs.
