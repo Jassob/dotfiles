@@ -344,6 +344,37 @@
                   ("M-<mouse-1>" . mc/add-cursor-on-click)))
   #+end_src
 
+  Sometimes it is handy to be able to open the current line or region
+  inside a browser.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (defun local/clean-git-url (git-url)
+      (string-replace ".git" "" (string-replace "git@github.com:" "https://github.com/" git-url)))
+
+    ;; Inspiration from https://www.reddit.com/r/emacs/comments/xdw6ok/comment/iodig8c
+    (defun open-on-github ()
+      (interactive)
+      (let
+          ((repo-url  (local/clean-git-url (magit-git-string "remote" "get-url" "--push" "origin")))
+           (commit-hash (magit-git-string "rev-parse" "HEAD"))
+           (start-line (if (use-region-p)
+                           (line-number-at-pos (region-beginning))
+                         (line-number-at-pos)))
+           (end-line (if (use-region-p) (line-number-at-pos (region-end)))))
+        (unless repo-url (error  "not in a git repo"))
+        (browse-url
+         (concat
+          repo-url
+          "/blob/"
+          commit-hash
+          "/"
+          (substring buffer-file-name (length (projectile-project-root)))
+          "#L" (number-to-string start-line)
+          (if (and (use-region-p) (< 0 (- end-line start-line)))
+              (concat "..L" (number-to-string end-line)))
+          ))))
+  #+end_src
+
 ** Formatting
 
    #+begin_src emacs-lisp :tangle init.el
@@ -583,10 +614,8 @@
   For instance I sometimes like to open URL's in a more capable
   browser than EWW (even though it is very good!).
 
-  Firefox is currently my driver of choice.
-
   #+begin_src emacs-lisp :tangle init.el
-    (setq browse-url-browser-function 'browse-url-firefox
+    (setq browse-url-browser-function 'browse-url-default-browser
           browse-url-new-window-flag  t)
   #+end_src
 
