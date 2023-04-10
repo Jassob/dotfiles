@@ -718,13 +718,15 @@
     (scroll-bar-mode -1)
   #+end_src
 
-  I really like the =gruvbox-dark= theme. It's a dark theme with good
-  contrast and stuff.
+  I'm currently trying out =catpuccin= theme, which markets itself
+  with soothing pastel tones.
 
   #+begin_src emacs-lisp :tangle init.el
     ;; Load theme
-    (use-package gruvbox-theme :straight t
-      :config (load-theme 'gruvbox-dark-hard t))
+    (use-package catppuccin-theme :straight t
+      :config
+      (setq catppuccin-flavor 'mocha)
+      (load-theme 'catppuccin t))
   #+end_src
 
   The fonts in =font-preferences= are the preferred fonts that I use
