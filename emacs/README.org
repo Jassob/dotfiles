@@ -632,6 +632,25 @@
        :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode))
    #+end_src
 
+   I want to use eglot to setup my LSP server for (Java|Type)Script
+   files, but it needs some workaround on NixOS systems:
+
+   #+begin_src emacs-lisp :tangle init.el
+     (with-eval-after-load 'eglot
+       (let ((path-to-typescript-language-server (executable-find "typescript-language-server"))
+             (path-to-tsserver (executable-find "tsserver")))
+         (unless path-to-typescript-language-server
+           (error "Missing typescript-language-server, please install it"))
+         (unless path-to-tsserver
+           (error "Missing tsserver, please install it"))
+         (add-to-list 'eglot-server-programs
+                      `((js-mode typescript-mode) .
+                        (,path-to-typescript-language-server
+                         "--stdio"
+                         "--tsserver-path"
+                         ,(expand-file-name "../../lib" (file-truename path-to-tsserver)))))))
+   #+end_src
+
 * Personal customization
   Give my setup a personal touch.
 
