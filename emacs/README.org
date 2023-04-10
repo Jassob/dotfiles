@@ -356,6 +356,24 @@
           ))))
   #+end_src
 
+** Treesitter
+
+   Treesitter is a parsing library that is getting increasingly used
+   both in Emacs proper but also in different packages and other utilities.
+   It was presented on StrangeLoop [[https://www.thestrangeloop.com/2018/tree-sitter---a-new-parsing-system-for-programming-tools.html][here]].
+
+   #+begin_src emacs-lisp :tangle init.el
+     ;; https://vxlabs.com/2022/06/12/typescript-development-with-emacs-tree-sitter-and-lsp-in-2022/
+     (use-package tree-sitter :straight t
+       :init
+       (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+       :config
+       ;; activate tree-sitter on any buffer containing code for which it has a parser available
+       (global-tree-sitter-mode))
+
+     (use-package tree-sitter-langs :straight t :after tree-sitter)
+   #+end_src
+
 ** LSP
 
   Quite a few of the programming languages I work with supports LSP,
@@ -1091,33 +1109,6 @@
        (:map evil-operator-state-map ("C-g" . #'evil-keyboard-quit)))
    #+end_src
 
-** Tree-sitter
-
-   Tree-sitter is a new parsing system with Emacs bindings, it was
-   presented on StrangeLoop [[https://www.thestrangeloop.com/2018/tree-sitter---a-new-parsing-system-for-programming-tools.html][here]].
-
-   #+begin_src emacs-lisp :tangle init.el
-     ;; Install tree-sitter dynamic modules and languages in a writable directory.
-     (let ((vars-and-directories-alist
-            `((tsc-dyn-dir . ,(expand-file-name "tree-sitter/tsc-dyn" user-emacs-directory))
-              (tree-sitter-langs-grammar-dir . ,(expand-file-name "tree-sitter/langs" user-emacs-directory))
-              (tree-sitter-langs--dir . ,(expand-file-name "tree-sitter/langs" user-emacs-directory)))))
-       (dolist (el vars-and-directories-alist)
-         (let ((var (car el))
-               (dir (cdr el)))
-           (make-directory dir t)
-           (set var dir))))
-
-     ;; Enable tree-sitter for all programming derived modes.
-     (use-package tree-sitter :straight t :delight
-       :init (add-hook 'tree-sitter-after-on-hook 'tree-sitter-hl-mode)
-       :config
-       (require 'tree-sitter-langs)
-       (global-tree-sitter-mode))
-
-     ;; Install the language bundle.
-     (use-package tree-sitter-langs :straight t)
-   #+end_src
 
 * TODO Add linters and formatters to common-code-mode
   Variable =buffer-file-name= could be used together with a asynch
