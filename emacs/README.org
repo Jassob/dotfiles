@@ -52,16 +52,26 @@
 
 ** Packages
 
-   First we need to activate the package system and add the melpa
-   repository, if it is not already added.
+   First we need to install the =straight.el= package manager.
 
    #+begin_src emacs-lisp :tangle init.el
-     (require 'package)
-     (setq package-archives '(("gnu"   . "https://elpa.gnu.org/packages/")
-                              ("melpa" . "https://melpa.org/packages/")))
-     (package-initialize)
+     (defvar bootstrap-version)
+     (let ((bootstrap-file
+            (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+           (bootstrap-version 6))
+       (unless (file-exists-p bootstrap-file)
+         (with-current-buffer
+             (url-retrieve-synchronously
+              "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+              'silent 'inhibit-cookies)
+           (goto-char (point-max))
+           (eval-print-last-sexp)))
+       (load bootstrap-file nil 'nomessage))
+   #+end_src
 
-     ;; We've already enabled the package system.
+   Then we'll mark that we've initialized packages outside package.el.
+
+   #+begin_src emacs-lisp :tangle init.el
      (setq package-enable-at-startup nil)
    #+end_src
 
@@ -88,7 +98,7 @@
    Delight is a nice package for hiding stuff in my modeline.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package delight :ensure t)
+     (use-package delight :straight t)
    #+end_src
 
 ** Backups and auto-save
@@ -145,7 +155,7 @@
    there is a choice.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package ace-window :ensure t :bind (("C-x o" . ace-window)))
+     (use-package ace-window :straight t :bind (("C-x o" . ace-window)))
    #+end_src
 
 ** Dired
@@ -213,7 +223,7 @@
    stuff to the X clipboard. =xclip= is a package that does just that.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package xclip :ensure t :init (xclip-mode t))
+     (use-package xclip :straight t :init (xclip-mode t))
    #+end_src
 
 ** Custom file
@@ -233,7 +243,7 @@
  manipulate parens, quotes etc.
 
  #+begin_src emacs-lisp :tangle init.el
-   (use-package smartparens :ensure t :delight
+   (use-package smartparens :straight t :delight
      :init (require 'smartparens-config)
      :hook ((prog-mode-hook . 'turn-on-smartparens-strict-mode)
             (minibuffer-setup-hook . 'turn-on-smartparens-strict-mode))
@@ -288,23 +298,23 @@
     (use-package subword-mode :hook prog-mode :delight)
 
     (use-package hl-line-mode :hook prog-mode :delight)
-    (use-package hl-todo :ensure t :delight :hook hl-todo-mode)
+    (use-package hl-todo :straight t :delight :hook hl-todo-mode)
 
     (use-package column-number-mode :hook prog-mode :delight)
 
-    (use-package projectile :ensure t :delight :init (projectile-mode)
+    (use-package projectile :straight t :delight :init (projectile-mode)
       :bind (("C-c p" . #'projectile-command-map)
              ("M-p" . #'projectile-command-map)))
 
     ;; Hide modes in modeline
-    (use-package delight :ensure t)
+    (use-package delight :straight t)
 
-    (use-package company :ensure t :delight :hook (prog-mode . company-mode)
+    (use-package company :straight t :delight :hook (prog-mode . company-mode)
       :bind (:map prog-mode-map ("C-c RET" . company-complete)))
 
-    (use-package rainbow-delimiters :ensure t :delight :hook (prog-mode . rainbow-delimiters-mode))
+    (use-package rainbow-delimiters :straight t :delight :hook (prog-mode . rainbow-delimiters-mode))
 
-    (use-package multiple-cursors :ensure t
+    (use-package multiple-cursors :straight t
       :bind (:map prog-mode-map
                   ("C-S-c C-S-c" . mc/edit-lines)
                   ("M-n" . mc/mark-next-symbol-like-this)
@@ -353,7 +363,7 @@
   makes sense.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package eglot :ensure t
+    (use-package eglot :straight t
       :commands (eglot-ensure
                  eglot-code-actions
                  eglot-code-action-organize-imports
@@ -374,7 +384,7 @@
              ("C-c l f f" . eglot-format)
              ("C-c l f b" . eglot-format-buffer)))
 
-    (use-package yasnippet :after eglot :hook (eglot-mode . yas-minor-mode) :ensure t)
+    (use-package yasnippet :after eglot :hook (eglot-mode . yas-minor-mode) :straight t)
   #+end_src
 
 ** Formatting
@@ -402,7 +412,7 @@
    Rust will continue to use their respective *fmt binaries.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package clang-format :commands 'clang-format-buffer :ensure t)
+     (use-package clang-format :commands 'clang-format-buffer :straight t)
 
      (defvar prog-mode-formatters '((c-mode . clang-format-buffer)
                                     (java-mode . clang-format-buffer)
@@ -422,14 +432,14 @@
    frontends I really like.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package magit :bind ("C-x g" . magit-status) :ensure t :defer t)
+     (use-package magit :bind ("C-x g" . magit-status) :straight t :defer t)
    #+end_src
 
    =Git-gutter+= is a package that shows a line's status (added,
    modifid or deleted) in a file that is version controlled by Git.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package git-gutter :ensure t :diminish t
+     (use-package git-gutter :straight t :diminish t
        :hook (prog-mode . git-gutter-mode)
        :bind (:map prog-mode-map
                    ;; Navigate on hunks
@@ -445,7 +455,7 @@
    To help me interact with my Github repositories I use =forge=.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package forge :after magit :ensure t)
+     (use-package forge :after magit :straight t)
    #+end_src
 
 ** Rust
@@ -454,7 +464,7 @@
   experience with Rust, especially with rust-analyzer.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package rust-mode :ensure t
+     (use-package rust-mode :straight t
        :init (setq rust-format-on-save t
                    rust-format-show-buffer nil
                    rust-format-goto-problem nil))
@@ -467,16 +477,15 @@
   linter and formatters etc.
 
   #+begin_src emacs-lisp :tangle init.el
-        (use-package go-mode :mode "\\.go\\'" :defer t
-          :hook ((go-mode . yas-minor-mode))
-          :bind (:map go-mode-map
-                      ("C-c C-k" . godoc)))
+    (use-package go-mode :mode "\\.go\\'" :defer t
+      :hook ((go-mode . yas-minor-mode))
+      :bind (:map go-mode-map ("C-c C-k" . godoc)))
   #+end_src
 
   I want to be able to run tests directly from within Emacs.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package gotest :ensure t :after go-mode
+    (use-package gotest :straight t :after go-mode
       :config (setq go-test-verbose t
                     go-test-args "-race -cover -timeout=10s")
       :bind (:map go-mode-map
@@ -531,11 +540,11 @@
 ** TypeScript and Web stuff
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package typescript-mode :ensure t
+     (use-package typescript-mode :straight t
        :mode "\\.ts\\'"
        :hook (typescript-mode . prettier-mode))
 
-     (use-package tide :ensure t :after typescript-mode
+     (use-package tide :straight t :after typescript-mode
        :hook ((typescript-mode . tide-setup)
               (typescript-mode . tide-hl-identifier-mode))
        :config
@@ -555,7 +564,7 @@
               (web-mode . prettier-mode))
        :bind (:map web-mode-map ("C-c C-RET" . company-complete))
        :config (flycheck-add-mode 'typescript-tslint 'web-mode)
-       :ensure t)
+       :straight t)
    #+end_src
 
    =prettier= should automatically format my web files.
@@ -564,7 +573,7 @@
      (use-package prettier
        :after (web-mode typescript-mode)
        :commands (prettier-mode)
-       :ensure t)
+       :straight t)
    #+end_src
 
 * Personal customization
@@ -639,7 +648,7 @@
 
   #+begin_src emacs-lisp :tangle init.el
     ;; Load theme
-    (use-package gruvbox-theme :ensure t
+    (use-package gruvbox-theme :straight t
       :config (load-theme 'gruvbox-dark-hard t))
   #+end_src
 
@@ -648,7 +657,7 @@
   will be set as the main font for Emacs.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package cl-lib :ensure t)
+    (use-package cl-lib :straight t)
     (defun font-existsp (font)
       "Check to see if the named FONT is available."
       (if (null (x-list-fonts font)) nil t))
@@ -720,13 +729,13 @@
 
  #+begin_src emacs-lisp :tangle init.el
    ;; Enable ivy on completion-read
-   (use-package ivy :ensure t :init (ivy-mode t))
+   (use-package ivy :straight t :init (ivy-mode t))
    ;; Replace common functions with ivy-versions
-   (use-package counsel :ensure t :init (counsel-mode)
+   (use-package counsel :straight t :init (counsel-mode)
      :bind (("M-x" . counsel-M-x)
             ("C-c g" . counsel-git)))
    ;; Enable ivy powered search/occur function
-   (use-package swiper :ensure t :bind ("C-s" . swiper))
+   (use-package swiper :straight t :bind ("C-s" . swiper))
  #+end_src
 
  I sometimes use Imenu to quickly navigate inside the current file.
@@ -941,7 +950,7 @@
  popup showing all the keybindings belonging to a prefix key.
 
  #+begin_src emacs-lisp :tangle init.el
-   (use-package which-key :delight t :ensure t
+   (use-package which-key :delight t :straight t
      :init (which-key-mode)
      :config (setq which-key-idle-delay 2.0))
  #+end_src
@@ -954,7 +963,7 @@
 
   #+begin_src emacs-lisp :tangle init.el
     ;; Display local file history as tree of edits
-    (use-package undo-tree :ensure t :delight
+    (use-package undo-tree :straight t :delight
       :config
       (setq undo-tree-visualizer-timestamps t
             undo-tree-visualizer-diff t)
@@ -968,7 +977,7 @@
   and this is where =writeroom-mode= (found [[https://github.com/joostkremers/writeroom-mode][here]]) comes in to play.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package writeroom-mode :ensure t
+    (use-package writeroom-mode :straight t
       :init (setq writeroom-width 120)
       (add-hook 'writeroom-mode-hook (lambda () (display-line-numbers-mode -1)))
       :bind (:map writeroom-mode-map
@@ -1100,14 +1109,14 @@
            (set var dir))))
 
      ;; Enable tree-sitter for all programming derived modes.
-     (use-package tree-sitter :ensure t :delight
+     (use-package tree-sitter :straight t :delight
        :init (add-hook 'tree-sitter-after-on-hook 'tree-sitter-hl-mode)
        :config
        (require 'tree-sitter-langs)
        (global-tree-sitter-mode))
 
      ;; Install the language bundle.
-     (use-package tree-sitter-langs :ensure t)
+     (use-package tree-sitter-langs :straight t)
    #+end_src
 
 * TODO Add linters and formatters to common-code-mode
