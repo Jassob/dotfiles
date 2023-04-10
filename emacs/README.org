@@ -651,6 +651,17 @@
                          ,(expand-file-name "../../lib" (file-truename path-to-tsserver)))))))
    #+end_src
 
+** Haskell
+
+   I want to launch ~interactive-haskell-mode~ when I press <C-c C-l>.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package haskell-mode :straight t
+       :hook ((haskell-mode . interactive-haskell-mode)
+              (haskell-mode . haskell-indentation-mode))
+       :init (setq lsp-haskell-formatting-provider "brittany"))
+   #+end_src
+
 * Personal customization
   Give my setup a personal touch.
 
