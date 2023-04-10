@@ -818,6 +818,18 @@
    (setq org-agenda-files (list org-directory (concat org-directory "/calendar")))
  #+end_src
 
+ I want to be able to press <TAB> on ~<q~ to it to ~#+begin_quote...~
+
+ #+begin_src emacs-lisp :tangle init.el
+   (add-to-list 'org-modules 'org-tempo)
+ #+end_src
+
+ I also want the text to follow the indentation from the headers.
+
+ #+begin_src emacs-lisp :tangle init.el
+   (setq org-adapt-indentation t)
+ #+end_src
+
 ** My files
    :PROPERTIES:
    :CUSTOM_ID: org-files
