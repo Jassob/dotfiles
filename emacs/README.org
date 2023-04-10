@@ -557,41 +557,49 @@
 
 ** TypeScript and Web stuff
 
-   #+begin_src emacs-lisp :tangle init.el
-     (use-package typescript-mode :straight t
-       :mode "\\.ts\\'"
-       :hook (typescript-mode . prettier-mode))
+   The following configuration will ensure that tree-sitter’s
+   dedicated tsx parser will be used for tsx (typescript + react)
+   files. By default this currently is not the case, as it uses the
+   typescript parser which does not understand the tsx extensions.
 
-     (use-package tide :straight t :after typescript-mode
-       :hook ((typescript-mode . tide-setup)
-              (typescript-mode . tide-hl-identifier-mode))
+   Here we create a new derived mode that will map to both .tsx and
+   .ts. Due to the derived mode’s name, the typescript language server
+   will select tsx support, and due to the the explicit mapping,
+   tree-sitter will select its tsx parser.
+
+   #+begin_src emacs-lisp :tangle init.el
+     ;; https://vxlabs.com/2022/06/12/typescript-development-with-emacs-tree-sitter-and-lsp-in-2022/
+     (use-package typescript-mode :after tree-sitter
        :config
-       (setq company-tooltip-align-annotations t))
+       ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
+       ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
+       (define-derived-mode typescriptreact-mode typescript-mode "TypeScript TSX")
 
-     (add-to-list 'prog-mode-formatters '(typescript-mode . prettier-prettify))
+       ;; use our derived mode for tsx files
+       (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
+       ;; by default, typescript-mode is mapped to the treesitter typescript parser
+       ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
+       (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
    #+end_src
 
-   TSX files should be treated as TypeScript files.
+   Thanks to Dan Orzechowski, we can configure the tsi.el package
+   which will give us tree-sitter based indentation for TypeScript,
+   JSON and (S)CSS.
+
+   The code below shows how to do this with use-package and straight, as
+   tsi.el is not (yet) on melpa.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package web-mode
-       :mode "\\.tsx\\'"
-       :hook ((web-mode . (lambda ()
-                           (when (string-equal "tsx" (file-name-extension buffer-file-name))
-                             (setup-tide-mode))))
-              (web-mode . prettier-mode))
-       :bind (:map web-mode-map ("C-c C-RET" . company-complete))
-       :config (flycheck-add-mode 'typescript-tslint 'web-mode)
-       :straight t)
-   #+end_src
-
-   =prettier= should automatically format my web files.
-
-   #+begin_src emacs-lisp :tangle init.el
-     (use-package prettier
-       :after (web-mode typescript-mode)
-       :commands (prettier-mode)
-       :straight t)
+     ;; https://github.com/orzechowskid/tsi.el/
+     ;; great tree-sitter-based indentation for typescript/tsx, css, json
+     (use-package tsi :after tree-sitter
+       :straight (tsi :type git :host github :repo "orzechowskid/tsi.el")
+       :hook ((typescript-mode . (lambda () (tsi-typescript-mode t)))
+              (json-mode . (lambda () (tsi-json-mode t)))
+              (css-mode-hook . (lambda () (tsi-css-mode 1)))
+              (scss-mode-hook . (lambda () (tsi-scss-mode 1))))
+       ;; define autoload definitions which when actually invoked will cause package to be loaded
+       :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode))
    #+end_src
 
 * Personal customization
