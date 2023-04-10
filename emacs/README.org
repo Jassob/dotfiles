@@ -374,6 +374,36 @@
      (use-package tree-sitter-langs :straight t :after tree-sitter)
    #+end_src
 
+   From the 2022 [[https://emacsconf.org/2022/talks/treesitter/][EmacsConf talk about tree-sitter]] we learned that we
+   can use tree-sitter for much more than syntax highlighting, such as
+   code folding, narrowing and which-func functionality.
+
+*** Code folding
+
+    When tree-sitter is enabled we also want to enable ts-fold-mode.
+
+    #+begin_src emacs-lisp :tangle init.el
+      (use-package ts-fold :commands (ts-fold-mode)
+        :straight (ts-fold :type git :host github :repo "emacs-tree-sitter/ts-fold")
+        :hook (
+               ;; Enable ts-fold-mode when tree-sitter is active
+               (tree-sitter-after-on . ts-fold-mode)
+               ;; Disable hide-show minor mode
+               (ts-fold-mode . (lambda () (when hs-minor-mode (hs-minor-mode -1))))
+               )
+        :bind (("C-c @ c" . ts-fold-close)
+               ("C-c @ s" . ts-fold-open)
+               ("C-c @ C-c" . ts-fold-close-all)
+               ("C-c @ C-s" . ts-fold-open-all)))
+
+      (use-package ts-fold-indicators
+        :straight (ts-fold-indicators :type git :host github :repo "emacs-tree-sitter/ts-fold")
+        :hook (ts-fold-mode . ts-fold-indicators-mode))
+
+      (use-package fringe-helper
+        :straight (fringe-helper :type git :host github :repo "nschum/fringe-helper.el"))
+    #+end_src
+
 ** LSP
 
   Quite a few of the programming languages I work with supports LSP,
