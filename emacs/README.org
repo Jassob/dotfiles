@@ -82,9 +82,7 @@
    them and load them lazily.
 
    #+begin_src emacs-lisp :tangle init.el
-     (unless (package-installed-p 'use-package)
-       (package-refresh-contents)
-       (package-install 'use-package))
+     (straight-use-package 'use-package)
    #+end_src
 
    Make sure that =use-package= is available for the byte-compiler.
@@ -337,13 +335,14 @@
     (use-package subword-mode :hook prog-mode :delight)
 
     (use-package hl-line-mode :hook prog-mode :delight)
-    (use-package hl-todo :straight t :delight :hook hl-todo-mode)
+    (use-package hl-todo :straight t :delight :hook hl-todo-mode :straight t)
 
     (use-package column-number-mode :hook prog-mode :delight)
 
     (use-package projectile :straight t :delight :init (projectile-mode)
       :bind (("C-c p" . #'projectile-command-map)
              ("M-p" . #'projectile-command-map)))
+    (use-package rg :straight t)
 
     ;; Hide modes in modeline
     (use-package delight :straight t)
@@ -366,6 +365,7 @@
     ;; Inspiration from https://www.reddit.com/r/emacs/comments/xdw6ok/comment/iodig8c
     (defun open-on-github ()
       (interactive)
+      (require 'magit)
       (let
           ((repo-url  (local/clean-git-url (magit-git-string "remote" "get-url" "--push" "origin")))
            (commit-hash (magit-git-string "rev-parse" "HEAD"))
@@ -474,6 +474,8 @@
 
    #+begin_src emacs-lisp :tangle init.el
      (use-package magit :bind ("C-x g" . magit-status) :straight t :defer t)
+     ;; sqlite3 is some kind of dependency to magit
+     (use-package sqlite3 :straight t :after magit)
    #+end_src
 
    =Git-gutter+= is a package that shows a line's status (added,
@@ -502,7 +504,7 @@
 ** Rust
 
    I want to format Rust buffers on save, and have the rest of the LSP
-  experience with Rust, especially with rust-analyzer.
+   experience with Rust, especially with rust-analyzer.
 
    #+begin_src emacs-lisp :tangle init.el
      (use-package rust-mode :straight t :hook (rust-mode . eglot-ensure)
@@ -518,7 +520,7 @@
   linter and formatters etc.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package go-mode :mode "\\.go\\'" :defer t
+    (use-package go-mode :mode "\\.go\\'" :defer t :straight t
       :hook ((go-mode . yas-minor-mode)
              (go-mode . eglot-ensure))
       :bind (:map go-mode-map ("C-c C-k" . godoc)))
@@ -550,7 +552,7 @@
 
    #+begin_src emacs-lisp :tangle init.el
      ;; https://vxlabs.com/2022/06/12/typescript-development-with-emacs-tree-sitter-and-lsp-in-2022/
-     (use-package typescript-mode :hook (typescript-mode . eglot-ensure)
+     (use-package typescript-mode :hook (typescript-mode . eglot-ensure) :straight t
        :config
        ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
        ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
@@ -778,6 +780,8 @@
             ("C-c g" . counsel-git)))
    ;; Enable ivy powered search/occur function
    (use-package swiper :straight t :bind ("C-s" . swiper))
+   ;; Use smex to keep M-x sorted on recent use
+   (use-package smex :straight t)
  #+end_src
 
  I sometimes use Imenu to quickly navigate inside the current file.
