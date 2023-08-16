@@ -256,6 +256,25 @@
                   ("C-M-<right>" . sp-forward-barf-sexp)))
   #+end_src
 
+  One really nifty feature is that we can edit multiple lines at once
+  with =multiple-cursors=.
+
+  =M-n= creates a new cursor on the next line (or tries to find a
+  matching token if you've selected anything) and =M-p= does the same,
+  but looking behind the mark.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (use-package multiple-cursors :straight t
+      :bind (:map global-map
+                  ("C-S-c C-S-c" . mc/edit-lines)
+                  ("M-n" . mc/mark-next-symbol-like-this)
+                  ("M-p" . mc/mark-previous-symbol-like-this)
+                  ("C-c M-n" . mc/mark-next-like-this)
+                  ("C-c M-p" . mc/mark-previous-like-this)
+                  ("C-," . mc/mark-pop)
+                  ("M-<mouse-1>" . mc/add-cursor-on-click)))
+  #+end_src
+
 * Coding settings
 
   There are some common things I want to use for all every
@@ -314,16 +333,6 @@
       :bind (:map prog-mode-map ("C-c RET" . company-complete)))
 
     (use-package rainbow-delimiters :straight t :delight :hook (prog-mode . rainbow-delimiters-mode))
-
-    (use-package multiple-cursors :straight t
-      :bind (:map prog-mode-map
-                  ("C-S-c C-S-c" . mc/edit-lines)
-                  ("M-n" . mc/mark-next-symbol-like-this)
-                  ("M-p" . mc/mark-previous-symbol-like-this)
-                  ("C-c M->" . mc/mark-next-like-this)
-                  ("C-c M-<" . mc/mark-previous-like-this)
-                  ("C-," . mc/mark-pop)
-                  ("M-<mouse-1>" . mc/add-cursor-on-click)))
 
     (use-package yasnippet :straight t :hook (prog-mode . yas-minor-mode))
   #+end_src
