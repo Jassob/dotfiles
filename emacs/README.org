@@ -381,54 +381,6 @@
     (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   #+end_src
 
-** Treesitter
-
-   Treesitter is a parsing library that is getting increasingly used
-   both in Emacs proper but also in different packages and other utilities.
-   It was presented on StrangeLoop [[https://www.thestrangeloop.com/2018/tree-sitter---a-new-parsing-system-for-programming-tools.html][here]].
-
-   #+begin_src emacs-lisp :tangle init.el
-     ;; https://vxlabs.com/2022/06/12/typescript-development-with-emacs-tree-sitter-and-lsp-in-2022/
-     (use-package tree-sitter :straight t
-       :init
-       (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-       :config
-       ;; activate tree-sitter on any buffer containing code for which it has a parser available
-       (global-tree-sitter-mode))
-
-     (use-package tree-sitter-langs :straight t :after tree-sitter)
-   #+end_src
-
-   From the 2022 [[https://emacsconf.org/2022/talks/treesitter/][EmacsConf talk about tree-sitter]] we learned that we
-   can use tree-sitter for much more than syntax highlighting, such as
-   code folding, narrowing and which-func functionality.
-
-*** Code folding
-
-    When tree-sitter is enabled we also want to enable ts-fold-mode.
-
-    #+begin_src emacs-lisp :tangle init.el
-      (use-package ts-fold :commands (ts-fold-mode)
-        :straight (ts-fold :type git :host github :repo "emacs-tree-sitter/ts-fold")
-        :hook (
-               ;; Enable ts-fold-mode when tree-sitter is active
-               (tree-sitter-after-on . ts-fold-mode)
-               ;; Disable hide-show minor mode
-               (ts-fold-mode . (lambda () (when hs-minor-mode (hs-minor-mode -1))))
-               )
-        :bind (("C-c @ c" . ts-fold-close)
-               ("C-c @ s" . ts-fold-open)
-               ("C-c @ C-c" . ts-fold-close-all)
-               ("C-c @ C-s" . ts-fold-open-all)))
-
-      (use-package ts-fold-indicators
-        :straight (ts-fold-indicators :type git :host github :repo "emacs-tree-sitter/ts-fold")
-        :hook (ts-fold-mode . ts-fold-indicators-mode))
-
-      (use-package fringe-helper
-        :straight (fringe-helper :type git :host github :repo "nschum/fringe-helper.el"))
-    #+end_src
-
 ** LSP
 
   Quite a few of the programming languages I work with supports LSP,
@@ -565,49 +517,6 @@
                   ("C-c C-t p" . go-test-current-project)))
   #+end_src
 
-  Error handling in Go is a bit tedious when you have multiple return
-  values. With the help of Tree sitter we can automate that code
-  generation. Thanks to [[https://blog.meain.io/2021/intelligent-snippets-treesitter/][meain for the tip]].
-
-  #+begin_src emacs-lisp :tangle init.el
-    ;; Source: https://blog.meain.io/2021/intelligent-snippets-treesitter/
-    (defun meain/go-default-returns (type)
-        "Making it a function instead of an alist so that we can handle unknown TYPE."
-        (pcase type
-            ("error" "err")
-            ("string" "\"\"")
-            ("rune" "0")
-            ("int" "0")
-            ("uint" "0")
-            ("float64" "0.0")
-            ("bool" "false")
-            ("chan" "nil")
-            ((pred (string-prefix-p "<-")) "nil") ; channels
-            ((pred (string-prefix-p "[")) "nil") ; arrays
-            ((pred (string-match " ")) nil) ; for situations with return name
-            (_ (concat type "{}"))))
-    (defun meain/go-return-string ()
-      "Get return string for go by looking up the return type of current func."
-      (interactive)
-      (let* ((func-node (tree-sitter-node-at-point 'function_declaration))
-             (return-node (tsc-get-child-by-field func-node ':result)))
-        ;; remove extra whitespace if nothing at end
-        (replace-regexp-in-string " $" ""
-          (concat "return "
-            (if return-node
-              (let ((return-node-type (tsc-node-type return-node))
-                    (return-node-text (tsc-node-text return-node)))
-                (pcase return-node-type
-                    ('parameter_list (string-join
-                                       (remove-if (lambda (x) (equal nil x))
-                                         (mapcar 'meain/go-default-returns
-                                           (mapcar 'string-trim
-                                             (split-string (string-trim return-node-text "(" ")") ","))))
-                                       ", "))
-                    (_ (meain/go-default-returns return-node-text)))))))))
-
-  #+end_src
-
 ** TypeScript and Web stuff
 
    The following configuration will ensure that tree-sitter’s
@@ -622,37 +531,14 @@
 
    #+begin_src emacs-lisp :tangle init.el
      ;; https://vxlabs.com/2022/06/12/typescript-development-with-emacs-tree-sitter-and-lsp-in-2022/
-     (use-package typescript-mode :after tree-sitter
+     (use-package typescript-mode :hook (typescript-mode . eglot-ensure)
        :config
        ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
        ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
        (define-derived-mode typescriptreact-mode typescript-mode "TypeScript TSX")
 
        ;; use our derived mode for tsx files
-       (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
-       ;; by default, typescript-mode is mapped to the treesitter typescript parser
-       ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
-       (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
-   #+end_src
-
-   Thanks to Dan Orzechowski, we can configure the tsi.el package
-   which will give us tree-sitter based indentation for TypeScript,
-   JSON and (S)CSS.
-
-   The code below shows how to do this with use-package and straight, as
-   tsi.el is not (yet) on melpa.
-
-   #+begin_src emacs-lisp :tangle init.el
-     ;; https://github.com/orzechowskid/tsi.el/
-     ;; great tree-sitter-based indentation for typescript/tsx, css, json
-     (use-package tsi :after tree-sitter
-       :straight (tsi :type git :host github :repo "orzechowskid/tsi.el")
-       :hook ((typescript-mode . (lambda () (tsi-typescript-mode t)))
-              (json-mode . (lambda () (tsi-json-mode t)))
-              (css-mode-hook . (lambda () (tsi-css-mode 1)))
-              (scss-mode-hook . (lambda () (tsi-scss-mode 1))))
-       ;; define autoload definitions which when actually invoked will cause package to be loaded
-       :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode))
+       (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode)))
    #+end_src
 
    I want to use eglot to setup my LSP server for (Java|Type)Script
