@@ -239,22 +239,22 @@
 
 * Handling character pairs
 
- Emacs has a great package for dealing with characters that comes in
- pairs, ~smartparens~. Smartparens lets us navigate with and
- manipulate parens, quotes etc.
+  Emacs has a great package for dealing with characters that comes in
+  pairs, ~smartparens~. Smartparens lets us navigate with and
+  manipulate parens, quotes etc.
 
- #+begin_src emacs-lisp :tangle init.el
-   (use-package smartparens :straight t :delight
-     :init (require 'smartparens-config)
-     :hook ((prog-mode-hook . 'turn-on-smartparens-strict-mode)
-            (minibuffer-setup-hook . 'turn-on-smartparens-strict-mode))
-     :config (show-smartparens-global-mode t)
-     :bind (:map smartparens-mode-map
-                 ("M-<left>" . sp-backward-slurp-sexp)
-                 ("C-M-<left>" . sp-backward-barf-sexp)
-                 ("M-<right>" . sp-forward-slurp-sexp)
-                 ("C-M-<right>" . sp-forward-barf-sexp)))
- #+end_src
+  #+begin_src emacs-lisp :tangle init.el
+    (use-package smartparens :straight t :delight
+      :init (require 'smartparens-config)
+      :hook ((prog-mode-hook . 'turn-on-smartparens-strict-mode)
+             (minibuffer-setup-hook . 'turn-on-smartparens-strict-mode))
+      :config (show-smartparens-global-mode t)
+      :bind (:map smartparens-mode-map
+                  ("M-<left>" . sp-backward-slurp-sexp)
+                  ("C-M-<left>" . sp-backward-barf-sexp)
+                  ("M-<right>" . sp-forward-slurp-sexp)
+                  ("C-M-<right>" . sp-forward-barf-sexp)))
+  #+end_src
 
 * Coding settings
 
