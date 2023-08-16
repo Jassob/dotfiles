@@ -395,8 +395,7 @@
                  eglot-rename
                  eglot format
                  eglot-format-buffer)
-      :hook ((prog-mode . eglot-ensure)
-             (eglot--managed-mode . (lambda ()
+      :hook ((eglot--managed-mode . (lambda ()
                              (add-hook 'before-save-hook
                                        (lambda () (eglot-format)) 0 t))))
       :bind (("C-c l a a" . eglot-code-actions)
@@ -487,7 +486,7 @@
   experience with Rust, especially with rust-analyzer.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package rust-mode :straight t
+     (use-package rust-mode :straight t :hook (rust-mode . eglot-ensure)
        :init (setq rust-format-on-save t
                    rust-format-show-buffer nil
                    rust-format-goto-problem nil))
@@ -501,7 +500,8 @@
 
   #+begin_src emacs-lisp :tangle init.el
     (use-package go-mode :mode "\\.go\\'" :defer t
-      :hook ((go-mode . yas-minor-mode))
+      :hook ((go-mode . yas-minor-mode)
+             (go-mode . eglot-ensure))
       :bind (:map go-mode-map ("C-c C-k" . godoc)))
   #+end_src
 
@@ -569,6 +569,23 @@
        :hook ((haskell-mode . interactive-haskell-mode)
               (haskell-mode . haskell-indentation-mode))
        :init (setq lsp-haskell-formatting-provider "brittany"))
+   #+end_src
+
+** Java
+
+   I want to use =lsp-java= when programming in Java, because I don't
+   feel the need to learn how to get Eglot to work with Java's
+   pecularities.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package lsp-mode :straight t :commands (lsp-deferred)
+       :hook (lsp-mode . yas-minor-mode)
+       :init (setq lsp-keymap-prefix (kbd "C-c l")))
+
+     (use-package lsp-java :straight t :after lsp-mode)
+
+     (add-hook 'java-mode-hook 'lsp-deferred)
+     (add-hook 'java-mode-hook (lambda () (setq tab-width 8)))
    #+end_src
 
 * Personal customization
