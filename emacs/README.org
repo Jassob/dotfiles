@@ -588,6 +588,15 @@
      (add-hook 'java-mode-hook (lambda () (setq tab-width 8)))
    #+end_src
 
+** Nix
+
+   When editing =nix= source files I want syntax highlighting and
+   other major mode perks from =nix-mode=.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package nix-mode :straight t)
+   #+end_src
+
 * Personal customization
   Give my setup a personal touch.
 
