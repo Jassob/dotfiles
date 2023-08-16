@@ -357,6 +357,19 @@
           ))))
   #+end_src
 
+
+  When LSP is not setup correctly Xref falls back to navigating the
+  source tree with TAGS, and these files seldom exists.
+  With =dumb-jump= we get some heuristics that jumps to somewhat
+  reasonable places and allows us to use Xref without LSP setup
+  properly.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (use-package dumb-jump :straight t :commands (dump-jump-xref-activate))
+
+    (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  #+end_src
+
 ** Treesitter
 
    Treesitter is a parsing library that is getting increasingly used
