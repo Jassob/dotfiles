@@ -324,6 +324,8 @@
                   ("C-c M-<" . mc/mark-previous-like-this)
                   ("C-," . mc/mark-pop)
                   ("M-<mouse-1>" . mc/add-cursor-on-click)))
+
+    (use-package yasnippet :straight t :hook (prog-mode . yas-minor-mode))
   #+end_src
 
   Sometimes it is handy to be able to open the current line or region
@@ -445,8 +447,6 @@
              ("C-c l r r" . eglot-rename)
              ("C-c l f f" . eglot-format)
              ("C-c l f b" . eglot-format-buffer)))
-
-    (use-package yasnippet :after eglot :hook (eglot-mode . yas-minor-mode) :straight t)
   #+end_src
 
 ** Formatting
