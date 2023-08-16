@@ -234,6 +234,7 @@
 
    #+begin_src emacs-lisp :tangle init.el
      (setq custom-file (concat user-emacs-directory "custom.el"))
+     (load-file custom-file)
    #+end_src
 
 * Handling character pairs

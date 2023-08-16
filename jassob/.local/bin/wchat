@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p python38Packages.notify2 python38Packages.dbus-python python38 mosh
+#! nix-shell -i bash -p python39Packages.notify2 python39Packages.dbus-python python39 mosh
 
 set -euo pipefail
 
