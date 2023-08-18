@@ -538,6 +538,14 @@
                   ("C-c C-t p" . go-test-current-project)))
   #+end_src
 
+  Sometimes when testing I want to be able to debug the test cases and
+  set breakpoints, for that I use =go-dlv= which let's me use the GUD
+  interface.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (use-package go-dlv :straight t :after go-mode :commands (dlv-current-func))
+  #+end_src
+
 ** TypeScript and Web stuff
 
    The following configuration will ensure that tree-sitter’s
