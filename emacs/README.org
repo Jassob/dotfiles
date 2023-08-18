@@ -584,6 +584,26 @@
        (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode)))
    #+end_src
 
+** Infrastructure tools
+
+   I want to have terraform HCL source code syntax highlighted.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package terraform-mode :straight t)
+   #+end_src
+
+   I also use saltstack and thus want some salt support too.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package salt-mode :straight t)
+   #+end_src
+
+   Other describing languages that I use are;
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package protobuf-mode :straight t)
+   #+end_src
+
 ** Haskell
 
    I want to launch ~interactive-haskell-mode~ when I press <C-c C-l>.
