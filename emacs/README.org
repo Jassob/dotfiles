@@ -237,6 +237,25 @@
      (load-file custom-file)
    #+end_src
 
+** Dealing with Emacs server directory permissions
+
+   For some reason the `/run/user/$UID/emacs` directory sometimes has
+   the permissions =u+rx= instead of =u+rwx=, which causes Emacs to
+   not be able to write its server file.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (defun local/ensure-permission (dir mode)
+       "Checks that DIR has permissions MODE set and sets it if missing."
+       (let ((current-mode (file-modes dir)))
+         (unless (= (logand current-mode mode) mode)
+           (chmod dir (logior current-mode mode)))))
+
+     ;; Ensure that the permissions are correct before starting the server.
+     (advice-add 'server-start :before
+                 (lambda (&optional LEAVE-DEAD INHIBIT-PROMPT)
+                   (local/ensure-permission server-socket-dir #o700)))
+   #+end_src
+
 * Handling character pairs
 
   Emacs has a great package for dealing with characters that comes in
