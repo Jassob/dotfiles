@@ -335,7 +335,7 @@
     (use-package subword-mode :hook prog-mode :delight)
 
     (use-package hl-line-mode :hook prog-mode :delight)
-    (use-package hl-todo :straight t :delight :hook hl-todo-mode :straight t)
+    (use-package hl-todo :straight t :delight :hook (prog-mode . hl-todo-mode) :straight t)
 
     (use-package column-number-mode :hook prog-mode :delight)
 
