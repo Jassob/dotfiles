@@ -490,6 +490,12 @@
                   ("C-c ! p"   . flymake-goto-prev-error)))
   #+end_src
 
+  There seems to be a bug in treemacs, related to SVG images.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (add-to-list 'image-types 'svg)
+  #+end_src
+
   Now, let's configure the various modes to actually start the
   expected =lsp= implementation.
 
