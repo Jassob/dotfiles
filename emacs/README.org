@@ -244,9 +244,11 @@
    #+begin_src emacs-lisp :tangle init.el
      (defun local/ensure-permission (dir mode)
        "Checks that DIR has permissions MODE set and sets it if missing."
+       (unless (file-exists-p dir)
+         (mkdir dir))
        (let ((current-mode (file-modes dir)))
-         (unless (= (logand current-mode mode) mode)
-           (chmod dir (logior current-mode mode)))))
+         (unless (= current-mode mode)
+           (chmod dir mode))))
 
      ;; Ensure that the permissions are correct before starting the server.
      (advice-add 'server-start :before
