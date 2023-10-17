@@ -595,19 +595,46 @@
   enabled together with a plethora of other useful stuff, such as
   linter and formatters etc.
 
+  First let's start with fixing the project/module location.
+
   #+begin_src emacs-lisp :tangle init.el
-    (use-package go-mode :mode "\\.go\\'" :defer t :straight t
-      :hook ((go-mode . yas-minor-mode)
-             (go-mode . eglot-ensure))
-      :bind (:map go-mode-map ("C-c C-k" . godoc)))
+    ;; Go defines a module (or project in Eglot lingo) to be whatever
+    ;; directory that contains a go.mod file.
+    (require 'project)
+
+    (defun project-find-go-module (dir)
+      (when-let ((root (locate-dominating-file dir "go.mod")))
+        (cons 'go-module root)))
+
+    (cl-defmethod project-root ((project (head go-module)))
+      (cdr project))
+
+    (add-hook 'project-find-functions #'project-find-go-module)
+  #+end_src
+
+  Then, let me configure Go mode to use Eglot.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (use-package go-mode :mode "\\.go\\'" :after eglot :defer t :straight t
+      :bind (:map go-mode-map ("C-c C-k" . godoc))
+      :hook (go-mode . (lambda () (add-hook 'before-save-hook #'eglot-format-buffer -10 t)))
+      :config (add-to-list
+               'eglot-workspace-configuration
+               '(gopls . ((buildFlags . ("integration"))
+                           (formatting . (gofumpt . t))
+                           (staticcheck . t)
+                           (codelenses . (gc_details . t))
+                           (matcher . "CaseSensitive")))))
+
   #+end_src
 
   I want to be able to run tests directly from within Emacs.
 
   #+begin_src emacs-lisp :tangle init.el
     (use-package gotest :straight t :after go-mode
-      :config (setq go-test-verbose t
-                    go-test-args "-race -cover -timeout=10s")
+      :hook (go-mode . (lambda ()
+                         (setq go-test-verbose t
+                               go-test-args "-race -cover -timeout=10s")))
       :bind (:map go-mode-map
                   ("C-c C-t t" . go-test-current-test)
                   ("C-c C-t f" . go-test-current-file)
