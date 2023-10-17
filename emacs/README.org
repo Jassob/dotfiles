@@ -687,6 +687,7 @@
    #+begin_src emacs-lisp :tangle init.el
      (use-package protobuf-mode :straight t)
      (use-package toml-mode :straight t)
+     (use-package dockerfile-mode :straight t)
    #+end_src
 
 ** Haskell
