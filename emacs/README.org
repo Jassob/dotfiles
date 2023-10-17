@@ -589,6 +589,27 @@
                    rust-format-goto-problem nil))
   #+end_src
 
+  =rustic= provides some more convenience functions like running the
+  current test (=C-c C-c C-c=) and so on. By default it uses
+  =lsp-mode=, but I prefer =eglot= since it is simpler and smaller.
+
+  To make =rustic= use =lsp-mode= instead, remove the two hook changes
+  below.
+
+  #+begin_src emacs-lisp :tangle init.el
+    ;; Add rustic and make it use eglot
+    (use-package rustic :straight t :config
+      (remove-hook 'rustic-mode-hook 'rustic-setup-lsp)
+      (add-hook 'rustic-mode-hook 'rustic-setup-eglot))
+  #+end_src
+
+  Finally, =cargo-mode= allows me to easily change and update
+  Cargo.toml contents.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (use-package cargo-mode :straight t)
+  #+end_src
+
 ** Golang
 
   This configuration sets up a Go mode where common-code minor mode is
