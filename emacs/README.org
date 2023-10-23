@@ -482,6 +482,7 @@
     ;; Define LSP functions for modes
     (setq jsb/lsp-mode-alist '((go-mode-hook . eglot-ensure)
                                  (rust-mode-hook . eglot-ensure)
+                                 (c-mode-hook . eglot-ensure)
                                  (typescript-mode-hook . lsp-deferred)
                                  (java-mode-hook . lsp-deferred)))
 
