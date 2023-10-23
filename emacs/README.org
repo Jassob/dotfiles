@@ -582,7 +582,7 @@
 
   #+begin_src emacs-lisp :tangle init.el
     ;; Add rustic and make it use eglot
-    (use-package rustic :after rust-mode :config
+    (use-package rustic :after rust-mode :defer t :config
       (remove-hook 'rustic-mode-hook 'rustic-setup-lsp)
       (add-hook 'rustic-mode-hook 'rustic-setup-eglot))
   #+end_src
@@ -591,7 +591,7 @@
   Cargo.toml contents.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package cargo-mode :after rust-mode)
+    (use-package cargo-mode :after rust-mode :defer t)
   #+end_src
 
 ** Golang
@@ -636,7 +636,7 @@
   I want to be able to run tests directly from within Emacs.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package gotest :after go-mode
+    (use-package gotest :after go-mode :defer t
       :hook (go-mode . (lambda ()
                          (setq go-test-verbose t
                                go-test-args "-race -cover -timeout=10s")))
@@ -651,7 +651,7 @@
   interface.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package go-dlv :after go-mode :commands (dlv-current-func))
+    (use-package go-dlv :defer t :after go-mode :commands (dlv-current-func))
   #+end_src
 
 ** TypeScript and Web stuff
@@ -689,7 +689,7 @@
 
    #+begin_src emacs-lisp :tangle init.el
      ;; https://vxlabs.com/2022/06/12/typescript-development-with-emacs-tree-sitter-and-lsp-in-2022/
-     (use-package typescript-mode :hook (typescript-mode . eglot-ensure)
+     (use-package typescript-mode :defer t :hook (typescript-mode . eglot-ensure)
        :config
        (with-eval-after-load 'eglot (add-to-list 'eglot-server-programs (jsb/generate-typescript-eglot-server-program)))
        ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
@@ -705,21 +705,21 @@
    I want to have terraform HCL source code syntax highlighted.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package terraform-mode)
+     (use-package terraform-mode :defer t)
    #+end_src
 
    I also use saltstack and thus want some salt support too.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package salt-mode)
+     (use-package salt-mode :defer t)
    #+end_src
 
    Other describing languages that I use are;
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package protobuf-mode)
-     (use-package toml-mode)
-     (use-package dockerfile-mode)
+     (use-package protobuf-mode :defer t)
+     (use-package toml-mode :defer t)
+     (use-package dockerfile-mode :defer t)
    #+end_src
 
 ** Haskell
@@ -727,7 +727,7 @@
    I want to launch ~interactive-haskell-mode~ when I press <C-c C-l>.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package haskell-mode
+     (use-package haskell-mode :defer t
        :mode "\\.hs\\'"
        :hook ((haskell-mode . interactive-haskell-mode)
               (haskell-mode . haskell-indentation-mode)
@@ -743,7 +743,7 @@
    pecularities.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package lsp-java :after lsp-mode)
+     (use-package lsp-java :after lsp-mode :defer t)
 
      (add-hook 'java-mode-hook (lambda () (setq tab-width 8)))
    #+end_src
@@ -754,7 +754,7 @@
    other major mode perks from =nix-mode=.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package nix-mode)
+     (use-package nix-mode :defer t)
    #+end_src
 
 * Personal customization
