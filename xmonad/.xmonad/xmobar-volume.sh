@@ -6,13 +6,13 @@ MUTE=$(pulsemixer --get-mute)
 
 # Add the muted line if the Master device is off (muted)
 if [ "${MUTE}" = "1" ]; then
-    ICON="婢"
+    ICON="󰝟"
 elif [ "${VOL}" -le 15 ]; then
-    ICON="奄"
+    ICON="󰕿"
 elif [ "${VOL}" -le 50 ]; then
-    ICON="奔"
+    ICON="󰖀"
 elif [ "${VOL}" -le 75 ]; then
-    ICON="墳"
+    ICON="󰕾"
 else
     ICON=""
 fi
