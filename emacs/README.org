@@ -625,12 +625,33 @@
       :hook (go-mode . (lambda () (add-hook 'before-save-hook #'eglot-format-buffer -10 t)))
       :config (add-to-list
                'eglot-workspace-configuration
-               '(gopls . ((buildFlags . ("integration"))
-                           (formatting . (gofumpt . t))
-                           (staticcheck . t)
-                           (codelenses . (gc_details . t))
-                           (matcher . "CaseSensitive")))))
+               '(:gopls (:buildFlags ["-tags" "integration"])
+                        :gofumpt t
+                        :staticcheck t
+                        :codelenses ((gc_details . t) (tidy . t) (run_vulncheck . t) (test . t))
+                        :matcher  "CaseSensitive")))
+  #+end_src
 
+  At einride we use golangci-lint and I want Emacs to automatically
+  pick up the correct binary and config file, if provided by the
+  repository.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (use-package flycheck-golangci-lint :straight t :after go-mode
+      :hook ((go-mode . flycheck-golangci-lint-setup)
+             (go-mode . flycheck-mode)
+             (go-mode . local/setup-sage-golangci-lint)))
+
+    (defun local/setup-sage-golangci-lint ()
+      "Instructs flycheck-golangci-lint to use the shipped binary and
+        config from a sage directory, if present."
+      (let* ((sage-dir (concat (vc-root-dir) ".sage/"))
+             (golangci-lint-config (concat sage-dir "tools/golangci-lint/.golangci.yml"))
+             (golangci-lint-exe (concat sage-dir "bin/golangci-lint")))
+        (when (file-exists-p golangci-lint-exe)
+          (setq-local flycheck-golangci-lint-executable golangci-lint-exe))
+        (when (file-exists-p golangci-lint-config)
+          (setq-local flycheck-golangci-lint-config golangci-lint-config))))
   #+end_src
 
   I want to be able to run tests directly from within Emacs.
