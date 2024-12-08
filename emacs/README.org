@@ -522,7 +522,8 @@
      (defvar prog-mode-formatters '((c-mode . clang-format-buffer)
                                     (java-mode . clang-format-buffer)
                                     (go-mode . gofmt)
-                                    (rust-mode . rust-format-buffer))
+                                    (rust-mode . rust-format-buffer)
+                                    (typescript-mode . prettier-prettify))
        "Alist containing major-mode and formatter pairs.")
    #+end_src
 
@@ -799,6 +800,13 @@
 
        ;; use our derived mode for tsx files
        (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode)))
+   #+end_src
+
+   Let's make sure that we get prettier files.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package prettier :straight t :after typescript-mode
+       :hook ((typescript-mode . prettier-mode)))
    #+end_src
 
 ** Infrastructure tools
