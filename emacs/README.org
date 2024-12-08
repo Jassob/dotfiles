@@ -624,14 +624,16 @@
   #+begin_src emacs-lisp :tangle init.el
     (use-package go-mode :mode "\\.go\\'" :after eglot
       :bind (:map go-mode-map ("C-c C-k" . godoc))
-      :hook (go-mode . (lambda () (add-hook 'before-save-hook #'eglot-format-buffer -10 t)))
-      :config (add-to-list
-               'eglot-workspace-configuration
-               '(:gopls (:buildFlags ["-tags" "integration"])
-                        :gofumpt t
-                        :staticcheck t
-                        :codelenses ((gc_details . t) (tidy . t) (run_vulncheck . t) (test . t))
-                        :matcher  "CaseSensitive")))
+      :hook (
+             (go-mode . (lambda () (add-hook 'before-save-hook #'eglot-format-buffer -10 t)))
+             (go-mode . (lambda () (setq eglot-workspace-configuration
+                                         '(:gopls (:buildFlags ["-tags" "integration"]
+                                                   :gofumpt t
+                                                   :staticcheck t
+                                                   :codelenses ((gc_details . t) (tidy . t) (run_vulncheck . t) (test . t))
+                                                   :matcher  "CaseSensitive")))))
+             )
+      )
   #+end_src
 
   At einride we use golangci-lint and I want Emacs to automatically
@@ -640,20 +642,59 @@
 
   #+begin_src emacs-lisp :tangle init.el
     (use-package flycheck-golangci-lint :straight t :after go-mode
-      :hook ((go-mode . flycheck-golangci-lint-setup)
-             (go-mode . flycheck-mode)
-             (go-mode . local/setup-sage-golangci-lint)))
+      :config (setq flycheck-golangci-lint-deadline "10s")
+      :hook ((go-mode . jsb/setup-sage-golangci-lint)
+             (go-mode . flycheck-golangci-lint-setup)
+             (go-mode . flycheck-mode)))
 
-    (defun local/setup-sage-golangci-lint ()
+
+    (defun jsb/setup-sage-golangci-lint (&optional root-dir curr-dir)
       "Instructs flycheck-golangci-lint to use the shipped binary and
         config from a sage directory, if present."
-      (let* ((sage-dir (concat (vc-root-dir) ".sage/"))
-             (golangci-lint-config (concat sage-dir "tools/golangci-lint/.golangci.yml"))
-             (golangci-lint-exe (concat sage-dir "bin/golangci-lint")))
-        (when (file-exists-p golangci-lint-exe)
-          (setq-local flycheck-golangci-lint-executable golangci-lint-exe))
-        (when (file-exists-p golangci-lint-config)
-          (setq-local flycheck-golangci-lint-config golangci-lint-config))))
+      (interactive)
+      ; Use the arguments if provided, otherwise default to project dir
+      ; and buffer directory.
+      (let ((sage-dir (concat (or root-dir (project-root (project-current))) ".sage/"))
+            (current-dir (or curr-dir (file-name-directory (buffer-file-name)))))
+        (let ((sage-golangci-lint-config (concat sage-dir "tools/golangci-lint/.golangci.yml"))
+              (sage-golangci-lint-exe (concat sage-dir "bin/golangci-lint"))
+              (local-golangci-lint-config (jsb/find-golangci-lint-config curr-dir root-dir)))
+          ;; Set exe if exists
+          (unless (jsb/set-local-if-exists 'flycheck-golangci-lint-executable sage-golangci-lint-exe)
+            (message "Missing sage-provided golangci-lint binary, make sure to run `make`"))
+          ;; Set config if exists
+          (if local-golangci-lint-config
+              (setq-local flycheck-golangci-lint-config local-golangci-lint-config)
+            (unless (jsb/set-local-if-exists 'flycheck-golangci-lint-config sage-golangci-lint-config)
+                (message "Missing golangci-lint config, falling back to default behavior"))))))
+
+    (defun jsb/set-local-if-exists (var file)
+      "Set VAR locally to FILE if FILE exists."
+      (if (and (stringp file) (symbolp var))
+        (if (file-exists-p file) (setq-local var file))
+        (warn "Either FILE is not a string or VAR is not a symbol")))
+
+    (defun jsb/find-golangci-lint-config (current-directory root-directory)
+      "Selects the closest of any existing .golangci.yml files."
+      (when (and current-directory root-directory)
+        (let* ((relative-dir (file-relative-name current-directory root-directory))
+               (candidate-dirs (append (list root-directory) (jsb/ancestor-paths relative-dir)))
+               (candidates (mapcar (lambda (ancestor) (concat ancestor "/.golangci.yml")) candidate-dirs)))
+
+          (jsb/return-first-file candidates))))
+
+    (defun jsb/return-first-file (candidates)
+      "Returns the first file that exists out of CANDIDATES."
+      (catch 'first-match
+        (dolist (candidate candidates)
+          (when (file-exists-p candidate)
+            (throw 'first-match candidate)))))
+
+    (defun jsb/ancestor-paths (path)
+      "Returns a list of all ancestors to PATH."
+      (let (ancestors)
+        (dolist (current-path (file-name-split path) ancestors)
+          (add-to-list 'ancestors (if ancestors (concat (car ancestors) "/" current-path) current-path)))))
   #+end_src
 
   I want to be able to run tests directly from within Emacs.
@@ -662,11 +703,48 @@
     (use-package gotest :after go-mode :defer t
       :hook (go-mode . (lambda ()
                          (setq go-test-verbose t
-                               go-test-args "-race -cover -timeout=10s")))
+                               go-test-args "-race -cover")))
       :bind (:map go-mode-map
                   ("C-c C-t t" . go-test-current-test)
                   ("C-c C-t f" . go-test-current-file)
                   ("C-c C-t p" . go-test-current-project)))
+
+    (with-eval-after-load
+     'gotest
+     (defvar jsb/gotest-default-args '("-race" "-cover" "-count=1" "-timeout=30s")
+       "Default arguments to gotest package, as a list.")
+
+     (defun jsb/gotest-update-args ()
+       "Update the gotest's go-test-args with our own jsb/gotest-arg-list"
+       (setq go-test-args (string-join jsb/gotest-arg-list " ")))
+
+     (defun jsb/gotest-reset-args ()
+       "Resets go-test-args"
+       (interactive)
+       (setq jsb/gotest-arg-list jsb/gotest-default-args)
+       (jsb/gotest-update-args))
+
+     ;; Reset the args to the default
+     (jsb/gotest-reset-args)
+
+     (defun jsb/gotest-add-arg (arg)
+       "Adds ARG to go-test-args. If ARG is present it will be replaced."
+       (interactive "sArgument: ")
+       (let* ((pairs (string-split arg "[= ]"))
+    	  (filtered-args (cl-remove-if (lambda (arg) (string-prefix-p (car pairs) arg)) jsb/gotest-arg-list)))
+         (setq jsb/gotest-arg-list (cons (string-join pairs "=") filtered-args))
+         (jsb/gotest-update-args)))
+
+     (defun jsb/gotest-add-build-tags (buildTag)
+       "Adds BUILDTAG to go-test-args."
+       (interactive "sBuild tag: ")
+       (jsb/gotest-add-arg (concat "-tags=" buildTag)))
+
+     (defun jsb/gotest-add-timeout (timeout)
+       "Adds TIMEOUT to go-test-args."
+       (interactive "sTimeout (with unit): ")
+       (jsb/gotest-add-arg (concat "-timeout=" timeout)))
+     )
   #+end_src
 
   Sometimes when testing I want to be able to debug the test cases and
