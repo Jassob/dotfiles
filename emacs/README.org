@@ -28,27 +28,17 @@
   to memory issues while setting everything up.
 
   #+begin_src emacs-lisp :tangle init.el
-    (setq gc-cons-threshold 64000000)
+    (setq gc-cons-threshold (* 100 (expt 10 6)) ; 100 MB
+          gc-cons-percentage 0.8)
+
+    ;; restore after startup
     (add-hook 'after-init-hook
-              ;; restore after startup
-              #'(lambda () (setq gc-cons-threshold 800000)))
+              (lambda () (setq gc-cons-threshold (* 50 (expt 20 6)) ; 50 MB
+                               gc-cons-percentage 0.1)))
+
+    ;; Increase the amount of data read from subprocesses
+    (setq read-process-output-max (* 1 (expt 10 6))) ; 1MB
   #+end_src
-
-** Editing system files
-
-   When I edit system configuration files I might accidentally find
-   files as my regular user, even though I need sudo rights to edit
-   them. This advice makes =ido-find-file= automatically open it
-   through =TRAMP= as sudo if it is not writable by my user.
-
-   #+begin_src emacs-lisp :tangle init.el
-     (defadvice find-file (after find-file-sudo activate)
-       "Find file as root if necessary."
-       (when (and buffer-file-name
-                  (not (file-writable-p buffer-file-name))
-                  (y-or-n-p "Do you want to edit as sudo?"))
-         (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
-   #+end_src
 
 ** Packages
 
@@ -84,6 +74,22 @@
 
    #+begin_src emacs-lisp :tangle init.el
      (use-package delight :commands (delight))
+   #+end_src
+
+** Editing system files
+
+   When I edit system configuration files I might accidentally find
+   files as my regular user, even though I need sudo rights to edit
+   them. This advice makes =find-file= automatically open it through
+   =TRAMP= as sudo if it is not writable by my user.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (defadvice find-file (after find-file-sudo activate)
+       "Find file as root if necessary."
+       (when (and buffer-file-name
+                  (not (file-writable-p buffer-file-name))
+                  (y-or-n-p "Do you want to edit as sudo?"))
+         (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
    #+end_src
 
 ** Backups and auto-save
