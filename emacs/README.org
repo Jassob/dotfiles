@@ -1108,6 +1108,13 @@
    (setq org-adapt-indentation t)
  #+end_src
 
+ I want org files to be collapsed when they open, so I can quickly
+ navigate to the section/header I want to go.
+
+ #+begin_src emacs-lisp :tangle init.el
+   (setq org-startup-folded 'content)
+ #+end_src
+
 ** My files
    :PROPERTIES:
    :CUSTOM_ID: org-files
