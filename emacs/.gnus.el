@@ -12,8 +12,6 @@
 	     (flyspell-mode t)
 	     (local-set-key (kbd "TAB") 'bbdb-complete-name)))
 
-(require 'nnir)
-
 ;; Please note mail folder in `gnus-select-method` have NO prefix like
 ;; "nnimap+hotmail:" or "nnimap+gmail:"
 (setq gnus-select-method '(nntp "news.gwene.org")) ;; Read feeds/atom through gwene
@@ -40,12 +38,6 @@
 
 ;; list all the subscribed groups even if they contain zero unread messages
 (define-key gnus-group-mode-map (kbd "o") 'local/gnus-group-list-subscribed-groups)
-
-;; BBDB: Address list
-(use-package bbdb :ensure t :hook (gnus-startup . 'bbdb-insinuate-gnus)
-  :init (bbdb-initialize 'message 'gnus 'sendmail)
-  :config (setq bbdb/mail-auto-create-p t
-		bbdb/news-auto-create-p t))
 
 ;; Fetch only part of the article if we can.
 (setq gnus-read-active-file 'some)
