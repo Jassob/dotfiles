@@ -52,27 +52,11 @@
 
 ** Packages
 
-   First we need to install the =straight.el= package manager.
-
-   #+begin_src emacs-lisp :tangle init.el
-     (defvar bootstrap-version)
-     (let ((bootstrap-file
-            (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-           (bootstrap-version 6))
-       (unless (file-exists-p bootstrap-file)
-         (with-current-buffer
-             (url-retrieve-synchronously
-              "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-              'silent 'inhibit-cookies)
-           (goto-char (point-max))
-           (eval-print-last-sexp)))
-       (load bootstrap-file nil 'nomessage))
-   #+end_src
-
    Then we'll mark that we've initialized packages outside package.el.
 
    #+begin_src emacs-lisp :tangle init.el
-     (setq package-enable-at-startup nil)
+     (require 'package)
+     (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
    #+end_src
 
    Make sure to reload the list of packages by calling =M-x
@@ -82,7 +66,10 @@
    them and load them lazily.
 
    #+begin_src emacs-lisp :tangle init.el
-     (straight-use-package 'use-package)
+     (require 'use-package)
+     ;; Always install all packages, but defer them until they are needed
+     (setq use-package-always-ensure t
+           use-package-always-defer t)
    #+end_src
 
    Make sure that =use-package= is available for the byte-compiler.
@@ -96,7 +83,7 @@
    Delight is a nice package for hiding stuff in my modeline.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package delight :straight t)
+     (use-package delight :commands (delight))
    #+end_src
 
 ** Backups and auto-save
@@ -153,7 +140,7 @@
    there is a choice.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package ace-window :straight t :bind (("C-x o" . ace-window)))
+     (use-package ace-window :bind (("C-x o" . ace-window)))
    #+end_src
 
 ** Dired
@@ -221,7 +208,7 @@
    stuff to the X clipboard. =xclip= is a package that does just that.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package xclip :straight t :init (xclip-mode t))
+     (use-package xclip :init (xclip-mode t))
    #+end_src
 
 ** Custom file
@@ -263,7 +250,7 @@
   manipulate parens, quotes etc.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package smartparens :straight t :delight
+    (use-package smartparens :delight
       :init (require 'smartparens-config)
       :hook ((prog-mode-hook . 'turn-on-smartparens-strict-mode)
              (minibuffer-setup-hook . 'turn-on-smartparens-strict-mode))
@@ -283,7 +270,7 @@
   but looking behind the mark.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package multiple-cursors :straight t
+    (use-package multiple-cursors
       :bind (:map global-map
                   ("C-S-c C-S-c" . mc/edit-lines)
                   ("M-n" . mc/mark-next-symbol-like-this)
@@ -328,65 +315,53 @@
   Other minor modes I want to have active in programming modes:
 
   #+begin_src emacs-lisp :tangle init.el
-    ;; Folding of outline
-    (use-package hs-minor-mode :hook prog-mode :delight :bind (("C-<tab>" . #'hs-toggle-hiding)))
+    ;;; Built into Emacs
+    (use-package hs-minor-mode :hook prog-mode :delight :bind (("C-<tab>" . #'hs-toggle-hiding)) :ensure nil)
+    (use-package subword-mode :hook prog-mode :delight :ensure nil)
+    (use-package hl-line-mode :hook prog-mode :delight :ensure nil)
+    (use-package column-number-mode :hook prog-mode :delight :ensure nil)
 
     ;; Automatically revert file when changed outside of Emacs
     (use-package autorevert :delight auto-revert-mode :hook (prog-mode . auto-revert-mode))
 
-    (use-package subword-mode :hook prog-mode :delight)
+    (use-package hl-todo :delight :hook (prog-mode . hl-todo-mode))
 
-    (use-package hl-line-mode :hook prog-mode :delight)
-    (use-package hl-todo :straight t :delight :hook (prog-mode . hl-todo-mode) :straight t)
+    (use-package projectile :delight :commands (projectile-mode)
+      :init (projectile-mode)
+      :bind (("C-c p" . #'projectile-mode-map)
+             ("M-p" . #'projectile-mode-map)))
+    (use-package rg)
 
-    (use-package column-number-mode :hook prog-mode :delight)
+    (use-package company :delight :hook (prog-mode . company-mode)
+      :bind (:map prog-mode-map (("C-c RET" . company-complete)
+                                 ("C-c C-RET" . company-complete))))
 
-    (use-package projectile :straight t :delight :init (projectile-mode)
-      :bind (("C-c p" . #'projectile-command-map)
-             ("M-p" . #'projectile-command-map)))
-    (use-package rg :straight t)
+    (use-package rainbow-delimiters :delight :hook (prog-mode . rainbow-delimiters-mode))
 
-    ;; Hide modes in modeline
-    (use-package delight :straight t)
-
-    (use-package company :straight t :delight :hook (prog-mode . company-mode)
-      :bind (:map prog-mode-map ("C-c RET" . company-complete)))
-
-    (use-package rainbow-delimiters :straight t :delight :hook (prog-mode . rainbow-delimiters-mode))
-
-    (use-package yasnippet :straight t :hook (prog-mode . yas-minor-mode))
+    (use-package yasnippet :commands (yas-reload-all yas-minor-mode)
+      :config (yas-reload-all))
   #+end_src
 
   Sometimes it is handy to be able to open the current line or region
   inside a browser.
 
   #+begin_src emacs-lisp :tangle init.el
-    (defun local/clean-git-url (git-url)
+    (defun jsb/clean-git-url (git-url)
       (string-replace ".git" "" (string-replace "git@github.com:" "https://github.com/" git-url)))
 
     ;; Inspiration from https://www.reddit.com/r/emacs/comments/xdw6ok/comment/iodig8c
     (defun open-on-github ()
       (interactive)
       (require 'magit)
-      (let
-          ((repo-url  (local/clean-git-url (magit-git-string "remote" "get-url" "--push" "origin")))
-           (commit-hash (magit-git-string "rev-parse" "HEAD"))
-           (start-line (if (use-region-p)
-                           (line-number-at-pos (region-beginning))
-                         (line-number-at-pos)))
-           (end-line (if (use-region-p) (line-number-at-pos (region-end)))))
+      (let ((repo-url  (jsb/clean-git-url (magit-git-string "remote" "get-url" "--push" "origin")))
+            (commit-hash (magit-git-string "rev-parse" "HEAD"))
+            (start-line (if (use-region-p) (line-number-at-pos (region-beginning)) (line-number-at-pos)))
+            (end-line (if (use-region-p) (line-number-at-pos (region-end))))
+            (file-name (substring buffer-file-name (length (projectile-project-root)))))
         (unless repo-url (error  "not in a git repo"))
-        (browse-url
-         (concat
-          repo-url
-          "/blob/"
-          commit-hash
-          "/"
-          (substring buffer-file-name (length (projectile-project-root)))
-          "#L" (number-to-string start-line)
-          (if (and (use-region-p) (< 0 (- end-line start-line)))
-              (concat "..L" (number-to-string end-line)))
-          ))))
+        (browse-url (concat repo-url "/blob/" commit-hash "/" file-name "#L" (number-to-string start-line)
+                            (if (and (use-region-p) (< 0 (- end-line start-line)))
+                                (concat "..L" (number-to-string end-line)))))))
   #+end_src
 
 
@@ -397,9 +372,8 @@
   properly.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package dumb-jump :straight t :commands (dump-jump-xref-activate))
-
-    (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+    (use-package dumb-jump :commands (dump-jump-xref-activate)
+      :init (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
   #+end_src
 
 ** Tree-Sitter
@@ -457,15 +431,13 @@
 
   Let's start with configuring eglot:
   #+begin_src emacs-lisp :tangle init.el
-    (use-package eglot :straight t
-      :commands (eglot-ensure
-                 eglot-code-actions
-                 eglot-code-action-organize-imports
-                 eglot-rename
-                 eglot format
-                 eglot-format-buffer)
-      :hook ((eglot-managed-mode . (lambda ()
-                             (add-hook 'before-save-hook #'eglot-format 0 t))))
+    (use-package eglot :commands (eglot-ensure
+                                  eglot-code-actions
+                                  eglot-code-action-organize-imports
+                                  eglot-rename
+                                  eglot format
+                                  eglot-format-buffer)
+      :hook ((eglot-managed-mode . (lambda () (add-hook 'before-save-hook #'eglot-format 0 t))))
       :bind (:map eglot-mode-map
                   ("C-c l a a" . eglot-code-actions)
                   ("C-c l a i" . eglot-code-action-organize-imports)
@@ -481,7 +453,7 @@
   Next comes =lsp-mode=:
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package lsp-mode :straight t :commands (lsp lsp-deferred)
+    (use-package lsp-mode :commands (lsp lsp-deferred)
       :init (setq lsp-keymap-prefix (kbd "C-c l"))
       :bind (:map lsp-mode-map
                   ("C-c ! l"   . flymake-show-buffer-diagnostics)
@@ -535,7 +507,7 @@
    Rust will continue to use their respective *fmt binaries.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package clang-format :commands 'clang-format-buffer :straight t)
+     (use-package clang-format :commands 'clang-format-buffer)
 
      (defvar prog-mode-formatters '((c-mode . clang-format-buffer)
                                     (java-mode . clang-format-buffer)
@@ -555,16 +527,14 @@
    frontends I really like.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package magit :bind ("C-x g" . magit-status) :straight t :defer t)
-     ;; sqlite3 is some kind of dependency to magit
-     (use-package sqlite3 :straight t :after magit)
+     (use-package magit :bind ("C-x g" . magit-status))
    #+end_src
 
    =Git-gutter+= is a package that shows a line's status (added,
    modifid or deleted) in a file that is version controlled by Git.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package git-gutter :straight t :diminish t
+     (use-package git-gutter :delight t
        :hook (prog-mode . git-gutter-mode)
        :bind (:map prog-mode-map
                    ;; Navigate on hunks
@@ -580,7 +550,7 @@
    To help me interact with my Github repositories I use =forge=.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package forge :after magit :straight t)
+     (use-package forge :after magit)
    #+end_src
 
 ** Rust
@@ -589,7 +559,7 @@
    experience with Rust, especially with rust-analyzer.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package rust-mode :straight t :hook (rust-mode . eglot-ensure)
+     (use-package rust-mode :hook (rust-mode . eglot-ensure)
        :init (setq rust-format-on-save t
                    rust-format-show-buffer nil
                    rust-format-goto-problem nil))
@@ -604,7 +574,7 @@
 
   #+begin_src emacs-lisp :tangle init.el
     ;; Add rustic and make it use eglot
-    (use-package rustic :straight t :config
+    (use-package rustic :after rust-mode :config
       (remove-hook 'rustic-mode-hook 'rustic-setup-lsp)
       (add-hook 'rustic-mode-hook 'rustic-setup-eglot))
   #+end_src
@@ -613,7 +583,7 @@
   Cargo.toml contents.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package cargo-mode :straight t)
+    (use-package cargo-mode :after rust-mode)
   #+end_src
 
 ** Golang
@@ -642,7 +612,7 @@
   Then, let me configure Go mode to use Eglot.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package go-mode :mode "\\.go\\'" :after eglot :defer t :straight t
+    (use-package go-mode :mode "\\.go\\'" :after eglot
       :bind (:map go-mode-map ("C-c C-k" . godoc))
       :hook (go-mode . (lambda () (add-hook 'before-save-hook #'eglot-format-buffer -10 t)))
       :config (add-to-list
@@ -658,7 +628,7 @@
   I want to be able to run tests directly from within Emacs.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package gotest :straight t :after go-mode
+    (use-package gotest :after go-mode
       :hook (go-mode . (lambda ()
                          (setq go-test-verbose t
                                go-test-args "-race -cover -timeout=10s")))
@@ -673,7 +643,7 @@
   interface.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package go-dlv :straight t :after go-mode :commands (dlv-current-func))
+    (use-package go-dlv :after go-mode :commands (dlv-current-func))
   #+end_src
 
 ** TypeScript and Web stuff
@@ -711,7 +681,7 @@
 
    #+begin_src emacs-lisp :tangle init.el
      ;; https://vxlabs.com/2022/06/12/typescript-development-with-emacs-tree-sitter-and-lsp-in-2022/
-     (use-package typescript-mode :hook (typescript-mode . eglot-ensure) :straight t
+     (use-package typescript-mode :hook (typescript-mode . eglot-ensure)
        :config
        (with-eval-after-load 'eglot (add-to-list 'eglot-server-programs (jsb/generate-typescript-eglot-server-program)))
        ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
@@ -727,21 +697,21 @@
    I want to have terraform HCL source code syntax highlighted.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package terraform-mode :straight t)
+     (use-package terraform-mode)
    #+end_src
 
    I also use saltstack and thus want some salt support too.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package salt-mode :straight t)
+     (use-package salt-mode)
    #+end_src
 
    Other describing languages that I use are;
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package protobuf-mode :straight t)
-     (use-package toml-mode :straight t)
-     (use-package dockerfile-mode :straight t)
+     (use-package protobuf-mode)
+     (use-package toml-mode)
+     (use-package dockerfile-mode)
    #+end_src
 
 ** Haskell
@@ -749,7 +719,7 @@
    I want to launch ~interactive-haskell-mode~ when I press <C-c C-l>.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package haskell-mode :straight t
+     (use-package haskell-mode
        :hook ((haskell-mode . interactive-haskell-mode)
               (haskell-mode . haskell-indentation-mode))
        :init (setq lsp-haskell-formatting-provider "brittany"))
@@ -762,7 +732,7 @@
    pecularities.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package lsp-java :straight t :after lsp-mode)
+     (use-package lsp-java :after lsp-mode)
 
      (add-hook 'java-mode-hook (lambda () (setq tab-width 8)))
    #+end_src
@@ -773,7 +743,7 @@
    other major mode perks from =nix-mode=.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package nix-mode :straight t)
+     (use-package nix-mode)
    #+end_src
 
 * Personal customization
@@ -848,7 +818,7 @@
 
   #+begin_src emacs-lisp :tangle init.el
     ;; Load theme
-    (use-package catppuccin-theme :straight t
+    (use-package catppuccin-theme
       :config
       (setq catppuccin-flavor 'mocha)
       (load-theme 'catppuccin t))
@@ -859,7 +829,6 @@
   will be set as the main font for Emacs.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package cl-lib :straight t)
     (defun font-existsp (font)
       "Check to see if the named FONT is available."
       (if (null (x-list-fonts font)) nil t))
@@ -931,15 +900,15 @@
 
  #+begin_src emacs-lisp :tangle init.el
    ;; Enable ivy on completion-read
-   (use-package ivy :straight t :init (ivy-mode t))
+   (use-package ivy :init (ivy-mode t) :delight)
    ;; Replace common functions with ivy-versions
-   (use-package counsel :straight t :init (counsel-mode)
+   (use-package counsel :init (counsel-mode) :delight
      :bind (("M-x" . counsel-M-x)
             ("C-c g" . counsel-git)))
    ;; Enable ivy powered search/occur function
-   (use-package swiper :straight t :bind ("M-s o" . swiper))
+   (use-package swiper :bind ("M-s o" . swiper))
    ;; Use smex to keep M-x sorted on recent use
-   (use-package smex :straight t)
+   (use-package smex)
  #+end_src
 
  I sometimes use Imenu to quickly navigate inside the current file.
@@ -1166,7 +1135,7 @@
  popup showing all the keybindings belonging to a prefix key.
 
  #+begin_src emacs-lisp :tangle init.el
-   (use-package which-key :delight t :straight t
+   (use-package which-key :delight
      :init (which-key-mode)
      :config (setq which-key-idle-delay 2.0))
  #+end_src
@@ -1179,7 +1148,7 @@
 
   #+begin_src emacs-lisp :tangle init.el
     ;; Display local file history as tree of edits
-    (use-package undo-tree :straight t :delight
+    (use-package undo-tree :delight
       :config
       (setq undo-tree-visualizer-timestamps t
             undo-tree-visualizer-diff t
@@ -1194,7 +1163,7 @@
   and this is where =writeroom-mode= (found [[https://github.com/joostkremers/writeroom-mode][here]]) comes in to play.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package writeroom-mode :straight t
+    (use-package writeroom-mode
       :init (setq writeroom-width 120)
       (add-hook 'writeroom-mode-hook (lambda () (display-line-numbers-mode -1)))
       :bind (:map writeroom-mode-map
