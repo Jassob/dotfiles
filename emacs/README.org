@@ -951,64 +951,67 @@
   #+begin_src emacs-lisp :tangle init.el
     (defun font-existsp (font)
       "Check to see if the named FONT is available."
-      (if (null (x-list-fonts font)) nil t))
+      (unless (eq window-system nil)
+        (if (null (x-list-fonts font)) nil t)))
 
-    (defun font-avail (fonts)
-      "Finds the available fonts."
-      (cl-remove-if-not 'font-existsp fonts))
+    (defvar font-preferences '("iosevka term" "Hasklig" "Inconsolata"
+    			   "Fira Code" "Source Code Pro" "PragmataPro"))
 
-    (defvar font-preferences
-      '( "Iosevka"
-         "Hasklig"
-         "Inconsolata"
-         "Fira Code"
-         "Source Code Pro"
-         "PragmataPro"))
-
-    (unless (eq window-system nil)
-      (let ((fonts (font-avail font-preferences)))
-        (unless (null fonts) (progn
-            (set-face-attribute 'default nil :font (car fonts))
-            (set-face-attribute 'default nil :weight 'medium)))))
+    ;; Set font of new frames to the first available font in
+    ;; font-preferences.
+    (use-package cl-lib :straight t)
+    (add-hook 'server-after-make-frame-hook
+    	  (lambda () (let ((fonts (cl-remove-if-not 'font-existsp font-preferences)))
+    		       (unless (and (not fonts) (eq window-system nil))
+    			 (progn
+    			   (set-face-font 'default (car fonts))
+    			   (set-face-attribute 'default nil :weight 'medium))))))
   #+end_src
 
-  When using Hasklig we can have some degree of ligature support and
-  this is configured below.
+  When programming we would like to make use of ligatures to make the
+  font a little nicer.
 
   #+begin_src emacs-lisp :tangle init.el
-    (defun jsb/correct-symbol-bounds (pretty-alist)
-      "Prepend a TAB character to each symbol in this alist,
-    this way compose-region called by prettify-symbols-mode
-    will use the correct width of the symbols
-    instead of the width measured by char-width."
-      (mapcar (lambda (el)
-                (setcdr el (string ?\t (cdr el)))
-                el)
-              pretty-alist))
+    (dolist (char/ligature-re
+             `((?-  . ,(rx (or (or "-->" "-<<" "->>" "-|" "-~" "-<" "->") (+ "-"))))
+               (?/  . ,(rx (or (or "/==" "/=" "/>" "/**" "/*") (+ "/"))))
+               (?*  . ,(rx (or (or "*>" "*/") (+ "*"))))
+               (?<  . ,(rx (or (or "<<=" "<<-" "<|||" "<==>" "<!--" "<=>" "<||" "<|>" "<-<"
+                                   "<==" "<=<" "<-|" "<~>" "<=|" "<~~" "<$>" "<+>" "</>"
+                                   "<*>" "<->" "<=" "<|" "<:" "<>"  "<$" "<-" "<~" "<+"
+                                   "</" "<*")
+                               (+ "<"))))
+               (?:  . ,(rx (or (or ":?>" "::=" ":>" ":<" ":?" ":=") (+ ":"))))
+               (?=  . ,(rx (or (or "=>>" "==>" "=/=" "=!=" "=>" "=:=") (+ "="))))
+               (?!  . ,(rx (or (or "!==" "!=") (+ "!"))))
+               (?>  . ,(rx (or (or ">>-" ">>=" ">=>" ">]" ">:" ">-" ">=") (+ ">"))))
+               (?&  . ,(rx (+ "&")))
+               (?|  . ,(rx (or (or "|->" "|||>" "||>" "|=>" "||-" "||=" "|-" "|>"
+                                   "|]" "|}" "|=")
+                               (+ "|"))))
+               (?.  . ,(rx (or (or ".?" ".=" ".-" "..<") (+ "."))))
+               (?+  . ,(rx (or "+>" (+ "+"))))
+               (?\[ . ,(rx (or "[<" "[|")))
+               (?\{ . ,(rx "{|"))
+               (?\? . ,(rx (or (or "?." "?=" "?:") (+ "?"))))
+               (?#  . ,(rx (or (or "#_(" "#[" "#{" "#=" "#!" "#:" "#_" "#?" "#(")
+                               (+ "#"))))
+               (?\; . ,(rx (+ ";")))
+               (?_  . ,(rx (or "_|_" "__")))
+               (?~  . ,(rx (or "~~>" "~~" "~>" "~-" "~@")))
+               (?$  . ,(rx "$>"))
+               (?^  . ,(rx "^="))
+               (?\] . ,(rx "]#"))))
+      (let ((char (car char/ligature-re))
+            (ligature-re (cdr char/ligature-re)))
+        (set-char-table-range composition-function-table char
+                              `([,ligature-re 0 font-shape-gstring]))))
 
-    (defun jsb/ligature-list (ligatures codepoint-start)
-      "Create an alist of strings to replace with
-    codepoints starting from codepoint-start."
-      (let ((codepoints (-iterate '1+ codepoint-start (length ligatures))))
-        (-zip-pair ligatures codepoints)))
 
-    ;; list can be found at https://github.com/i-tu/Hasklig/blob/master/GlyphOrderAndAliasDB#L1588
-    (setq jsb/hasklig-ligatures
-          (let* ((ligs '("&&" "***" "*>" "\\\\" "||" "|>" "::"
-                         "==" "===" "==>" "=>" "=<<" "!!" ">>"
-                         ">>=" ">>>" ">>-" ">-" "->" "-<" "-<<"
-                         "<*" "<*>" "<|" "<|>" "<$>" "<>" "<-"
-                         "<<" "<<<" "<+>" ".." "..." "++" "+++"
-                         "/=" ":::" ">=>" "->>" "<=>" "<=<" "<->")))
-            (jsb/correct-symbol-bounds (jsb/ligature-list ligs #Xe100))))
-
-    ;; nice glyphs for haskell with hasklig
-    (defun jsb/set-hasklig-ligatures ()
-      "Add hasklig ligatures for use with prettify-symbols-mode."
-      (interactive)
-      (setq prettify-symbols-alist
-            (append jsb/hasklig-ligatures prettify-symbols-alist))
-      (prettify-symbols-mode))
+    ;; Use ligatures in code, but not in prose.
+    (use-package composite
+        :hook (prog-mode . auto-composition-mode)
+        :init (global-auto-composition-mode -1))
   #+end_src
 
 * Counsel / Ivy
