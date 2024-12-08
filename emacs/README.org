@@ -229,7 +229,7 @@
    not be able to write its server file.
 
    #+begin_src emacs-lisp :tangle init.el
-     (defun local/ensure-permission (dir mode)
+     (defun jsb/ensure-permission (dir mode)
        "Checks that DIR has permissions MODE set and sets it if missing."
        (unless (file-exists-p dir)
          (mkdir dir))
@@ -240,7 +240,7 @@
      ;; Ensure that the permissions are correct before starting the server.
      (advice-add 'server-start :before
                  (lambda (&optional LEAVE-DEAD INHIBIT-PROMPT)
-                   (local/ensure-permission server-socket-dir #o700)))
+                   (jsb/ensure-permission server-socket-dir #o700)))
    #+end_src
 
 * Handling character pairs
@@ -403,7 +403,7 @@
           (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
           (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
-     (defun local/install-treesit-language-if-missing (lang)
+     (defun jsb/install-treesit-language-if-missing (lang)
        "Install treesit language grammar if it is missing.
 
      Uses treesit-language-source-alist to get the recipe.
@@ -416,7 +416,7 @@
          (when (called-interactively-p 'any)
            (message "Tree-sitter grammar %s is already installed." lang))))
 
-     (mapc #'local/install-treesit-language-if-missing (mapcar #'car treesit-language-source-alist))
+     (mapc #'jsb/install-treesit-language-if-missing (mapcar #'car treesit-language-source-alist))
    #+end_src
 
 ** LSP
@@ -473,19 +473,19 @@
 
   #+begin_src emacs-lisp :tangle init.el
     ;; Define LSP functions for modes
-    (setq local/lsp-mode-alist '((go-mode-hook . eglot-ensure)
+    (setq jsb/lsp-mode-alist '((go-mode-hook . eglot-ensure)
                                  (rust-mode-hook . eglot-ensure)
                                  (typescript-mode-hook . lsp-deferred)
                                  (java-mode-hook . lsp-deferred)))
 
     ;; Register the LSP functions for the different modes
-    (mapcar (lambda (pair) (add-hook (car pair) (cdr pair))) local/lsp-mode-alist)
+    (mapcar (lambda (pair) (add-hook (car pair) (cdr pair))) jsb/lsp-mode-alist)
   #+end_src
 
 ** Formatting
 
    #+begin_src emacs-lisp :tangle init.el
-     (defun my/format-code ()
+     (defun jsb/format-code ()
        "Format buffer using formatter in assoc-list prog-mode-formatters..
 
      prog-mode-formatters is an assoc-list on the form 'major-mode
@@ -500,7 +500,7 @@
              (funcall (cdr formatter))))))
 
      ;; Bind it to our formatting key-binding
-     (define-key prog-mode-map (kbd "C-c C-f") 'my/format-code)
+     (define-key prog-mode-map (kbd "C-c C-f") 'jsb/format-code)
    #+end_src
 
    For C and Java we want to use Clang-format for formatting, Go and
@@ -856,7 +856,7 @@
   this is configured below.
 
   #+begin_src emacs-lisp :tangle init.el
-    (defun local--correct-symbol-bounds (pretty-alist)
+    (defun jsb/correct-symbol-bounds (pretty-alist)
       "Prepend a TAB character to each symbol in this alist,
     this way compose-region called by prettify-symbols-mode
     will use the correct width of the symbols
@@ -866,28 +866,28 @@
                 el)
               pretty-alist))
 
-    (defun local--ligature-list (ligatures codepoint-start)
+    (defun jsb/ligature-list (ligatures codepoint-start)
       "Create an alist of strings to replace with
     codepoints starting from codepoint-start."
       (let ((codepoints (-iterate '1+ codepoint-start (length ligatures))))
         (-zip-pair ligatures codepoints)))
 
     ;; list can be found at https://github.com/i-tu/Hasklig/blob/master/GlyphOrderAndAliasDB#L1588
-    (setq local--hasklig-ligatures
+    (setq jsb/hasklig-ligatures
           (let* ((ligs '("&&" "***" "*>" "\\\\" "||" "|>" "::"
                          "==" "===" "==>" "=>" "=<<" "!!" ">>"
                          ">>=" ">>>" ">>-" ">-" "->" "-<" "-<<"
                          "<*" "<*>" "<|" "<|>" "<$>" "<>" "<-"
                          "<<" "<<<" "<+>" ".." "..." "++" "+++"
                          "/=" ":::" ">=>" "->>" "<=>" "<=<" "<->")))
-            (local--correct-symbol-bounds (local--ligature-list ligs #Xe100))))
+            (jsb/correct-symbol-bounds (jsb/ligature-list ligs #Xe100))))
 
     ;; nice glyphs for haskell with hasklig
-    (defun local/set-hasklig-ligatures ()
+    (defun jsb/set-hasklig-ligatures ()
       "Add hasklig ligatures for use with prettify-symbols-mode."
       (interactive)
       (setq prettify-symbols-alist
-            (append local--hasklig-ligatures prettify-symbols-alist))
+            (append jsb/hasklig-ligatures prettify-symbols-alist))
       (prettify-symbols-mode))
   #+end_src
 
@@ -1105,17 +1105,17 @@
               ("jassob" :components ("html" "archive" "org-static" "web"))
               ("all" :components ("jassob"))))
 
-      (defun local/publish-jassob ()
+      (defun jsb/publish-jassob ()
         "Publishes \"jassob\" project"
         (interactive)
         (org-publish "jassob" t))
 
-      (defun local/publish-chalmers ()
+      (defun jsb/publish-chalmers ()
         "Publishes \"chalmers\" project"
         (interactive)
         (org-publish "chalmers" t))
 
-      (defun local/publish-web ()
+      (defun jsb/publish-web ()
         "Publishes \"web\" project"
         (interactive)
         (org-publish "web" t)))
