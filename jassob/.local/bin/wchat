@@ -3,8 +3,10 @@
 
 set -euo pipefail
 
-cd "${HOME}/tools/weelisten" || exit 1
-python3 client.py jassob.se --password-cmd "pass apps/weechat | tail -n +3 | cut -f 3 -d ' '" -p 8001 &
+cd "${HOME}/tools/weelisten" || { echo "Missing weelisten, clone github.com/Jassob/weelisten"; exit 1; }
+python3 client.py jassob.se --password-cmd "pass apps/weechat | tail -n +3 | cut -f 3 -d ' '" \
+                            --ca-file "~/tools/weelisten/fullchain.pem" \
+                            --port 8001 &
 IP=$(ping -c 1 192.168.1.72 >/dev/null && echo 192.168.1.72 || echo nuc)
 mosh ${IP} tmux a
 trap 'kill $(jobs -p)' EXIT
