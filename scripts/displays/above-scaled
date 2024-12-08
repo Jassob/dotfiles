@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# External display in 2x scaled native resolution above internal
+set -euo pipefail
+
+xrandr --output DP-1-3 --mode 2560x1440 --scale 2x2 \
+	--output eDP-1-1 --auto --pos 0x2880
+
+~/.fehbg

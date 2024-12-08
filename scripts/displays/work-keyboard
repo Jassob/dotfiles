@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+
+# Standard work profile with keyboard and display to the right
+set -euo pipefail
+
+xrandr --output DP-1-4 --pos 3840x0 --mode 2560x1440 --scale 2x2 \
+	--output eDP-1-1 --mode 3840x2400 --pos 0x0
+
+~/.fehbg
