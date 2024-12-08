@@ -354,8 +354,7 @@ main = do
     , workspaces         = myWorkspaces
     , handleEventHook    = handleEventHook def
     , startupHook        = myStartupHook
-    , logHook            = do
-                             whenX (liftIO $ readIORef updateVar)
+    , logHook            = whenX (liftIO $ readIORef updateVar)
                                $ updatePointer (0.5, 0.5) (0.0, 0.0)
     , keys               = myKeys updateVar
     , normalBorderColor  = "#474646"
