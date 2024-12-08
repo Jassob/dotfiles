@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Arranges the display layout so the internal display is beneath the external one
+set -euo pipefail
+
+xrandr --output DP-1 --auto --above eDP-1 \
+	--output DP-2 --auto --above eDP-1 \
+	--output DP-3 --auto --above eDP-1
+~/.fehbg

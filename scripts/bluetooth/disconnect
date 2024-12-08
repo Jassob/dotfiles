@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Disconnect from DEVICE, or interactively select device to disconnect from.
+set -euo pipefail
+
+DEVICE="${1:-undefined}"
+
+if [[ "${DEVICE}" == "undefined" ]]; then
+    DEVICE=$(bluetoothctl devices Connected | cut -f3 -d' ' | fzf)
+fi
+
+DEVICE_MAC=$(bluetoothctl devices Connected | grep "${DEVICE}" | cut -f2 -d' ')
+if [[ -z "${DEVICE_MAC}" ]]; then
+    echo "${DEVICE} is not a connected device, check spelling or call again without name."
+    exit 127
+fi
+
+echo "Disconnecting from ${DEVICE}..."
+bluetoothctl disconnect "${DEVICE_MAC}"
