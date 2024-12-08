@@ -141,14 +141,6 @@
                 ("S-C-<up>"    . enlarge-window))
    #+end_src
 
-   However, sometimes =C-x o= is exactly what we need, but then we can
-   extend it with =ace-window= to make it prompt us for a window when
-   there is a choice.
-
-   #+begin_src emacs-lisp :tangle init.el
-     (use-package ace-window :bind (("C-x o" . ace-window)))
-   #+end_src
-
 ** Dired
 
    Dired is file manager and browser built into Emacs and it is
