@@ -1156,26 +1156,6 @@
       (global-undo-tree-mode))
   #+end_src
 
-* Distraction free writing
-
-  Sometimes I just want to have my code (or whatever I'm currently
-  reading or writing) presented to me without any other distractions
-  and this is where =writeroom-mode= (found [[https://github.com/joostkremers/writeroom-mode][here]]) comes in to play.
-
-  #+begin_src emacs-lisp :tangle init.el
-    (use-package writeroom-mode
-      :init (setq writeroom-width 120)
-      (add-hook 'writeroom-mode-hook (lambda () (display-line-numbers-mode -1)))
-      :bind (:map writeroom-mode-map
-                  ("C-c C-w <" . #'writeroom-decrease-width)
-                  ("C-c C-w >" . #'writeroom-increase-width)
-                  ("C-c C-w =" . #'writeroom-adjust-width)
-                  ("s-?" . nil)
-                  ("C-c C-w SPC" . #'writeroom-toggle-mode-line))
-            (:map global-map
-                  ("C-c C-M-w" . #'writeroom-mode)))
-  #+end_src
-
 * Secrets and custom settings
 
   I store more sensitive data in =~/.emacs.d/etc/.secrets.el= so I
@@ -1200,6 +1180,36 @@
     (setq eshell-smart-space-goes-to-end t)
   #+end_src
 
+* Reading / Writing
+** Distraction free writing
+
+   Sometimes I just want to have my code (or whatever I'm currently
+   reading or writing) presented to me without any other distractions
+   and this is where =writeroom-mode= (found [[https://github.com/joostkremers/writeroom-mode][here]]) comes in to play.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package writeroom-mode
+       :init (setq writeroom-width 120)
+       (add-hook 'writeroom-mode-hook (lambda () (display-line-numbers-mode -1)))
+       :bind (:map writeroom-mode-map
+                   ("C-c C-w <" . #'writeroom-decrease-width)
+                   ("C-c C-w >" . #'writeroom-increase-width)
+                   ("C-c C-w =" . #'writeroom-adjust-width)
+                   ("s-?" . nil)
+                   ("C-c C-w SPC" . #'writeroom-toggle-mode-line))
+             (:map global-map
+                   ("C-c C-M-w" . #'writeroom-mode)))
+   #+end_src
+
+** PDFs
+
+   =pdf-tools= is a package that let's me read PDF files within Emacs.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package pdf-tools
+       :magic ("%PDF" . pdf-view-mode)
+       :init (pdf-loader-install :no-query))
+   #+end_src
 
 * Experiments
 
