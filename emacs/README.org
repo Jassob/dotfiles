@@ -635,7 +635,7 @@
   repository.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package flycheck-golangci-lint :straight t :after go-mode
+    (use-package flycheck-golangci-lint :after go-mode
       :config (setq flycheck-golangci-lint-deadline "10s")
       :hook ((go-mode . jsb/setup-sage-golangci-lint)
              (go-mode . flycheck-golangci-lint-setup)
@@ -798,7 +798,7 @@
    Let's make sure that we get prettier files.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package prettier :straight t :after typescript-mode
+     (use-package prettier :after typescript-mode
        :hook ((typescript-mode . prettier-mode)))
    #+end_src
 
@@ -960,7 +960,7 @@
 
     ;; Set font of new frames to the first available font in
     ;; font-preferences.
-    (use-package cl-lib :straight t)
+    (use-package cl-lib)
     (add-hook 'server-after-make-frame-hook
     	  (lambda () (let ((fonts (cl-remove-if-not 'font-existsp font-preferences)))
     		       (unless (and (not fonts) (eq window-system nil))
@@ -1010,7 +1010,7 @@
 
 
     ;; Use ligatures in code, but not in prose.
-    (use-package composite
+    (use-package composite :ensure nil
         :hook (prog-mode . auto-composition-mode)
         :init (global-auto-composition-mode -1))
   #+end_src
