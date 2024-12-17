@@ -326,8 +326,8 @@
 
     (use-package projectile :delight :commands (projectile-mode)
       :init (projectile-mode)
-      :bind (("C-c p" . #'projectile-mode-map)
-             ("M-p" . #'projectile-mode-map)))
+      :bind (("C-c p" . projectile-command-map)
+             ("M-p" . projectile-command-map)))
     (use-package rg
       ;; Don't ignore hidden files
       :config (add-to-list 'rg-command-line-flags "-."))
