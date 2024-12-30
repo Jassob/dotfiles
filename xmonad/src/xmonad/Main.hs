@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeApplications #-}
+
 {-
   My XMonad configuration.
 
@@ -7,6 +9,8 @@ TODO
 ---------
 -}
 
+import Control.Exception (IOException, catch)
+import Control.Monad (unless)
 import Data.IORef (
     IORef,
     modifyIORef',
@@ -16,6 +20,7 @@ import Data.IORef (
 import Data.Map (Map)
 import qualified Data.Map as M
 import System.Exit (exitSuccess)
+import System.Process (callProcess)
 import XMonad (
     ChangeLayout (NextLayout),
     Default (def),
@@ -200,11 +205,15 @@ myScratchpads =
 -- | Stuff that will run every time XMonad is either started or restarted.
 myStartupHook :: X ()
 myStartupHook = do
-    safeSpawn "pkill" ["trayer"]
-    safeSpawn "pkill" ["picom"]
-    dir <- asks (cfgDir . directories)
-    safeSpawn (dir ++ "/xmobar-trayer.sh") []
     setWMName "LG3D"
+    unlessM (isRunning "trayer") $
+        flip safeSpawn [] . (++ "/xmobar-trayer.sh") =<< asks (cfgDir . directories)
+  where
+    isRunning :: String -> X Bool
+    isRunning prog = liftIO $ catch @IOException (callProcess "pgrep" [prog] >> pure True) (const (pure False))
+
+    unlessM :: (Monad m) => m Bool -> m () -> m ()
+    unlessM cond a = cond >>= flip unless a
 
 myManageHook :: ManageHook
 myManageHook =
