@@ -566,7 +566,14 @@
      (use-package rust-mode :hook (rust-mode . eglot-ensure)
        :init (setq rust-format-on-save t
                    rust-format-show-buffer nil
-                   rust-format-goto-problem nil))
+                   rust-format-goto-problem nil)
+       :bind (:map rust-mode-map
+     	      ("C-c C-u" . jsb/rust-insert-todo)))
+
+     (defun jsb/rust-insert-todo ()
+       "Inserts todo!() into a buffer at point."
+       (interactive)
+       (insert "todo!()"))
   #+end_src
 
   =rustic= provides some more convenience functions like running the
