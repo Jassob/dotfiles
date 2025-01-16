@@ -1279,12 +1279,11 @@
 
   #+begin_src emacs-lisp :tangle init.el
     ;; Display local file history as tree of edits
-    (use-package undo-tree :delight
-      :config
-      (setq undo-tree-visualizer-timestamps t
-            undo-tree-visualizer-diff t
-            undo-tree-history-directory-alist '(("." . "~/.emacs.d/backups")))
-      (global-undo-tree-mode))
+    (use-package undo-tree :delight :commands (global-undo-tree-mode)
+      :init (global-undo-tree-mode)
+      :config (setq undo-tree-visualizer-timestamps t
+    		undo-tree-visualizer-diff t
+    		undo-tree-history-directory-alist '(("." . "~/.emacs.d/backups"))))
   #+end_src
 
 * Secrets and custom settings
