@@ -617,7 +617,8 @@
 
   #+begin_src emacs-lisp :tangle init.el
     (use-package go-mode :mode "\\.go\\'" :after eglot
-      :bind (:map go-mode-map ("C-c C-k" . godoc))
+      :bind (:map go-mode-map (("C-c C-k" . godoc)
+                               ("C-c C-u" . jsb/go-insert-todo)))
       :hook (
              (go-mode . (lambda () (add-hook 'before-save-hook #'eglot-format-buffer -10 t)))
              (go-mode . (lambda () (setq eglot-workspace-configuration
@@ -625,9 +626,12 @@
                                                    :gofumpt t
                                                    :staticcheck t
                                                    :codelenses ((gc_details . t) (tidy . t) (run_vulncheck . t) (test . t))
-                                                   :matcher  "CaseSensitive")))))
-             )
-      )
+                                                   :matcher  "CaseSensitive")))))))
+
+    (defun jsb/go-insert-todo ()
+      "Inserts panic(\"todo\") in the buffer at point."
+      (interactive)
+      (insert "panic(\"todo\")"))
   #+end_src
 
   At einride we use golangci-lint and I want Emacs to automatically
