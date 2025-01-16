@@ -1,1 +1,4 @@
 ignore-project: False
+
+package xmobar
+        flags: +with_mpris +with_inotify +with_alsa +with_threaded
