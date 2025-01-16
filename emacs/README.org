@@ -1028,7 +1028,7 @@
 
  #+begin_src emacs-lisp :tangle init.el
    ;; Enable ivy on completion-read
-   (use-package ivy :init (ivy-mode t) :delight)
+   (use-package ivy :commands (ivy-mode) :init (ivy-mode t) :delight)
    ;; Replace common functions with ivy-versions
    (use-package counsel :init (counsel-mode) :delight
      :bind (("M-x" . counsel-M-x)
