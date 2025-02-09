@@ -934,107 +934,109 @@
           browse-url-new-window-flag  t)
   #+end_src
 
-* Visual appearance
+** Visual appearance
 
-  It is great that you can start out learning Emacs like a normal
-  person, using the mouse and navigating through the menu and tool
-  bar. However, on a smaller screen I find it a waste of screen
-  space.
+   It is great that you can start out learning Emacs like a normal
+   person, using the mouse and navigating through the menu and tool
+   bar. However, on a smaller screen I find it a waste of screen
+   space.
 
-  #+begin_src emacs-lisp :tangle init.el
-    ;; Hide UX we don't want
-    (tool-bar-mode -1)
-    (menu-bar-mode -1)
-    (scroll-bar-mode -1)
+   #+begin_src emacs-lisp :tangle init.el
+     ;; Hide UX we don't want
+     (tool-bar-mode -1)
+     (menu-bar-mode -1)
+     (scroll-bar-mode -1)
 
-    (setq frame-resize-pixelwise t)
-    (pixel-scroll-mode)
-  #+end_src
+     (setq frame-resize-pixelwise t)
+     (pixel-scroll-mode)
+   #+end_src
 
-  We want to have some kind of theme running, the built-in
-  =modus-themes= have one bright theme and one dark and ships a
-  function to switch between them.
+   We want to have some kind of theme running, the built-in
+   =modus-themes= have one bright theme and one dark and ships a
+   function to switch between them.
 
-  #+begin_src emacs-lisp :tangle init.el
-    (require-theme 'modus-themes)
+   #+begin_src emacs-lisp :tangle init.el
+     (require-theme 'modus-themes)
 
-    ;; We want to italics, but not bold
-    (setq modus-themes-italic-constructs t
-          modus-themes-bold-constructs nil)
-    (load-theme 'modus-operandi)
-    ;; Toggle between light and dark themes with f5
-    (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
-  #+end_src
+     ;; We want to italics, but not bold
+     (setq modus-themes-italic-constructs t
+           modus-themes-bold-constructs nil)
+     (load-theme 'modus-operandi)
+     ;; Toggle between light and dark themes with f5
+     (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
+   #+end_src
 
-  The fonts in =font-preferences= are the preferred fonts that I use
-  on my system, in descending order. The first font that is available
-  will be set as the main font for Emacs.
+** Fonts
 
-  #+begin_src emacs-lisp :tangle init.el
-    (defun font-existsp (font)
-      "Check to see if the named FONT is available."
-      (unless (eq window-system nil)
-        (if (null (x-list-fonts font)) nil t)))
+   The fonts in =font-preferences= are the preferred fonts that I use
+   on my system, in descending order. The first font that is available
+   will be set as the main font for Emacs.
 
-    (defvar font-preferences '("iosevka term" "Hasklig" "Inconsolata"
-    			   "Fira Code" "Source Code Pro" "PragmataPro"))
+   #+begin_src emacs-lisp :tangle init.el
+     (defun font-existsp (font)
+       "Check to see if the named FONT is available."
+       (unless (eq window-system nil)
+         (if (null (x-list-fonts font)) nil t)))
 
-    ;; Set font of new frames to the first available font in
-    ;; font-preferences.
-    (use-package cl-lib)
-    (add-hook 'server-after-make-frame-hook
-    	  (lambda () (let ((fonts (cl-remove-if-not 'font-existsp font-preferences)))
-    		       (unless (and (not fonts) (eq window-system nil))
-    			 (progn
-    			   (set-face-font 'default (car fonts))
-    			   (set-face-attribute 'default nil :weight 'medium))))))
-  #+end_src
+     (defvar font-preferences '("iosevka term" "Hasklig" "Inconsolata"
+    			"Fira Code" "Source Code Pro" "PragmataPro"))
 
-  When programming we would like to make use of ligatures to make the
-  font a little nicer.
+     ;; Set font of new frames to the first available font in
+     ;; font-preferences.
+     (use-package cl-lib)
+     (add-hook 'server-after-make-frame-hook
+           (lambda () (let ((fonts (cl-remove-if-not 'font-existsp font-preferences)))
+    		    (unless (and (not fonts) (eq window-system nil))
+                          (progn
+    			(set-face-font 'default (car fonts))
+    			(set-face-attribute 'default nil :weight 'medium))))))
+   #+end_src
 
-  #+begin_src emacs-lisp :tangle init.el
-    (dolist (char/ligature-re
-             `((?-  . ,(rx (or (or "-->" "-<<" "->>" "-|" "-~" "-<" "->") (+ "-"))))
-               (?/  . ,(rx (or (or "/==" "/=" "/>" "/**" "/*") (+ "/"))))
-               (?*  . ,(rx (or (or "*>" "*/") (+ "*"))))
-               (?<  . ,(rx (or (or "<<=" "<<-" "<|||" "<==>" "<!--" "<=>" "<||" "<|>" "<-<"
-                                   "<==" "<=<" "<-|" "<~>" "<=|" "<~~" "<$>" "<+>" "</>"
-                                   "<*>" "<->" "<=" "<|" "<:" "<>"  "<$" "<-" "<~" "<+"
-                                   "</" "<*")
-                               (+ "<"))))
-               (?:  . ,(rx (or (or ":?>" "::=" ":>" ":<" ":?" ":=") (+ ":"))))
-               (?=  . ,(rx (or (or "=>>" "==>" "=/=" "=!=" "=>" "=:=") (+ "="))))
-               (?!  . ,(rx (or (or "!==" "!=") (+ "!"))))
-               (?>  . ,(rx (or (or ">>-" ">>=" ">=>" ">]" ">:" ">-" ">=") (+ ">"))))
-               (?&  . ,(rx (+ "&")))
-               (?|  . ,(rx (or (or "|->" "|||>" "||>" "|=>" "||-" "||=" "|-" "|>"
-                                   "|]" "|}" "|=")
-                               (+ "|"))))
-               (?.  . ,(rx (or (or ".?" ".=" ".-" "..<") (+ "."))))
-               (?+  . ,(rx (or "+>" (+ "+"))))
-               (?\[ . ,(rx (or "[<" "[|")))
-               (?\{ . ,(rx "{|"))
-               (?\? . ,(rx (or (or "?." "?=" "?:") (+ "?"))))
-               (?#  . ,(rx (or (or "#_(" "#[" "#{" "#=" "#!" "#:" "#_" "#?" "#(")
-                               (+ "#"))))
-               (?\; . ,(rx (+ ";")))
-               (?_  . ,(rx (or "_|_" "__")))
-               (?~  . ,(rx (or "~~>" "~~" "~>" "~-" "~@")))
-               (?$  . ,(rx "$>"))
-               (?^  . ,(rx "^="))
-               (?\] . ,(rx "]#"))))
-      (let ((char (car char/ligature-re))
-            (ligature-re (cdr char/ligature-re)))
-        (set-char-table-range composition-function-table char
-                              `([,ligature-re 0 font-shape-gstring]))))
+   When programming we would like to make use of ligatures to make the
+   font a little nicer.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (dolist (char/ligature-re
+              `((?-  . ,(rx (or (or "-->" "-<<" "->>" "-|" "-~" "-<" "->") (+ "-"))))
+                (?/  . ,(rx (or (or "/==" "/=" "/>" "/**" "/*") (+ "/"))))
+                (?*  . ,(rx (or (or "*>" "*/") (+ "*"))))
+                (?<  . ,(rx (or (or "<<=" "<<-" "<|||" "<==>" "<!--" "<=>" "<||" "<|>" "<-<"
+                                    "<==" "<=<" "<-|" "<~>" "<=|" "<~~" "<$>" "<+>" "</>"
+                                    "<*>" "<->" "<=" "<|" "<:" "<>"  "<$" "<-" "<~" "<+"
+                                    "</" "<*")
+                                (+ "<"))))
+                (?:  . ,(rx (or (or ":?>" "::=" ":>" ":<" ":?" ":=") (+ ":"))))
+                (?=  . ,(rx (or (or "=>>" "==>" "=/=" "=!=" "=>" "=:=") (+ "="))))
+                (?!  . ,(rx (or (or "!==" "!=") (+ "!"))))
+                (?>  . ,(rx (or (or ">>-" ">>=" ">=>" ">]" ">:" ">-" ">=") (+ ">"))))
+                (?&  . ,(rx (+ "&")))
+                (?|  . ,(rx (or (or "|->" "|||>" "||>" "|=>" "||-" "||=" "|-" "|>"
+                                    "|]" "|}" "|=")
+                                (+ "|"))))
+                (?.  . ,(rx (or (or ".?" ".=" ".-" "..<") (+ "."))))
+                (?+  . ,(rx (or "+>" (+ "+"))))
+                (?\[ . ,(rx (or "[<" "[|")))
+                (?\{ . ,(rx "{|"))
+                (?\? . ,(rx (or (or "?." "?=" "?:") (+ "?"))))
+                (?#  . ,(rx (or (or "#_(" "#[" "#{" "#=" "#!" "#:" "#_" "#?" "#(")
+                                (+ "#"))))
+                (?\; . ,(rx (+ ";")))
+                (?_  . ,(rx (or "_|_" "__")))
+                (?~  . ,(rx (or "~~>" "~~" "~>" "~-" "~@")))
+                (?$  . ,(rx "$>"))
+                (?^  . ,(rx "^="))
+                (?\] . ,(rx "]#"))))
+       (let ((char (car char/ligature-re))
+             (ligature-re (cdr char/ligature-re)))
+         (set-char-table-range composition-function-table char
+                               `([,ligature-re 0 font-shape-gstring]))))
 
 
-    ;; Use ligatures in code, but not in prose.
-    (use-package composite :ensure nil
-        :hook (prog-mode . auto-composition-mode)
-        :init (global-auto-composition-mode -1))
-  #+end_src
+     ;; Use ligatures in code, but not in prose.
+     (use-package composite :ensure nil
+         :hook (prog-mode . auto-composition-mode)
+         :init (global-auto-composition-mode -1))
+   #+end_src
 
 * Org configuration
 
