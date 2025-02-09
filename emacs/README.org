@@ -1238,15 +1238,11 @@
 
   I find Emacs default undo behaviour rather intuitive (of course a
   redo is just an undo of your last undo!), but I like being able to
-  visualise the timeline of my file. Enters =undo-tree-mode=!
+  visualise the timeline of my file. Enters =vundo=!
 
   #+begin_src emacs-lisp :tangle init.el
     ;; Display local file history as tree of edits
-    (use-package undo-tree :delight :commands (global-undo-tree-mode)
-      :init (global-undo-tree-mode)
-      :config (setq undo-tree-visualizer-timestamps t
-    		undo-tree-visualizer-diff t
-    		undo-tree-history-directory-alist '(("." . "~/.emacs.d/backups"))))
+    (use-package vundo :delight :commands (vundo) :bind ("C-x u" . vundo))
   #+end_src
 
 * Secrets and custom settings
