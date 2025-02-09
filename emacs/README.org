@@ -256,6 +256,38 @@
     (use-package smex)
   #+end_src
 
+** Tree-like file history
+
+   I find Emacs default undo behaviour rather intuitive (of course a
+   redo is just an undo of your last undo!), but I like being able to
+   visualise the timeline of my file. Enters =vundo=!
+
+   #+begin_src emacs-lisp :tangle init.el
+     ;; Display local file history as tree of edits
+     (use-package vundo :delight :commands (vundo) :bind ("C-x u" . vundo))
+   #+end_src
+
+** Secrets and custom settings
+
+   I store more sensitive data in =~/.emacs.d/etc/.secrets.el= so I
+   easily can store my main configuration in a public version control
+   system.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (load (concat user-emacs-directory ".secrets.el") t)
+   #+end_src
+
+** Key stroke reminders
+
+  To help me remember my commands I use =which-key=, which displays a
+  popup showing all the keybindings belonging to a prefix key.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (use-package which-key :delight
+      :init (which-key-mode)
+      :config (setq which-key-idle-delay 2.0))
+  #+end_src
+
 * Handling character pairs
 
   Emacs has a great package for dealing with characters that comes in
@@ -1222,38 +1254,6 @@
    #+begin_src emacs-lisp :tangle init.el
    )
    #+end_src
-
-* Key stroke reminders
-
- To help me remember my commands I use =which-key=, which displays a
- popup showing all the keybindings belonging to a prefix key.
-
- #+begin_src emacs-lisp :tangle init.el
-   (use-package which-key :delight
-     :init (which-key-mode)
-     :config (setq which-key-idle-delay 2.0))
- #+end_src
-
-* Tree-like file history
-
-  I find Emacs default undo behaviour rather intuitive (of course a
-  redo is just an undo of your last undo!), but I like being able to
-  visualise the timeline of my file. Enters =vundo=!
-
-  #+begin_src emacs-lisp :tangle init.el
-    ;; Display local file history as tree of edits
-    (use-package vundo :delight :commands (vundo) :bind ("C-x u" . vundo))
-  #+end_src
-
-* Secrets and custom settings
-
-  I store more sensitive data in =~/.emacs.d/etc/.secrets.el= so I
-  easily can store my main configuration in a public version control
-  system.
-
-  #+begin_src emacs-lisp :tangle init.el
-    (load (concat user-emacs-directory ".secrets.el") t)
-  #+end_src
 
 * Eshell
 
