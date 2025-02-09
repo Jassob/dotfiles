@@ -121,13 +121,9 @@
    I have them bound to, in my opinion at least, sensible keybindings.
 
    #+begin_src emacs-lisp :tangle init.el
-     (bind-keys ("<S-left>"  . windmove-left)
-                ("C-x <left>"  . windmove-left)
-                ("<S-up>"    . windmove-up)
+     (bind-keys ("C-x <left>"  . windmove-left)
                 ("C-x <up>"    . windmove-up)
-                ("<S-down>"  . windmove-down)
                 ("C-x <down>"  . windmove-down)
-                ("<S-right>" . windmove-right)
                 ("C-x <right>" . windmove-right))
    #+end_src
 
