@@ -241,6 +241,31 @@
                    (jsb/ensure-permission server-socket-dir #o700)))
    #+end_src
 
+** Completions
+
+   ~fido-vertical-mode~ is a builtin package providing a vertical list
+   of completion candidates for the minibuffer.
+
+  #+begin_src emacs-lisp :tangle init.el
+    ;; List minibuffer candidates in vertical list
+    (fido-vertical-mode)
+  #+end_src
+
+  It is usually convenient to get my most frequently used commands at
+  the top of the suggestions, ~smex~ is a package that does just that
+  for M-x.
+
+  #+begin_src emacs-lisp :tangle init.el
+    ;; Use smex to keep M-x sorted on recent use
+    (use-package smex)
+  #+end_src
+
+  I sometimes use Imenu to quickly navigate inside the current file.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (define-key global-map (kbd "M-g M-m") #'imenu)
+  #+end_src
+
 * Handling character pairs
 
   Emacs has a great package for dealing with characters that comes in
@@ -1032,32 +1057,6 @@
         :hook (prog-mode . auto-composition-mode)
         :init (global-auto-composition-mode -1))
   #+end_src
-
-* Counsel / Ivy
-
-  After having run with ido and smex for a while I wanted to try out
-  Helm and while it worked quite satisfactorily I thought that it
-  deviated too much from vanilla Emacs experience. My hope is that Ivy
-  and counsel will be a more discrete mix.
-
- #+begin_src emacs-lisp :tangle init.el
-   ;; Enable ivy on completion-read
-   (use-package ivy :commands (ivy-mode) :init (ivy-mode t) :delight)
-   ;; Replace common functions with ivy-versions
-   (use-package counsel :init (counsel-mode) :delight
-     :bind (("M-x" . counsel-M-x)
-            ("C-c g" . counsel-git)))
-   ;; Enable ivy powered search/occur function
-   (use-package swiper :bind ("M-s o" . swiper))
-   ;; Use smex to keep M-x sorted on recent use
-   (use-package smex)
- #+end_src
-
- I sometimes use Imenu to quickly navigate inside the current file.
-
- #+begin_src emacs-lisp :tangle init.el
-   (define-key global-map (kbd "M-g M-m") #'imenu)
- #+end_src
 
 * Org configuration
 
