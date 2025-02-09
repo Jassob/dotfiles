@@ -3,7 +3,7 @@
 VOL=$(pulsemixer --get-volume | awk '{ print $1 }')
 MUTE=$(pulsemixer --get-mute)
 
-if pactl info | grep -q "Default Sink: bluez_output"; then
+if bluetoothctl info | grep -q "UUID: Headset"; then
     if [ "${MUTE}" = "1" ]; then
 	ICON="󰟎"
     else
