@@ -569,9 +569,10 @@
      (use-package rust-mode
        :init (setq rust-format-on-save t
                    rust-format-show-buffer nil
-                   rust-format-goto-problem nil)
+                   rust-format-goto-problem nil
+                   rust-mode-treesitter-derive t)
        :bind (:map rust-mode-map
-     	      ("C-c C-u" . jsb/rust-insert-todo)))
+                   ("C-c C-u" . jsb/rust-insert-todo)))
 
      (defun jsb/rust-insert-todo ()
        "Inserts todo!() into a buffer at point."
@@ -580,17 +581,12 @@
   #+end_src
 
   =rustic= provides some more convenience functions like running the
-  current test (=C-c C-c C-c=) and so on. By default it uses
-  =lsp-mode=, but I prefer =eglot= since it is simpler and smaller.
-
-  To make =rustic= use =lsp-mode= instead, remove the two hook changes
-  below.
+  current test (=C-c C-c C-c=) and so on.
 
   #+begin_src emacs-lisp :tangle init.el
-    ;; Add rustic and make it use eglot
-    (use-package rustic :after rust-mode :defer t :config
-      (remove-hook 'rustic-mode-hook 'rustic-setup-lsp)
-      (add-hook 'rustic-mode-hook 'rustic-setup-eglot))
+    (use-package rustic :after rust-ts-mode :defer t :init
+      (setq rustic-lsp-client 'eglot)
+      (add-hook 'rustic-mode-hook #'rustic-setup-eglot -10))
   #+end_src
 
   Finally, =cargo-mode= allows me to easily change and update
