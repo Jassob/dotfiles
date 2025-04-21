@@ -566,7 +566,7 @@
    experience with Rust, especially with rust-analyzer.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package rust-mode :hook (rust-mode . eglot-ensure)
+     (use-package rust-mode
        :init (setq rust-format-on-save t
                    rust-format-show-buffer nil
                    rust-format-goto-problem nil)
