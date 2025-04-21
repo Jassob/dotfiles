@@ -442,7 +442,6 @@
                                   eglot format
                                   eglot-format-buffer)
       :hook ((eglot-managed-mode . (lambda () (add-hook 'before-save-hook #'eglot-format 0 t))))
-      :init (setq flymake-show-diagnostics-at-end-of-line t)
       :bind (:map eglot-mode-map
                   ("C-c l a a" . eglot-code-actions)
                   ("C-c l a i" . eglot-code-action-organize-imports)
