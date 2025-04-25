@@ -472,21 +472,6 @@
     (add-to-list 'image-types 'svg)
   #+end_src
 
-  Now, let's configure the various modes to actually start the
-  expected =lsp= implementation.
-
-  #+begin_src emacs-lisp :tangle init.el
-    ;; Define LSP functions for modes
-    (setq jsb/lsp-mode-alist '((go-mode-hook . eglot-ensure)
-                                 (rust-mode-hook . eglot-ensure)
-                                 (c-mode-hook . eglot-ensure)
-                                 (typescript-mode-hook . lsp-deferred)
-                                 (java-mode-hook . lsp-deferred)))
-
-    ;; Register the LSP functions for the different modes
-    (mapcar (lambda (pair) (add-hook (car pair) (cdr pair))) jsb/lsp-mode-alist)
-  #+end_src
-
 ** Formatting
 
    #+begin_src emacs-lisp :tangle init.el
@@ -619,10 +604,10 @@
   Then, let me configure Go mode to use Eglot.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package go-mode :mode "\\.go\\'" :after eglot
+    (use-package go-mode :mode "\\.go\\'"
       :bind (:map go-mode-map (("C-c C-k" . godoc)
                                ("C-c C-u" . jsb/go-insert-todo)))
-      :hook (
+      :hook ((go-mode . eglot-ensure)
              (go-mode . (lambda () (add-hook 'before-save-hook #'eglot-format-buffer -10 t)))
              (go-mode . (lambda () (add-hook 'project-find-functions #'project-find-go-module -10 t)))
              (go-mode . (lambda () (setq-default eglot-workspace-configuration
