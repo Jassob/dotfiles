@@ -841,11 +841,11 @@
        :mode "\\.hs\\'"
        :hook ((haskell-mode . interactive-haskell-mode)
               (haskell-mode . haskell-indentation-mode)
-     	 (haskell-mode . (lambda () (lsp-deferred))))
-       :init (setq lsp-haskell-formatting-provider "fourmolu"
-     	      lsp-haskell-plugin-fourmolu-config-external t)
+              (haskell-mode . (lambda () (eglot-ensure))))
        :bind (:map haskell-mode-map
-     	      ("C-c C-u" . jsb/haskell-insert-unimplemented)))
+                   ("C-c C-u" . jsb/haskell-insert-unimplemented))
+       :bind (:map interactive-haskell-mode-map
+     	      ("C-c RET" . company-complete)))
 
      (defun jsb/haskell-insert-unimplemented ()
        "Inserts error \"Not implemented.\" into a buffer at point."
