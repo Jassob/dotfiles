@@ -942,7 +942,7 @@
      (scroll-bar-mode -1)
 
      (setq frame-resize-pixelwise t)
-     (pixel-scroll-mode)
+     (pixel-scroll-precision-mode)
    #+end_src
 
    We want to have some kind of theme running, the built-in
