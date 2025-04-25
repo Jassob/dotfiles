@@ -4,7 +4,7 @@
 , deepseq, directory, dlist, extensible-exceptions, filepath
 , ghc-prim, integer-gmp, mtl, old-locale, old-time, process, random
 , rts, setlocale, stdenv, time, transformers, unix, utf8-string
-, X11, X11-xft, xmonad, xmonad-contrib, xmobar, lib
+, X11, X11-xft, xmonad, xmonad-contrib, xmobar, lib, haskell-language-server
 }:
 mkDerivation {
   pname = "xmonad-config";
@@ -20,5 +20,6 @@ mkDerivation {
     old-time process random rts setlocale time transformers unix
     utf8-string X11 X11-xft xmonad xmonad-contrib xmobar
   ];
+  buildTools = [ haskell-language-server ];
   license = lib.licenses.bsd3;
 }
