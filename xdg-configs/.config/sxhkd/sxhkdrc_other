@@ -38,9 +38,6 @@ XF86KbdBrightness{Up,Down}
 super + x; o
      rofi -show drun
 
-super + x; f
-      $HOME/.local/bin/openfile -i "rofi -dmenu"
-
 super + p
      rofi-pass
 

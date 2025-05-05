@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-EMACS_LOG=/run/user/1000/emacs_cron.log
-
-emacs --batch -l "$HOME/.emacs.d/minimal.el" -f org-gcal-sync >> "$EMACS_LOG"

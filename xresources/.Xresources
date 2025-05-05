@@ -1,6 +1,3 @@
 ! Include specific files
-#include ".Xresources.d/fonts.conf"
 #include ".Xresources.d/dpi.conf"
-#include ".Xresources.d/theme-gruvbox-dark.conf"
 #include ".Xresources.d/cursor.conf"
-#include ".Xresources.d/emacs.conf"
