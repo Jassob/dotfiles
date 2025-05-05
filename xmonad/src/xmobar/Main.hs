@@ -40,12 +40,6 @@ config = defaultConfig
       , "-a", "notify-send -u critical 'Battery level low, connect charger!'"
       ] 5
 
-      , Run $ Mpris2 "spotify"
-        ["-t", "<action=`playerctl play-pause`><artist> - <title></action>"
-         , "-M", "20"
-         , "-x", ""
-         ] 10
-
       , Run $ ComX "sh" [ "-c"
                       , "mu find flag:unread and maildir:/INBOX and not flag:trashed | wc -l"
                       ] "N/A" "inbox" 10
