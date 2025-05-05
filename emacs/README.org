@@ -819,18 +819,37 @@
 
 ** Haskell
 
-   I want to launch ~interactive-haskell-mode~ when I press <C-c C-l>.
+   I want to be able to open a git repository where a cabal file is
+   not necessarily in the root and have eglot figure out the project
+   by itself.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package haskell-mode :defer t
+     ;; Haskell defines a package (or project in Eglot lingo) to be a
+     ;; directory that contains a cabal file.
+     (require 'project)
+
+     (defun find-cabal-file (dir)
+       "Returns non-nil if DIR contains a *.cabal file."
+       (consp (directory-files dir nil ".*\.cabal")))
+
+     (defun project-find-haskell-package (dir)
+       (when-let ((root (locate-dominating-file dir #'find-cabal-file)))
+         (cons 'haskell-package root)))
+
+     (cl-defmethod project-root ((project (head haskell-package)))
+       (cdr project))
+   #+end_src
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package haskell-mode
        :mode "\\.hs\\'"
        :hook ((haskell-mode . interactive-haskell-mode)
               (haskell-mode . haskell-indentation-mode)
+              (haskell-mode . (lambda () (add-hook 'project-find-functions #'project-find-haskell-package -10 t)))
               (haskell-mode . (lambda () (eglot-ensure))))
        :bind (:map haskell-mode-map
-                   ("C-c C-u" . jsb/haskell-insert-unimplemented))
-       :bind (:map interactive-haskell-mode-map
-     	      ("C-c RET" . company-complete)))
+                   ("C-c C-u" . jsb/haskell-insert-unimplemented)
+                   ("C-c RET" . company-complete)))
 
      (defun jsb/haskell-insert-unimplemented ()
        "Inserts error \"Not implemented.\" into a buffer at point."
