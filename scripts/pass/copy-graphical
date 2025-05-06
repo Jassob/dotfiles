@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Choose a password in a graphical list and copy it to clipboard
+set -euo pipefail
+PASSWD=$(find ~/.password-store -name '*.gpg' -printf "%P\n" | sed 's/.gpg//' | rofi -dmenu -p "Choose password")
+
+if [[ -z ${PASSWD} ]]; then
+    echo "no password selected."
+    exit 0
+fi
+
+pass -c "${PASSWD}"

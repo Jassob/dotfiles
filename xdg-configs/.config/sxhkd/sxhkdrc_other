@@ -39,7 +39,7 @@ super + x; o
      rofi -show drun
 
 super + p
-     rofi-pass
+     $HOME/scripts/pass/copy-graphical
 
 super + x ; e ; c
       emacsclient -c -e "(org-capture)"
