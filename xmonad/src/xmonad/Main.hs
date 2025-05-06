@@ -52,24 +52,24 @@ myTerminal = "alacritty"
 
 myScratchpads :: [NamedScratchpad]
 myScratchpads =
-  [ NS "mupad" "spotify" (className =? "Spotify") doFullFloat,
-    NS
-      "termpad"
-      (termArgs "termpad" "tmux new-session -A -s termpad")
-      (title =? "termpad")
-      doFullFloat,
-    NS
-      "empad"
-      "emacsclient --frame-parameters=\"((name . \\\"empad\\\"))\" --create-frame"
-      (title =? "empad")
-      doCenterFloat,
-    NS "notepad" "logseq" (className =? "Logseq") doCenterFloat,
-    NS
-      "chatpad"
-      (termArgs "chatpad" "~/.local/bin/wchat")
-      (title =? "chatpad")
-      doFullFloat
-  ]
+    [ NS "mupad" "spotify" (className =? "Spotify") doFullFloat
+    , NS
+        "termpad"
+        (termArgs "termpad" "tmux new-session -A -s termpad")
+        (title =? "termpad")
+        doFullFloat
+    , NS
+        "empad"
+        "~/scripts/emacs/open-graphical server"
+        (title =? "server")
+        doCenterFloat
+    , NS "notepad" "logseq" (className =? "Logseq") doCenterFloat
+    , NS
+        "chatpad"
+        (termArgs "chatpad" "~/.local/bin/wchat")
+        (title =? "chatpad")
+        doFullFloat
+    ]
   where
     termArgs tit cmd = unwords [myTerminal, "-t", tit, "-e", cmd]
 

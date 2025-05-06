@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# [SESSION] open a graphical frame to SESSION.
+set -euo pipefail
+
+SESSION=${1:-undefined}
+
+if [[ "${SESSION}" == "undefined" ]]; then
+    SESSIONS=$(find "${XDG_RUNTIME_DIR}/emacs" -type s -printf "%f\n")
+
+    if [[ -z ${SESSIONS} ]]; then
+	echo "no sessions running"
+	exit 0
+    fi
+
+    SESSION=$(rofi -dmenu -p "Choose an Emacs session to open" <<<$SESSIONS)
+    if [[ -z ${SESSION} ]]; then
+	echo "no session selected"
+	exit 0
+    fi
+fi
+
+emacsclient -s "${SESSION}" --create-frame
