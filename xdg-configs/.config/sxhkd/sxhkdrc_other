@@ -48,7 +48,7 @@ super + x; r
       rofi -show emoji
 
 super + e
-      $HOME/.local/bin/startemacs -i "rofi -dmenu -p Emacs"
+      $HOME/scripts/emacs/choose-graphical
 
 #######
 # System stuff
