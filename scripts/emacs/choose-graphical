@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-SESSIONS=$(find "${XDG_RUNTIME_DIR}/emacs" -type s -printf "%f")
+SESSIONS=$(find "${XDG_RUNTIME_DIR}/emacs" -type s -printf "%f\n")
 
 if [[ -z ${SESSIONS} ]]; then
     echo "no sessions running"
