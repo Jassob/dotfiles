@@ -28,6 +28,7 @@
   to memory issues while setting everything up.
 
   #+begin_src emacs-lisp :tangle init.el
+    ;; -*- lexical-binding: t -*-
     (setq gc-cons-threshold (* 100 (expt 10 6)) ; 100 MB
           gc-cons-percentage 0.8)
 
@@ -472,6 +473,31 @@
     (add-to-list 'image-types 'svg)
   #+end_src
 
+  For repositories which includes projects whose roots are not in the
+  repository root we need to tell =project= how to find
+  these. Typically we can find the root by looking up from a current
+  file to a directory satisfying a predicate.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (require 'project)
+
+    (defun find-inner-project (project-mode predicate)
+      "Define how to find an inner project for PROJECT-MODE, using PREDICATE."
+      (unless (symbolp project-mode)
+        (error "project-mode should be a symbol"))
+      (unless (functionp predicate)
+        (error "predicate should be a function"))
+      ;; only run the predicate for a given mode
+      (add-hook 'project-find-functions
+    	    (lambda (dir)
+    	      (when (eq major-mode project-mode)
+    		(when-let ((root (funcall predicate dir)))
+    		  (cons 'inner-project root))))))
+
+    (cl-defmethod project-root ((project (head inner-project)))
+      (cdr project))
+  #+end_src
+
 ** Formatting
 
    #+begin_src emacs-lisp :tangle init.el
@@ -589,16 +615,8 @@
   First let's start with fixing the project/module location.
 
   #+begin_src emacs-lisp :tangle init.el
-    ;; Go defines a module (or project in Eglot lingo) to be whatever
-    ;; directory that contains a go.mod file.
-    (require 'project)
-
-    (defun project-find-go-module (dir)
-      (when-let ((root (locate-dominating-file dir "go.mod")))
-        (cons 'go-module root)))
-
-    (cl-defmethod project-root ((project (head go-module)))
-      (cdr project))
+    ;; a Go module is a directory containing a go.mod file
+    (find-inner-project 'go-mode (lambda (dir) (locate-dominating-file dir "go.mod")))
   #+end_src
 
   Then, let me configure Go mode to use Eglot.
@@ -609,7 +627,6 @@
                                ("C-c C-u" . jsb/go-insert-todo)))
       :hook ((go-mode . eglot-ensure)
              (go-mode . (lambda () (add-hook 'before-save-hook #'eglot-format-buffer -90 t)))
-             (go-mode . (lambda () (add-hook 'project-find-functions #'project-find-go-module -90 t)))
              (go-mode . (lambda () (setq-default eglot-workspace-configuration
                                          '(:gopls (:buildFlags ["-tags=integration"]
                                                    :gofumpt t
@@ -824,20 +841,11 @@
    by itself.
 
    #+begin_src emacs-lisp :tangle init.el
-     ;; Haskell defines a package (or project in Eglot lingo) to be a
-     ;; directory that contains a cabal file.
-     (require 'project)
-
      (defun find-cabal-file (dir)
        "Returns non-nil if DIR contains a *.cabal file."
        (consp (directory-files dir nil ".*\.cabal")))
 
-     (defun project-find-haskell-package (dir)
-       (when-let ((root (locate-dominating-file dir #'find-cabal-file)))
-         (cons 'haskell-package root)))
-
-     (cl-defmethod project-root ((project (head haskell-package)))
-       (cdr project))
+     (find-inner-project 'haskell-mode (lambda (dir) (locate-dominating-file dir #'find-cabal-file)))
    #+end_src
 
    #+begin_src emacs-lisp :tangle init.el
@@ -845,8 +853,7 @@
        :mode "\\.hs\\'"
        :hook ((haskell-mode . interactive-haskell-mode)
               (haskell-mode . haskell-indentation-mode)
-              (haskell-mode . (lambda () (add-hook 'project-find-functions #'project-find-haskell-package -10 t)))
-              (haskell-mode . (lambda () (eglot-ensure))))
+              (haskell-mode . eglot-ensure))
        :bind (:map haskell-mode-map
                    ("C-c C-u" . jsb/haskell-insert-unimplemented)
                    ("C-c RET" . company-complete)))
