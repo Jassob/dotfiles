@@ -246,6 +246,9 @@
   #+begin_src emacs-lisp :tangle init.el
     ;; List minibuffer candidates in vertical list
     (fido-vertical-mode)
+
+    ;; Show details in completions
+    (setq completions-detailed t)
   #+end_src
 
   It is usually convenient to get my most frequently used commands at
