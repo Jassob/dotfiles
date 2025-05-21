@@ -445,7 +445,7 @@
                                   eglot-rename
                                   eglot format
                                   eglot-format-buffer)
-      :hook ((eglot-managed-mode . (lambda () (add-hook 'before-save-hook #'eglot-format 0 t))))
+      :hook ((eglot-managed-mode . (lambda () (jsb/eglot-format-on-save-maybe))))
       :bind (:map eglot-mode-map
                   ("C-c l a a" . eglot-code-actions)
                   ("C-c l a i" . eglot-code-action-organize-imports)
@@ -456,6 +456,14 @@
                   ("C-c l r r" . eglot-rename)
                   ("C-c l f f" . eglot-format)
                   ("C-c l f b" . eglot-format-buffer)))
+
+    (defvar jsb/no-format-major-modes '(tsx-ts-mode typescript-ts-mode)
+      "Major modes that eglot should not auto-format.")
+
+    (defun jsb/eglot-format-on-save-maybe ()
+      "Formats buffer with eglot unless major-mode matches an ignored major-mode."
+      (unless (memq major-mode jsb/no-format-major-modes)
+        (add-hook 'before-save-hook #'eglot-format-buffer 0 t)))
   #+end_src
 
   Next comes =lsp-mode=:
@@ -474,6 +482,17 @@
 
   #+begin_src emacs-lisp :tangle init.el
     (add-to-list 'image-types 'svg)
+  #+end_src
+
+  We want Emacs to always use =tree-sitter= to parse whatever source
+  files we're editing.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (use-package treesit-auto :demand
+      :custom (treesit-auto-install 'prompt)
+      :config
+      (treesit-auto-add-to-auto-mode-alist 'all)
+      (global-treesit-auto-mode))
   #+end_src
 
   For repositories which includes projects whose roots are not in the
@@ -532,7 +551,7 @@
                                     (java-mode . clang-format-buffer)
                                     (go-mode . gofmt)
                                     (rust-mode . rust-format-buffer)
-                                    (typescript-mode . prettier-prettify))
+                                    (typescript-ts-mode . prettier-prettify))
        "Alist containing major-mode and formatter pairs.")
    #+end_src
 
@@ -764,55 +783,33 @@
 
 ** TypeScript and Web stuff
 
-   The following configuration will ensure that tree-sitter’s
-   dedicated tsx parser will be used for tsx (typescript + react)
-   files. By default this currently is not the case, as it uses the
-   typescript parser which does not understand the tsx extensions.
-
-   I want to use eglot to setup my LSP server for (Java|Type)Script
-   files, but it needs some workaround on NixOS systems:
+   First we need to tell Emacs and treesitter how to install
+   treesitter grammars for =tsx=.
 
    #+begin_src emacs-lisp :tangle init.el
-     (defun jsb/generate-typescript-eglot-server-program ()
-       "Generate the eglot-server-program entry for typescript-language-server.
+     ;; let treesit know how to install grammars for tsx
+     (add-to-list
+      'treesit-language-source-alist
+      '(tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
 
-     This might only be necessary on NixOS."
-       (let ((path-to-typescript-language-server (executable-find "typescript-language-server"))
-             (path-to-tsserver (executable-find "tsserver")))
-         (unless path-to-typescript-language-server
-           (error "Missing typescript-language-server, please install it"))
-         (unless path-to-tsserver
-           (error "Missing tsserver, please install it"))
-         `((js-mode typescript-mode) .
-           (,path-to-typescript-language-server
-            "--stdio"
-            "--tsserver-path"
-            ,(expand-file-name "../../lib" (file-truename path-to-tsserver))))))
+     (defun local/install-tsx-grammar-if-needed ()
+       (unless (treesit-language-available-p 'tsx)
+         (treesit-install-language-grammar 'tsx)))
+
+     (add-hook 'tsx-ts-mode-hook #'local/install-tsx-grammar-if-needed)
    #+end_src
 
-   Here we create a new derived mode that will map to both .tsx and
-   .ts. Due to the derived mode’s name, the typescript language server
-   will select tsx support, and due to the the explicit mapping,
-   tree-sitter will select its tsx parser.
+   Then we want =eglot= to run and start =typescript-language-server=.
 
    #+begin_src emacs-lisp :tangle init.el
-     ;; https://vxlabs.com/2022/06/12/typescript-development-with-emacs-tree-sitter-and-lsp-in-2022/
-     (use-package typescript-mode :defer t :hook (typescript-mode . eglot-ensure)
-       :config
-       (with-eval-after-load 'eglot (add-to-list 'eglot-server-programs (jsb/generate-typescript-eglot-server-program)))
-       ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
-       ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
-       (define-derived-mode typescriptreact-mode typescript-mode "TypeScript TSX")
-
-       ;; use our derived mode for tsx files
-       (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode)))
+     (add-hook 'tsx-ts-mode-hook #'eglot-ensure)
    #+end_src
 
    Let's make sure that we get prettier files.
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package prettier :after typescript-mode
-       :hook ((typescript-mode . prettier-mode)))
+     (add-hook 'tsx-ts-mode-hook #'prettier-mode)
+     (add-to-list 'prog-mode-formatters '(tsx-ts-mode . prettier-prettify))
    #+end_src
 
 ** Infrastructure tools
