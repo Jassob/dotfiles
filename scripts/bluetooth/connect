@@ -6,14 +6,14 @@ set -euo pipefail
 DEVICE="${1:-undefined}"
 
 if [[ "${DEVICE}" == "undefined" ]]; then
-    DEVICE=$(bluetoothctl devices Paired | cut -f3 -d' ' | fzf)
+    DEVICE=$(bluetoothctl devices Paired | sed 's/Device \S* \(\S*\)/\1/' | fzf)
 fi
 
-DEVICE_MAC=$(bluetoothctl devices Paired | grep ${DEVICE} | cut -f2 -d' ')
+DEVICE_MAC=$(bluetoothctl devices Paired | grep "${DEVICE}" | cut -f 2 -d ' ')
 if [[ -z "${DEVICE_MAC}" ]]; then
     echo "${DEVICE} is not a paired device, check spelling or call again without name."
     exit 127
 fi
 
 echo "Connecting to ${DEVICE}..."
-bluetoothctl connect ${DEVICE_MAC}
+bluetoothctl connect "${DEVICE_MAC}"
