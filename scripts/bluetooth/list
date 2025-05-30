@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# List paired bluetooth devices
+set -euo pipefail
+
+echo Paired devices:
+bluetoothctl devices | sed 's/\S* \S* \(\S*\)/\1/'
