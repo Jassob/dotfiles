@@ -46,22 +46,20 @@
    Then we'll mark that we've initialized packages outside package.el.
 
    #+begin_src emacs-lisp :tangle init.el
-     (require 'package)
-     (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-   #+end_src
+     (use-package package :ensure nil
+       :config (package-initialize)
+       :custom
+       (package-native-compile t)
+       (package-archives '(("gnu"   . "http://elpa.gnu.org/packages/")
+                           ("melpa" . "https://melpa.org/packages/"))))
 
-   Make sure to reload the list of packages by calling =M-x
-   package-refresh-contents= when adding melpa for the first time.
-
-   I use =use-package= for keeping track of my packages, customising
-   them and load them lazily.
-
-   #+begin_src emacs-lisp :tangle init.el
-     (require 'use-package)
      ;; Always install all packages, but defer them until they are needed
      (setq use-package-always-ensure t
            use-package-always-defer t)
    #+end_src
+
+   Make sure to reload the list of packages by calling =M-x
+   package-refresh-contents= when adding melpa for the first time.
 
    Make sure that =use-package= is available for the byte-compiler.
 
