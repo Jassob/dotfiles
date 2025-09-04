@@ -388,6 +388,7 @@
     (use-package rainbow-delimiters :delight :hook (prog-mode . rainbow-delimiters-mode))
 
     (use-package yasnippet :commands (yas-reload-all yas-minor-mode)
+      :hook (prog-mode . yas-minor-mode)
       :config (yas-reload-all))
   #+end_src
 
