@@ -992,6 +992,20 @@
      (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
    #+end_src
 
+   We also want the system to automatically change the theme depending
+   on the time of day (actually where the sun is).
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package circadian :defer nil
+       :config
+       (setq calendar-latitude 57.7089
+     	calendar-longitude 11.9746
+     	circadian-themes '((:sunrise . modus-operandi)
+     			   (:sunset  . modus-vivendi)))
+
+       (circadian-setup))
+   #+end_src
+
 ** Fonts
 
    The fonts in =font-preferences= are the preferred fonts that I use
