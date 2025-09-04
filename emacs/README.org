@@ -601,7 +601,7 @@
                    rust-format-show-buffer nil
                    rust-format-goto-problem nil
                    rust-mode-treesitter-derive t)
-       :bind (:map rust-mode-map
+       :bind (:map rust-ts-mode-map
                    ("C-c C-u" . jsb/rust-insert-todo)))
 
      (defun jsb/rust-insert-todo ()
@@ -614,17 +614,20 @@
   current test (=C-c C-c C-c=) and so on.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package rustic :after rust-ts-mode :defer t :init
-      (setq rustic-lsp-client 'eglot)
-      (add-hook 'rustic-mode-hook #'rustic-setup-eglot -10))
+    (use-package rustic :mode ("\\.rs\\'" . rustic-mode) :defer nil
+      :hook (rustic-mode . eglot-ensure)
+      :custom
+      ;; disable default LSP setup, it does not allow us to specify clippy
+      ;; as initialization option.
+      (rustic-lsp-client 'eglot))
   #+end_src
 
   Finally, =cargo-mode= allows me to easily change and update
   Cargo.toml contents.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package cargo-mode :after rust-mode :defer t)
-  #+end_src
+    (use-package cargo-mode :after rustic-mode :defer t)
+ #+end_src
 
 ** Golang
 
