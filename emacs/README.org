@@ -390,6 +390,12 @@
     (use-package yasnippet :commands (yas-reload-all yas-minor-mode)
       :hook (prog-mode . yas-minor-mode)
       :config (yas-reload-all))
+
+    ;; Highlight indentation with |-characters
+    (use-package highlight-indent-guides :hook prog-mode
+      :custom
+      (highlight-indent-guides-method 'character)
+      (highlight-indent-guides-responsive 'stack))
   #+end_src
 
   Sometimes it is handy to be able to open the current line or region
