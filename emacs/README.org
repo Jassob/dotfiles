@@ -888,6 +888,17 @@
      (use-package nix-mode :defer t)
    #+end_src
 
+** DBC
+
+   We have vendored a GitHub hosted at [[https://github.com/alexmurray/dbc-mode][alexmurray/dbc-mode]].
+
+   #+begin_src emacs-lisp :tangle init.el
+     ;; add vendor directory to load-path
+     (add-to-list 'load-path (concat "/home/" user-login-name "/dotfiles/emacs/vendor"))
+
+     (require 'dbc-mode)
+   #+end_src
+
 * Personal customization
   Give my setup a personal touch.
 
