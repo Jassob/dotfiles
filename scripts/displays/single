@@ -3,7 +3,7 @@
 # Internal display only
 set -euo pipefail
 
-if xrandr | grep DP-1-1; then
+if xrandr | grep eDP-1-1; then
     xrandr --output eDP-1-1 --primary --auto --pos 0x0 \
 	--output HDMI-1 --off \
 	--output DP-1-1 --off \

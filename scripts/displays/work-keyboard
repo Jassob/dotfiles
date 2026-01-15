@@ -4,7 +4,7 @@
 # Standard work profile with keyboard and display to the right
 set -euo pipefail
 
-if xrandr | grep DP-1-1; then
+if xrandr | grep eDP-1-1; then
 xrandr --output eDP-1-1 --mode 3840x2400 --pos 0x0 --primary \
 	--output DP-1-1 --off \
 	--output DP-1-2 --off \
