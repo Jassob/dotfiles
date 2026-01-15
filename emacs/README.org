@@ -462,7 +462,7 @@
                   ("C-c l f f" . eglot-format)
                   ("C-c l f b" . eglot-format-buffer)))
 
-    (defvar jsb/no-format-major-modes '(tsx-ts-mode typescript-ts-mode)
+    (defvar jsb/no-format-major-modes '(tsx-ts-mode typescript-ts-mode python-ts-mode)
       "Major modes that eglot should not auto-format.")
 
     (defun jsb/eglot-format-on-save-maybe ()
@@ -525,6 +525,12 @@
       (cdr project))
   #+end_src
 
+  Eglot should be run for C code.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (add-hook 'c-ts-mode-hook #'eglot-ensure)
+  #+end_src
+
 ** Formatting
 
    #+begin_src emacs-lisp :tangle init.el
@@ -555,6 +561,7 @@
      (defvar prog-mode-formatters '((c-mode . clang-format-buffer)
                                     (java-mode . clang-format-buffer)
                                     (go-mode . gofmt)
+                                    (haskell-mode . ormolu-format-buffer)
                                     (rust-mode . rust-format-buffer)
                                     (typescript-ts-mode . prettier-prettify))
        "Alist containing major-mode and formatter pairs.")
@@ -863,10 +870,15 @@
        :mode "\\.hs\\'"
        :hook ((haskell-mode . interactive-haskell-mode)
               (haskell-mode . haskell-indentation-mode)
-              (haskell-mode . eglot-ensure))
+              (haskell-mode . eglot-ensure)
+     	 (haskell-mode . (lambda () (highlight-indent-guides-mode -1))))
        :bind (:map haskell-mode-map
                    ("C-c C-u" . jsb/haskell-insert-unimplemented)
-                   ("C-c RET" . company-complete)))
+                   ("C-c RET" . company-complete))
+       :config (setq-default eglot-workspace-configuration
+                             '(:haskell (:plugin (:hlint (:globalOn :json-false))))))
+
+     (use-package ormolu :after haskell-mode)
 
      (defun jsb/haskell-insert-unimplemented ()
        "Inserts error \"Not implemented.\" into a buffer at point."
@@ -895,6 +907,28 @@
      (use-package nix-mode :defer t)
    #+end_src
 
+** Python
+
+   For Python we want it to figure out the project-specific paths of
+   all executables, for that we use =pet=.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package pet :commands (pet-mode)
+       :init
+       (setq pet-find-file-functions '(pet-find-file-from-project-root)
+     	pet-venv-dir-names '(".venv" "venv" ".env" "env"))
+       (add-hook 'python-base-mode-hook 'pet-mode -10))
+   #+end_src
+
+   We also want to have black automatically format our files, for
+   which we can use =blacken=.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package blacken :commands (blacken-mode) :hook (python-base-mode python-mode))
+   #+end_src
+
+   (add-hook 'python-base-mode-hook 'lsp-deferred)
+
 ** DBC
 
    We have vendored a GitHub hosted at [[https://github.com/alexmurray/dbc-mode][alexmurray/dbc-mode]].
@@ -904,6 +938,17 @@
      (add-to-list 'load-path (concat "/home/" user-login-name "/dotfiles/emacs/vendor"))
 
      (require 'dbc-mode)
+   #+end_src
+
+** CI
+
+   I would like to be able to lint the configuration files of my CI
+   and since I mainly use GitHub Actions, that can be linted by
+   actionlint, which can be integrated in flymake.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package flymake-actionlint
+       :hook ((yaml-mode yaml-ts-mode) . flymake-actionlint-action-load-when-actions-file))
    #+end_src
 
 * Personal customization
@@ -1018,18 +1063,18 @@
        (unless (eq window-system nil)
          (if (null (x-list-fonts font)) nil t)))
 
-     (defvar font-preferences '("iosevka term" "Hasklig" "Inconsolata"
-    			"Fira Code" "Source Code Pro" "PragmataPro"))
+     (defvar font-preferences '("iosevka term" "Hasklig" "Inconsolata Nerd Font Mono 16"
+     			"Fira Code" "Source Code Pro" "PragmataPro"))
 
      ;; Set font of new frames to the first available font in
      ;; font-preferences.
      (use-package cl-lib)
      (add-hook 'server-after-make-frame-hook
            (lambda () (let ((fonts (cl-remove-if-not 'font-existsp font-preferences)))
-    		    (unless (and (not fonts) (eq window-system nil))
+     		    (unless (or (not fonts) (eq window-system nil))
                           (progn
-    			(set-face-font 'default (car fonts))
-    			(set-face-attribute 'default nil :weight 'medium))))))
+     			(set-face-font 'default (car fonts))
+     			(set-face-attribute 'default nil :weight 'medium))))))
    #+end_src
 
    When programming we would like to make use of ligatures to make the
