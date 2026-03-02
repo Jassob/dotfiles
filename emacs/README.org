@@ -1422,6 +1422,28 @@
        (:map evil-operator-state-map ("C-g" . #'evil-keyboard-quit)))
    #+end_src
 
+** Agentic workflows
+
+   Claude code is quite useful and it'd be even more useful if it was
+   available at a couple of key strokes.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package claude-code :ensure t :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+       :config
+       (setq claude-code-terminal-backend 'vterm)
+       ;; optional IDE integration with Monet
+       (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+       (monet-mode 1)
+
+       :bind ("C-c c" . claude-code-transient)
+
+       ;; Optionally define a repeat map so that "M" will cycle thru Claude
+       ;; auto-accept/plan/confirm modes after invoking
+       ;; claude-code-cycle-mode / C-c M.
+       :bind (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode)))
+
+     (use-package monet :vc (:url "https://github.com/stevemolitor/monet" :rev :newest))
+   #+end_src
 
 * TODO Add linters and formatters to common-code-mode
   Variable =buffer-file-name= could be used together with a asynch
