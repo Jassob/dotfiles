@@ -462,7 +462,7 @@
                   ("C-c l f f" . eglot-format)
                   ("C-c l f b" . eglot-format-buffer)))
 
-    (defvar jsb/no-format-major-modes '(tsx-ts-mode typescript-ts-mode python-ts-mode)
+    (defvar jsb/no-format-major-modes '(tsx-ts-mode typescript-ts-mode python-ts-mode c-ts-mode c-mode)
       "Major modes that eglot should not auto-format.")
 
     (defun jsb/eglot-format-on-save-maybe ()
@@ -529,6 +529,7 @@
 
   #+begin_src emacs-lisp :tangle init.el
     (add-hook 'c-ts-mode-hook #'eglot-ensure)
+    (add-hook 'c-mode-hook #'eglot-ensure)
   #+end_src
 
 ** Formatting
