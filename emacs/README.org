@@ -613,10 +613,12 @@
 
    #+begin_src emacs-lisp :tangle init.el
      (use-package rust-mode
+       :hook (rust-mode . eglot-ensure)
        :init (setq rust-format-on-save t
                    rust-format-show-buffer nil
                    rust-format-goto-problem nil
-                   rust-mode-treesitter-derive t)
+                   rust-mode-treesitter-derive t
+     	      eglot-ignored-server-capabilities '(inlayHintsProvider))
        :bind (:map rust-ts-mode-map
                    ("C-c C-u" . jsb/rust-insert-todo)))
 
@@ -624,18 +626,6 @@
        "Inserts todo!() into a buffer at point."
        (interactive)
        (insert "todo!()"))
-  #+end_src
-
-  =rustic= provides some more convenience functions like running the
-  current test (=C-c C-c C-c=) and so on.
-
-  #+begin_src emacs-lisp :tangle init.el
-    (use-package rustic :mode ("\\.rs\\'" . rustic-mode) :defer nil
-      :hook (rustic-mode . eglot-ensure)
-      :custom
-      ;; disable default LSP setup, it does not allow us to specify clippy
-      ;; as initialization option.
-      (rustic-lsp-client 'eglot))
   #+end_src
 
   Finally, =cargo-mode= allows me to easily change and update
