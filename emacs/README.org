@@ -562,6 +562,7 @@
      (defvar prog-mode-formatters '((c-mode . clang-format-buffer)
                                     (java-mode . clang-format-buffer)
                                     (go-mode . gofmt)
+                                    (go-ts-mode . gofmt)
                                     (haskell-mode . ormolu-format-buffer)
                                     (rust-mode . rust-format-buffer)
                                     (typescript-ts-mode . prettier-prettify))
@@ -662,17 +663,20 @@
   #+begin_src emacs-lisp :tangle init.el
     (use-package go-ts-mode :mode "\\.go\\'"
       :bind (:map go-ts-mode-map (("C-c C-a" . go-import-add)
-    			      ("C-c C-k" . godoc)
+                                  ("C-c C-k" . godoc)
                                   ("C-c C-u" . jsb/go-insert-todo)))
       :hook ((go-ts-mode . eglot-ensure)
              (go-ts-mode . (lambda ()
-    			 (setq-default eglot-workspace-configuration
-    				       '(:gopls
-    					 (:buildFlags ["-tags=integration"]
+                             (setq-default eglot-workspace-configuration
+                                           '(:gopls
+                                             (:buildFlags ["-tags=integration"]
                                               :gofumpt t
                                               :staticcheck t
-                                              :codelenses ((gc_details . t) (tidy . t) (run_vulncheck . t) (test . t))
-                                              :matcher  "CaseSensitive")))))))
+                                              :matcher "CaseSensitive"
+                                              :codelenses ((gc_details . t)
+                                                           (tidy . t)
+                                                           (run_vulncheck . t)
+                                                           (test . t)))))))))
 
     (defun jsb/go-insert-todo ()
       "Inserts panic(\"todo\") in the buffer at point."
@@ -685,7 +689,7 @@
   repository.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package flycheck-golangci-lint :after go-mode
+    (use-package flycheck-golangci-lint :after go-ts-mode
       :config (setq flycheck-golangci-lint-deadline "10s")
       :hook ((go-mode . jsb/setup-sage-golangci-lint)
              (go-mode . flycheck-golangci-lint-setup)
@@ -796,7 +800,7 @@
   interface.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package go-dlv :defer t :after go-mode :commands (dlv-current-func))
+    (use-package go-dlv :defer t :after go-ts-mode :commands (dlv-current-func))
   #+end_src
 
 ** TypeScript and Web stuff
