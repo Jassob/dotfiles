@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+# Load light theme
+set -euo pipefail
+
+# Set alacritty theme to light
+ats --select alabaster.toml
+
+# Set light Gnome theme
+gsettings set org.gnome.desktop.interface gtk-theme 'Yaru'
+gsettings set org.gnome.desktop.interface cursor-theme 'DMZ-White'
+gsettings set org.gnome.desktop.interface color-scheme 'default'
+
+# Set light GTK2 theme
+cat > ~/.gtkrc-2.0 <<EOF
+# DO NOT EDIT! This file will be overwritten by $SD_ROOT/theme/ scripts.
+
+gtk-theme-name="Yaru"
+gtk-icon-theme-name="Yaru"
+gtk-font-name="Cantarell 11"
+gtk-cursor-theme-name="DMZ-White"
+gtk-cursor-theme-size=0
+gtk-toolbar-style=GTK_TOOLBAR_BOTH_HORIZ
+gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
+gtk-button-images=0
+gtk-menu-images=0
+gtk-enable-event-sounds=1
+gtk-enable-input-feedback-sounds=1
+gtk-xft-antialias=1
+gtk-xft-hinting=1
+gtk-xft-hintstyle="hintmedium"
+EOF
+
+# Set light GTK3 theme
+cat > ~/.config/gtk-3.0/settings.ini <<EOF
+# DO NOT EDIT! This file will be overwritten by $SD_ROOT/theme/ scripts.
+
+[Settings]
+gtk-theme-name=Yaru
+gtk-icon-theme-name=Yaru
+gtk-font-name=Cantarell 11
+gtk-cursor-theme-size=0
+gtk-toolbar-style=GTK_TOOLBAR_BOTH_HORIZ
+gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
+gtk-button-images=0
+gtk-menu-images=0
+gtk-enable-event-sounds=1
+gtk-enable-input-feedback-sounds=1
+gtk-xft-antialias=1
+gtk-xft-hinting=1
+gtk-xft-hintstyle=hintmedium
+gtk-cursor-theme-name=DMZ-White
+gtk-xft-rgba=none
+gtk-application-prefer-dark-theme = 0
+EOF
+
+# Set light GTK4 theme
+cat > ~/.config/gtk-4.0/settings.ini <<EOF
+# DO NOT EDIT! This file will be overwritten by $SD_ROOT/theme/ scripts.
+
+[Settings]
+gtk-theme-name = Yaru
+gtk-icon-theme-name = DMZ-White
+gtk-font-name = Cantarell 11
+gtk-application-prefer-dark-theme = 0
+EOF
