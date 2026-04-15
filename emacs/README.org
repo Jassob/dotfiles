@@ -1357,6 +1357,18 @@
     (setq eshell-smart-space-goes-to-end t)
   #+end_src
 
+* Terminal emulator
+
+  vterm is a fast terminal emulator running inside Emacs.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (use-package vterm :ensure t :commands (vterm-mode)
+      ;; automatically set vterm name to *vterm PROJECT* inside PROJECT.
+      :hook (vterm-mode . (lambda () (when (project-current)
+    				   (rename-buffer
+    				    (concat "*vterm " (project-name (project-current)) "*"))))))
+  #+end_src
+
 * Reading / Writing
 ** Distraction free writing
 
