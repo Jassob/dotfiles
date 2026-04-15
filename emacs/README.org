@@ -1033,17 +1033,12 @@
    #+end_src
 
    We also want the system to automatically change the theme depending
-   on the time of day (actually where the sun is).
+   on the system's color scheme, i.e. switch to the dark theme if the
+   rest of the system is using a dark theme (uses xdg-desktop-portal).
 
    #+begin_src emacs-lisp :tangle init.el
-     (use-package circadian :defer nil
-       :config
-       (setq calendar-latitude 57.7089
-     	calendar-longitude 11.9746
-     	circadian-themes '((:sunrise . modus-operandi)
-     			   (:sunset  . modus-vivendi)))
-
-       (circadian-setup))
+     (use-package auto-dark :init (auto-dark-mode) :defer nil
+       :config (setq auto-dark-themes '((modus-vivendi) (modus-operandi))))
    #+end_src
 
 ** Fonts
