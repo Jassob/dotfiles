@@ -1353,9 +1353,15 @@
   #+begin_src emacs-lisp :tangle init.el
     (use-package vterm :ensure t :commands (vterm-mode)
       ;; automatically set vterm name to *vterm PROJECT* inside PROJECT.
-      :hook (vterm-mode . (lambda () (when (project-current)
-    				   (rename-buffer
-    				    (concat "*vterm " (project-name (project-current)) "*"))))))
+      :hook (vterm-mode . (lambda () (jsb/rename-vterm-buffer-project-local))))
+
+    (defun jsb/rename-vterm-buffer-project-local ()
+      "Renames current buffer to *vterm PROJECT* (or *vterm PROJECT<COUNTER>*
+    if there are already multiple terminals in current project.)"
+      (if (project-current)
+          (let* ((base-name (concat "*vterm " (project-name (project-current)) "*"))
+    	     (buffer-name (generate-new-buffer-name base-name)))
+    	(rename-buffer buffer-name))))
   #+end_src
 
 * Reading / Writing
