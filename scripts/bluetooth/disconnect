@@ -6,7 +6,7 @@ set -euo pipefail
 DEVICE="${1:-undefined}"
 
 if [[ "${DEVICE}" == "undefined" ]]; then
-    DEVICE=$(bluetoothctl devices Connected | cut -f3 -d' ' | fzf)
+    DEVICE=$(bluetoothctl devices Connected | sed 's/Device \S* \(S*\)/\1/' | fzf)
 fi
 
 DEVICE_MAC=$(bluetoothctl devices Connected | grep "${DEVICE}" | cut -f2 -d' ')
