@@ -51,6 +51,7 @@
        :custom
        (package-native-compile t)
        (package-archives '(("gnu"   . "http://elpa.gnu.org/packages/")
+                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                            ("melpa" . "https://melpa.org/packages/"))))
 
      ;; Always install all packages, but defer them until they are needed
@@ -1437,7 +1438,7 @@
    #+begin_src emacs-lisp :tangle init.el
      (use-package claude-code :ensure t :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
        :config
-       (setq claude-code-terminal-backend 'vterm)
+       (setq claude-code-terminal-backend 'eat)
        ;; optional IDE integration with Monet
        (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
        (monet-mode 1)
@@ -1449,7 +1450,15 @@
        ;; claude-code-cycle-mode / C-c M.
        :bind (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode)))
 
-     (use-package monet :vc (:url "https://github.com/stevemolitor/monet" :rev :newest))
+     (use-package monet :vc (:url "https://github.com/stevemolitor/monet" :rev :newest) :after claude-code)
+   #+end_src
+
+   It seems my claude-code expects the buffer to be named in a certain
+   way, and my vterm configuration breaks that, instead I will try out
+   =eat= backend.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package eat :ensure t :hook (eshell-load . eat-eshell-mode))
    #+end_src
 
 * TODO Add linters and formatters to common-code-mode
