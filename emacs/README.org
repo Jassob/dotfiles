@@ -1347,6 +1347,15 @@
     (setq eshell-smart-space-goes-to-end t)
   #+end_src
 
+  Some commands expect a visual terminal (in contrast to the
+  line-based support provided by Eshell), we need to let Eshell know
+  that these need special handling.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (require 'em-term)
+    (add-to-list 'eshell-visual-commands "jj")
+  #+end_src
+
 * Terminal emulator
 
   vterm is a fast terminal emulator running inside Emacs.
