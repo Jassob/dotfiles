@@ -607,6 +607,16 @@
      (use-package forge :after magit)
    #+end_src
 
+   I'm also experimenting with jujutsu, for which I also want emacs support:
+
+   #+begin_src emacs-lisp :tangle init.el
+     ;; Install jj support for emacs builtin VC
+     (use-package vc-jj :ensure t)
+
+     ;; Install description mode for jj
+     (use-package jjdescription :ensure t)
+   #+end_src
+
 ** Rust
 
    I want to format Rust buffers on save, and have the rest of the LSP
