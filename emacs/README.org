@@ -1172,6 +1172,13 @@
    (setq org-agenda-files (list org-directory (concat org-directory "/calendar")))
  #+end_src
 
+ When looking at clock tables and other time durations, the number of
+ hours is clearer to read than it aggregated into number of days.
+
+ #+begin_src emacs-lisp :tangle init.el
+   (setq org-duration-format 'h:mm)
+ #+end_src
+
  I want to be able to press <TAB> on ~<q~ to it to ~#+begin_quote...~
 
  #+begin_src emacs-lisp :tangle init.el
