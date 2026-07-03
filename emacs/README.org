@@ -1363,15 +1363,30 @@
   #+begin_src emacs-lisp :tangle init.el
     (use-package vterm :ensure t :commands (vterm-mode)
       ;; automatically set vterm name to *vterm PROJECT* inside PROJECT.
-      :hook (vterm-mode . (lambda () (jsb/rename-vterm-buffer-project-local))))
+      :hook ((vterm-mode . (lambda () (jsb/vterm-rename-buffer-project-local))))
+      :bind (:map vterm-mode-map
+    	      ("C-q" . vterm-send-next-key)))
 
-    (defun jsb/rename-vterm-buffer-project-local ()
+    (defun jsb/vterm-rename-buffer-project-local ()
       "Renames current buffer to *vterm PROJECT* (or *vterm PROJECT<COUNTER>*
     if there are already multiple terminals in current project.)"
       (if (project-current)
           (let* ((base-name (concat "*vterm " (project-name (project-current)) "*"))
     	     (buffer-name (generate-new-buffer-name base-name)))
     	(rename-buffer buffer-name))))
+  #+end_src
+
+  We want to be able to access the =server-name= variable to reuse the
+  Emacs instance for terminal activities requiring an editor.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (defun jsb/expose-server-name-envvar ()
+      "Exposes SERVER-NAME variable behind EMACS_SERVER_NAME environment variable."
+      (if (boundp 'server-name)
+          (setenv "EMACS_SERVER_NAME" server-name)
+        (setenv "EMACS_SERVER_NAME")))
+
+    (advice-add 'server-start :after #'jsb/expose-server-name-envvar)
   #+end_src
 
 * Reading / Writing
