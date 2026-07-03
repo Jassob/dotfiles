@@ -4,15 +4,14 @@ set -euo pipefail
 
 SESSIONS=$(find "${XDG_RUNTIME_DIR}/emacs" -type s -printf "%f\n")
 
-if [[ -z ${SESSIONS} ]]; then
-    echo "no sessions running"
-    exit 0
-fi
-
 SESSION=$(rofi -dmenu -p "Choose an Emacs session to open" <<<$SESSIONS)
 if [[ -z ${SESSION} ]]; then
     echo "no session selected"
     exit 0
+fi
+
+if [[ ! -S "/run/user/$(id -u)/emacs/${SESSION}" ]]; then
+    emacs --daemon="${SESSION}"
 fi
 
 emacsclient -s "${SESSION}" --create-frame
