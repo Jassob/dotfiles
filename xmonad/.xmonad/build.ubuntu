@@ -1,0 +1,40 @@
+#!/bin/sh -eu
+
+################################################################################
+# Edit this file and then rename it to ~/.xmonad/build
+
+################################################################################
+# The directory holding your source code and Cabal file:
+SRC_DIR=~/dotfiles/xmonad/src
+
+################################################################################
+# The name of the executable produced by cabal.  This comes from the
+# executable section of your Cabal file.
+EXE_NAME=xmonad
+
+################################################################################
+# This script will be given a single argument, the full path to the
+# executable it should produce.
+output_file=$1; shift
+
+if [ -f "${output_file}" ]; then
+    rm -f "${output_file}"
+fi
+
+cd "${SRC_DIR}"
+
+# Build with cabal
+cabal build > /dev/null
+
+RESULT_DIR="dist-newstyle/build/x86_64-linux/ghc-9.4.7/xmonad-config-0.1.0.0"
+
+# Move the binary out into the root directory
+if [ -f "${RESULT_DIR}/x/xmonad/build/xmonad/xmonad" ]; then
+    cp "${RESULT_DIR}/x/xmonad/build/xmonad/xmonad" "${output_file}"
+fi
+
+# Copy the built xmobar binary
+if [ -f "${RESULT_DIR}/x/xmobar/build/xmobar/xmobar" ]; then
+    rm "${HOME}/.xmonad/xmobar"
+    cp "${RESULT_DIR}/x/xmobar/build/xmobar/xmobar" "${HOME}/.xmonad/xmobar"
+fi
