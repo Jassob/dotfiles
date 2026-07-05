@@ -8,7 +8,9 @@ cd "${HOME}/tools/weelisten" || {
   exit 1
 }
 
-CERT_PATH="$(pwd)/fullchain.pem"
+CERT_PATH="${HOME}/.cache/weechat/relay.pem"
+[[ -d $(dirname "${CERT_PATH}") ]] || mkdir -p $(dirname "${CERT_PATH}")
+
 CERT_MOD_TIME=$(stat -c '%Y' "${CERT_PATH}" 2>/dev/null || echo 0)
 CERT_AGE=$(( $(date +%s) - ${CERT_MOD_TIME} ))
 DAY_IN_SECONDS=86400 # 24 * 60 * 60
