@@ -1,18 +1,38 @@
 #!/usr/bin/env nix-shell
-#! nix-shell -i bash -p python312Packages.notify2 python312Packages.dbus-python python312
+#! nix-shell -i bash -p openssh python312Packages.notify2 python312Packages.dbus-python python312
 
 set -euo pipefail
 
-cd "${HOME}/tools/weelisten" || { echo "Missing weelisten, clone github.com/Jassob/weelisten"; exit 1; }
-if CERT_MOD_TIME=$(stat -c '%Y' ./fullchain.pem) && \
-   (( (( $(date +%s) - $CERT_MOD_TIME )) < 86400 )); then
-   echo "Recent certificate detected, remove $(pwd)/fullchain.pem if connection attempts fails"
+cd "${HOME}/tools/weelisten" || {
+  echo "Missing weelisten, clone github.com/Jassob/weelisten"
+  exit 1
+}
+
+CERT_PATH="$(pwd)/fullchain.pem"
+CERT_MOD_TIME=$(stat -c '%Y' "${CERT_PATH}" 2>/dev/null || echo 0)
+CERT_AGE=$(( $(date +%s) - ${CERT_MOD_TIME} ))
+DAY_IN_SECONDS=86400 # 24 * 60 * 60
+
+# Refresh certificate if older than a day.
+if (( ${CERT_AGE} < ${DAY_IN_SECONDS} )); then
+  echo "Recent certificate detected, remove ${CERT_PATH} if connection attempts fails"
 else
-  scp -P222 jassob.se:.weechat/ssl/fullchain.pem ./fullchain.pem
+  echo "${CERT_PATH} not found or too old, refreshing..."
+  scp -P222 jassob.se:.weechat/tls/relay.pem "${CERT_PATH}"
 fi
-python3 client.py jassob.se --password-cmd "pass apps/weechat | tail -n +3 | cut -f 3 -d ' '" \
-                            --ca-file "~/tools/weelisten/fullchain.pem" \
-                            --port 8001 &
-IP=$(ping -c 1 192.168.1.72 >/dev/null && echo 192.168.1.72 || echo jassob.se)
-ssh -p222 -t ${IP} tmux a
+
+# Start weelisten notification client
+python3 client.py jassob.se \
+	--password-cmd "pass apps/weechat | tail -n +3 | cut -f 3 -d ' '" \
+        --ca-file "${CERT_PATH}" \
+        --port 8001 &
+
 trap 'kill $(jobs -p)' EXIT
+
+IP=$(ping -c 1 192.168.1.104 >/dev/null && echo 192.168.1.104 || echo jassob.se)
+ssh -p222 -t ${IP} tmux a
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:
