@@ -41,7 +41,7 @@ config = defaultConfig
       ] 5
 
       , Run $ ComX "sh" [ "-c"
-                      , "mu find flag:unread and maildir:/INBOX and not flag:trashed | wc -l"
+                      , "mu find flag:unread and maildir:/personal/INBOX and not flag:trashed | wc -l"
                       ] "N/A" "inbox" 10
       , Run $ ComX "sh" [ "-c"
                       , "mu find flag:flagged and not flag:trashed | uniq | wc -l"
@@ -65,10 +65,9 @@ myTemplate = unwords
   , "}"
   , "<action=`$HOME/scripts/emacs/open-graphical server -e '(org-agenda-list)'` button=1> \61555 %date%</action>"
   , "{"
-  , "Updates: %checkupdates%"
-  , "| <action=`$HOME/.local/bin/toggle-dunst` button=1>%disturb%</action>"
+  , "<action=`$HOME/.local/bin/toggle-dunst` button=1>%disturb%</action>"
   , "| <action=`$HOME/.local/bin/toggle-awake` button=1>%awake%</action>"
-  , "| <action=`$HOME/scripts/emacs/open-graphical server -e '(mu4e)'` button=1>\61664 (personal: %inbox%, starred: %starred%)</action>"
+  , "| <action=`$HOME/scripts/emacs/open-graphical server -e '(gnus)'` button=1>\61664 (personal: %inbox%, starred: %starred%)</action>"
   , "| %memory%"
   , "| <action=`pavucontrol` button=1>%vol%</action>"
   , "| %battery% "
