@@ -43,7 +43,7 @@
 
 ** Packages
 
-   Then we'll mark that we've initialized packages outside package.el.
+   Let's start by loading ~package.el~ and add melpa archive.
 
    #+begin_src emacs-lisp :tangle init.el
      (use-package package :ensure nil
@@ -146,7 +146,7 @@
    #+begin_src emacs-lisp :tangle init.el
      (require 'dired-x)
      (setq dired-omit-files "^\\...+$")
-     (add-hook 'dired-mode-hook (lambda () (dired-omit-mode 1)))
+     (add-hook 'dired-mode-hook (lambda () (dired-omit-mode t)))
      (define-key dired-mode-map (kbd "C-c h") 'dired-omit-mode)
    #+end_src
 
@@ -257,6 +257,14 @@
   #+begin_src emacs-lisp :tangle init.el
     ;; Use smex to keep M-x sorted on recent use
     (use-package smex)
+  #+end_src
+
+  Sometimes there are annotations that Emacs should display when
+  selecting from a list of candidates (see for instance
+  ~describe-function~).
+
+  #+begin_src emacs-lisp :tangle init.el
+    (setq completions-detailed t)
   #+end_src
 
 ** Tree-like file history
@@ -472,6 +480,13 @@
         (add-hook 'before-save-hook #'eglot-format-buffer 0 t)))
   #+end_src
 
+  We use =C-c ! l= or =C-x C-h .= to show the relevant diagnostics, we
+  don't want flymake to show diagnostics on the end of the line.
+
+  #+begin_src emacs-lisp :tangle init.el
+    (setq flymake-show-diagnostics-at-end-of-line nil)
+  #+end_src
+
   Next comes =lsp-mode=:
 
   #+begin_src emacs-lisp :tangle init.el
@@ -482,6 +497,9 @@
                   ("C-c ! a"   . flymake-show-project-diagnostics)
                   ("C-c ! n"   . flymake-goto-next-error)
                   ("C-c ! p"   . flymake-goto-prev-error)))
+    (use-package flycheck :after lsp-mode
+      ;; disable automatic error display
+      :init (setq flycheck-auto-display-errors-after-checking nil))
   #+end_src
 
   There seems to be a bug in treemacs, related to SVG images.
@@ -628,9 +646,10 @@
        :init (setq rust-format-on-save t
                    rust-format-show-buffer nil
                    rust-format-goto-problem nil
-                   rust-mode-treesitter-derive t
-     	      eglot-ignored-server-capabilities '(inlayHintsProvider))
-       :bind (:map rust-ts-mode-map
+     	      rust-mode-treesitter-derive t
+     	      ;; ignore inlay hints for rust
+     	      eglot-ignored-server-capabilities '(:inlayHintProvider))
+       :bind (:map rust-mode-map
                    ("C-c C-u" . jsb/rust-insert-todo)))
 
      (defun jsb/rust-insert-todo ()
@@ -890,6 +909,12 @@
        "Inserts error \"Not implemented.\" into a buffer at point."
        (interactive)
        (insert "error \"Not implemented\""))
+
+     ;; Don't show the errors from FlyCheck when I hover over an error
+     ;; Stolen from: https://github.com/flycheck/flycheck/issues/1332
+     (defadvice flycheck-display-error-at-point-soon
+         (after flycheck-display-error-at-point-soon-advice activate compile)
+       (flycheck-cancel-error-display-error-at-point-timer))
    #+end_src
 
 ** Java
