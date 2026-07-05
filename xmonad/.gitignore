@@ -3,4 +3,13 @@
 *.o
 *dist/
 *dist-newstyle/
+*.errors
+*.state
+
+# Built binaries
 *xmonad-x86_64-linux
+*xmonad
+*xmobar
+
+# Build script symlink
+.xmonad/build
