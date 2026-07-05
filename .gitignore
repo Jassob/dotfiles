@@ -1,12 +1,9 @@
-/zsh/.zsh.d/.zcompdump
-/zsh/.zsh.d/history
-*.hi
-*.o
-*xmonad-x86_64-linux
-*.errors
-*.state
+# Editor backup files
+*~
+
+# Nix build files
 *result
-*dist/
-*dist-newstyle/
+
+
 /xdg-configs/.config/alacritty/alacritty.yml
-/xmonad/.config/xmobar/xmobar
+emacs/init.el

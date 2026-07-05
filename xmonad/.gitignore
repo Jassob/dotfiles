@@ -1,0 +1,6 @@
+# Haskell build files
+*.hi
+*.o
+*dist/
+*dist-newstyle/
+*xmonad-x86_64-linux

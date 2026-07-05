@@ -4,3 +4,6 @@
 \#*
 .\#*
 /history
+
+.zsh.d/.zcompdump
+.zsh.d/history
