@@ -1432,6 +1432,14 @@
         (setenv "EMACS_SERVER_NAME")))
 
     (advice-add 'server-start :after #'jsb/expose-server-name-envvar)
+
+    ;; We also want to make sure that the EDITOR environment variable
+    ;; points to the spawning Emacs instance.
+    (add-hook 'shell-mode-hook  'with-editor-export-editor)
+    (add-hook 'eshell-mode-hook 'with-editor-export-editor)
+    (add-hook 'term-exec-hook   'with-editor-export-editor)
+    (add-hook 'vterm-mode-hook  'with-editor-export-editor)
+    (add-hook 'eat-mode-hook    'with-editor-export-editor)
   #+end_src
 
 * Reading / Writing
