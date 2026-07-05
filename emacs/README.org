@@ -358,7 +358,6 @@
         (add-hook 'prog-mode-hook 'linum-mode)))
     (add-hook 'prog-mode-hook (lambda () (transient-mark-mode -1)))
     (setq company-idle-delay nil)
-
   #+end_src
 
   I want trailing white space to be removed automatically before saving.
@@ -429,7 +428,6 @@
                                 (concat "..L" (number-to-string end-line)))))))
   #+end_src
 
-
   When LSP is not setup correctly Xref falls back to navigating the
   source tree with TAGS, and these files seldom exists.
   With =dumb-jump= we get some heuristics that jumps to somewhat
@@ -491,12 +489,8 @@
 
   #+begin_src emacs-lisp :tangle init.el
     (use-package lsp-mode :commands (lsp lsp-deferred)
-      :init (setq lsp-keymap-prefix (kbd "C-c l"))
-      :bind (:map lsp-mode-map
-                  ("C-c ! l"   . flymake-show-buffer-diagnostics)
-                  ("C-c ! a"   . flymake-show-project-diagnostics)
-                  ("C-c ! n"   . flymake-goto-next-error)
-                  ("C-c ! p"   . flymake-goto-prev-error)))
+      :init (setq lsp-keymap-prefix (kbd "C-c l")))
+
     (use-package flycheck :after lsp-mode
       ;; disable automatic error display
       :init (setq flycheck-auto-display-errors-after-checking nil))
@@ -584,7 +578,10 @@
                                     (go-ts-mode . gofmt)
                                     (haskell-mode . ormolu-format-buffer)
                                     (rust-mode . rust-format-buffer)
-                                    (typescript-ts-mode . prettier-prettify))
+                                    (rust-ts-mode . rust-format-buffer)
+                                    (typescript-ts-mode . prettier-prettify)
+                                    (haskell-mode . ormolu)
+                                    (typescript-mode . prettier-prettify))
        "Alist containing major-mode and formatter pairs.")
    #+end_src
 
@@ -642,7 +639,7 @@
 
    #+begin_src emacs-lisp :tangle init.el
      (use-package rust-mode
-       :hook (rust-mode . eglot-ensure)
+       :hook ((rust-mode . eglot-ensure))
        :init (setq rust-format-on-save t
                    rust-format-show-buffer nil
                    rust-format-goto-problem nil
@@ -662,7 +659,7 @@
   Cargo.toml contents.
 
   #+begin_src emacs-lisp :tangle init.el
-    (use-package cargo-mode :after rustic-mode :defer t)
+    (use-package cargo-mode :after rust-mode :defer t)
  #+end_src
 
 ** Golang
@@ -895,8 +892,8 @@
        :mode "\\.hs\\'"
        :hook ((haskell-mode . interactive-haskell-mode)
               (haskell-mode . haskell-indentation-mode)
-              (haskell-mode . eglot-ensure)
-     	 (haskell-mode . (lambda () (highlight-indent-guides-mode -1))))
+     	 (haskell-mode . flycheck-mode))
+       :custom (haskell-process-suggest-remove-import-lines nil)
        :bind (:map haskell-mode-map
                    ("C-c C-u" . jsb/haskell-insert-unimplemented)
                    ("C-c RET" . company-complete))
@@ -956,9 +953,8 @@
 
    #+begin_src emacs-lisp :tangle init.el
      (use-package blacken :commands (blacken-mode) :hook (python-base-mode python-mode))
+     (add-hook 'python-base-mode-hook 'lsp-deferred)
    #+end_src
-
-   (add-hook 'python-base-mode-hook 'lsp-deferred)
 
 ** DBC
 
@@ -980,6 +976,13 @@
    #+begin_src emacs-lisp :tangle init.el
      (use-package flymake-actionlint
        :hook ((yaml-mode yaml-ts-mode) . flymake-actionlint-action-load-when-actions-file))
+   #+end_src
+
+** Zig
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package zig-mode
+       :hook (zig-mode . eglot-ensure))
    #+end_src
 
 * Personal customization
@@ -1377,7 +1380,7 @@
 
 * Eshell
 
-  I found =Eshell smart display= on the [[https://masteringemacs.org/article/complete-guide-mastering-][Eshell article on Mastering
+  I found =Eshell smart display= on the [[https://masteringemacs.org/article/complete-guide-mastering-eshell][Eshell article on Mastering
   Emacs]] and I think it is pretty neat! It lets me review a failing
   command and edit the command line to fix the error.
 
@@ -1468,6 +1471,19 @@
   out, with the hope of time boxing the experiment and either folding
   it into my configuration proper or removing it.
 
+** GPTel
+
+   I want to be able to query a local LLM running in ollama.
+
+   #+begin_src emacs-lisp :tangle init.el
+     (use-package gptel
+       :init (setq gptel-model 'mistral:latest
+     	      gptel-backend (gptel-make-ollama "Ollama"
+     					       :host "localhost:11434"
+     					       :stream t
+     					       :models '(mistral:latest))))
+   #+end_src
+
 ** EVIL mode
 
    I'm experimenting with EVIL mode in an attempt to learn Vi(m)
@@ -1539,4 +1555,3 @@
 * TODO Integrate better with Nix
   [[https://matthewbauer.us/bauer/#emacs][This]] is very interesting, maybe something I might take advantage of
   myself?
-* TODO Move common-code-mode into prog-mode
