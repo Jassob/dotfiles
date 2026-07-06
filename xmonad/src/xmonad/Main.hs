@@ -60,8 +60,8 @@ myScratchpads =
         doFullFloat
     , NS
         "empad"
-        "~/scripts/emacs/open-graphical server"
-        (title =? "server")
+        "~/scripts/emacs/open-graphical server --frame-parameters=\"((name . \\\"empad\\\"))\""
+        (title =? "empad")
         doCenterFloat
     , NS "notepad" "logseq" (className =? "Logseq") doCenterFloat
     , NS

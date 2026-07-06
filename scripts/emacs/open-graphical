@@ -18,6 +18,8 @@ if [[ "${SESSION}" == "undefined" ]]; then
 	echo "no session selected"
 	exit 0
     fi
+else
+    shift 1
 fi
 
-emacsclient -s "${SESSION}" --create-frame
+emacsclient -s "${SESSION}" "$@" --create-frame
