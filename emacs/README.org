@@ -1065,8 +1065,9 @@
 
      ;; We want to italics, but not bold
      (setq modus-themes-italic-constructs t
-           modus-themes-bold-constructs nil)
-     (load-theme 'modus-operandi)
+           modus-themes-bold-constructs nil
+           modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted))
+     (load-theme 'modus-vivendi-tinted)
      ;; Toggle between light and dark themes with f5
      (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
    #+end_src
@@ -1077,7 +1078,7 @@
 
    #+begin_src emacs-lisp :tangle init.el
      (use-package auto-dark :init (auto-dark-mode) :defer nil
-       :config (setq auto-dark-themes '((modus-vivendi) (modus-operandi))))
+       :config (setq auto-dark-themes '((modus-vivendi-tinted) (modus-operandi-tinted))))
    #+end_src
 
 ** Fonts
